@@ -1,0 +1,77 @@
+\section{Introduction}
+
+The phenotype is a term used in genetics to define the set of observable
+traits in an organism. It can be seen as the result of three factors:
+the expression of the genetic code of an organism, its interaction with
+the environment, and some casual events which can occur during its life.
+In particular, the main aspect is the gene expression, which is the
+process by which the information from a gene is used to synthesize all
+functional gene products, like RNA or proteins, essential for the life
+of all organisms and many viruses. The first step to define the gene
+expression is to study the DNA, which is the essential molecule that
+characterizes the organisms in general. It contains all the genetic
+instructions which regulate this process. Starting from its structure,
+the DNA is composed of two chains of nucleotides, combined to compose a
+double helix. This molecule can be divided into subsequences of
+nucleotides and each of them has a specific task. These sequences can be
+grouped into two sets according to their main purpose: the coding and
+non-coding regions. The coding regions (the gene) contain the
+information to synthesize some gene products and the non-coding regions
+are responsible to help, regulate or modify the creation process of a
+specific gene product. The gene expression involves both these regions
+of the DNA and it is composed of two main processes: transcription and
+translation. Through the transcription process, a particular DNA coding
+region is copied inside the messenger RNA (mRNA) thanks to some
+proteins, the RNA polymerase and other transcription factors, specific
+for each gene product. In particular, RNA polymerase binds to a
+particular region of DNA, called the promoter, and activates the
+transcription process. The initial version of mRNA contains redundant
+information and it consists of alternating segments called exons (coding
+regions) and introns (redundant regions). The RNA splicing method is
+applied to remove the introns and to produce the final mRNA sequence.
+After that, the mRNA goes out from the cell nucleus, and then the
+translation process starts. The mRNA sequence is divided into small
+groups of 3 nucleotides. Each of these triplets, also known as codon,
+corresponds to a specific amino acid. The result sequence of amino acids
+forms the final gene product. It is important to specify that a single
+coding region can generate many different products and the non-coding
+region play a big role in gene expression. There are two main types of
+non-coding regions: trans-regulatory elements (TREs) and cis-regulatory
+elements (CREs). TREs are particular types of genes that may modify or
+regulate the expression of other genes, often encoding transcription
+factors. Other non-coding regions, the CREs, are close to the genes that
+they regulate by bindings to the transcription factor. In particular,
+enhancers and silencers interact with promoters, through RNA polymerase
+and other transcription factors, to influence or repress, respectively,
+the gene expression. There are hundreds of different cell types in an
+organism despite they share the same DNA. This means that the gene
+expression is different according to the cell line and the type of
+product to be synthesized. In particular, the DNA may be used by the
+cell in very different ways and its regions may be active or inactive,
+producing a different level of expression for each gene. Determine the
+activation of the regions is a very important task in biology, it can be
+useful to determine the phenotype expressed by an organism or to control
+the gene expression in a specific cell line or, again, to understand
+better the complex interaction between the DNA and the transcription
+factors. Besides, this technique can help during the diagnosis, to
+determine the current or future pathology or to find the best therapy
+according to the genetic characteristics of the patient. However,
+determine if a DNA region is active or not is very hard and expensive:
+the amount of data to collect is huge and its analysis is very complex.
+The new information technologies can help to simplify this task,
+supervised machine learning in particular. The idea is to train a
+learning machine using some examples, DNA regions labeled as active and
+inactive, so that it can predict the status of an unknown region
+considering only its specific features. In the literature, a lot of
+methods are proposed. In {[}1{]} it is used a deep feedforward neural
+network to predict active enhancer, active promoter, active exon,
+inactive enhancer, inactive promoter, inactive exon, and uncharacterized
+regions. Another method, DeepEnhancer {[}2{]}, uses CNN to find
+enhancers and specialize in the learning process on the cell line using
+the transfer learning technique. Moreover, Basset {[}3{]} is an
+open-source system that applies CNN to learn simultaneously the relevant
+DNA sequence motifs and the regulatory logic to determine cell-specific
+DNA accessibility. Following work, Basenji {[}4{]}, modify the previous
+system to identify promoters and the relative regulatory elements and
+synthesize their content to make more precise gene expression
+predictions.

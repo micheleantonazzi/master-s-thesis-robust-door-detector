@@ -1,0 +1,39 @@
+\documentclass[letterpaper,12pt]{article}
+\usepackage{tabularx} % extra features for tabular environment
+\usepackage{amsmath}  % improve math presentation
+\usepackage{graphicx} % takes care of graphic including machinery
+\usepackage[margin=1in,letterpaper]{geometry} % decreases margins
+\usepackage{cite} % takes care of citations
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage[final]{hyperref} % adds hyper links inside the generated pdf file
+\hypersetup{
+	colorlinks=true,       % false: boxed links; true: colored links
+	linkcolor=blue,        % color of internal links
+	citecolor=black,        % color of links to bibliography
+	filecolor=magenta,     % color of file links
+	urlcolor=blue         
+}
+\usepackage{blindtext}
+%++++++++++++++++++++++++++++++++++++++++
+
+
+\begin{document}
+
+\title{Robust door detection in autonomous mobile robots}
+\author{Michele Antonazzi}
+\date{\today}
+\maketitle
+
+\begin{abstract}
+The aim of this document is to analyze the most relevant papers related to the research areas of door recognition and robotic vision. Promising work is \cite{7942676}: it fuses together a data-driven technique and a feature-based model to recognize door. This approach selects a ROI (region of interest) with a deep network and then applies an algorithm to extract the doors' characteristics only within this ROI. A possible way to increase the precision of the feature-based algorithm is explained in \cite{QUINTANA2018146}. Its feature-based algorithm is more complex and precise. In addition, this method fuses together visual and depth data. The survey reported in \cite{8683987} gives us useful information to utilize both RGB and depth data in an end-to-end module. Moreover, this work analyzes the available datasets that can be used to train a neural network to perform object recognition.
+\end{abstract}
+
+\input{text.tex}
+
+\newpage
+
+\bibliographystyle{abbrv}
+\bibliography{bibliography}
+
+\end{document}
