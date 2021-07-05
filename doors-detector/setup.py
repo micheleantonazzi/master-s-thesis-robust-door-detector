@@ -63,7 +63,8 @@ setup(
         'generic-dataset',
         'torch',
         'torchvision',
-        'gibson-env-utilities'
+        'gibson-env-utilities',
+        'scikit-learn'
     ],
     entry_points={
         'console_scripts': [
