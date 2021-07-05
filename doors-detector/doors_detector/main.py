@@ -4,6 +4,7 @@ from torch import nn
 import torch.nn.functional as F
 import torchvision.transforms as T
 
+from doors_detector.dataset.datasets_creator import DatasetsCreator
 from doors_detector.models.detr import Detr, DETR_RESNET50
 
 
@@ -69,7 +70,11 @@ def plot_results(pil_img, prob, boxes):
 
 
 detr_resnet50 = Detr(DETR_RESNET50, False)
-print(detr_resnet50.model)
+
+dataset_path = '/home/michele/myfiles/doors_dataset'
+datasets_creator = DatasetsCreator(dataset_path)
+datasets_creator.consider_samples_with_label(label=1)
+print(datasets_creator._dataframe)
 
 
 
