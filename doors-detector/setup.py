@@ -60,7 +60,6 @@ setup(
     install_requires=[
         'numpy',
         'opencv-python',
-        'scikit-image',
         'generic-dataset',
         'torch',
         'torchvision'
