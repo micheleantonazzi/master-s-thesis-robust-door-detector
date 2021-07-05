@@ -72,8 +72,9 @@ def plot_results(pil_img, prob, boxes):
 detr_resnet50 = Detr(DETR_RESNET50, False)
 
 dataset_path = '/home/michele/myfiles/doors_dataset'
-datasets_creator = DatasetsCreator(dataset_path)
+datasets_creator = DatasetsCreator(dataset_path, numpy_seed=0)
 datasets_creator.consider_samples_with_label(label=1)
+datasets_creator.consider_n_folders(3)
 print(datasets_creator._dataframe)
 
 
