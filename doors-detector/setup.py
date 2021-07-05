@@ -62,7 +62,8 @@ setup(
         'opencv-python',
         'generic-dataset',
         'torch',
-        'torchvision'
+        'torchvision',
+        'gibson-env-utilities'
     ],
     entry_points={
         'console_scripts': [
