@@ -81,8 +81,8 @@ class DatasetsCreator:
             test_dataframe = self._dataframe[self._dataframe.folder_name.isin(folders_test)]
 
             #Shuffle
-            train, train1 = train_test_split(train_dataframe.index.tolist(), train_size=0.99)
-            test, test1 = train_test_split(test_dataframe.index.tolist(), train_size=0.99)
+            train, train1 = train_test_split(train_dataframe.index.tolist(), train_size=0.99, random_state=random_state)
+            test, test1 = train_test_split(test_dataframe.index.tolist(), train_size=0.99, random_state=random_state)
             train_dataframe = train_dataframe.loc[train + train1]
             test_dataframe = test_dataframe.loc[test + test1]
 
