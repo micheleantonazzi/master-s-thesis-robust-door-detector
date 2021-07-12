@@ -1,4 +1,7 @@
+import cv2
+import numpy as np
 import torch
+from gibson_env_utilities.doors_dataset.door_sample import DoorSample
 from matplotlib import pyplot as plt
 from torch import nn
 import torch.nn.functional as F
@@ -69,7 +72,7 @@ def plot_results(pil_img, prob, boxes):
     plt.show()
 
 
-detr_resnet50 = Detr(DETR_RESNET50, False)
+detr_resnet50 = Detr(DETR_RESNET50, True)
 
 dataset_path = '/home/michele/myfiles/doors_dataset'
 
@@ -78,9 +81,22 @@ datasets_creator.consider_samples_with_label(label=1)
 datasets_creator.consider_n_folders(3)
 train, test = datasets_creator.creates_dataset(train_size=0.7, test_size=0.3, split_folder=True, folder_train_ratio=0.8, use_all_samples=True)
 
-img, target = train[0]
+for c in range(5, 10):
+    img, target, door_sample = train[c]
 
-print(target)
+    door_sample: DoorSample = door_sample
+    bgr_image = door_sample.get_bgr_image()
+    pretty_img = door_sample.get_pretty_semantic_image()
+
+    bboxes = door_sample.get_bboxes()
+    print(bboxes)
+
+    for bbox in bboxes:
+        cv2.rectangle(pretty_img, bbox, (0,255,255), 1)
+
+        cv2.imshow('as', np.concatenate((bgr_image, pretty_img), axis=1))
+        cv2.waitKey()
+
 
 
 
