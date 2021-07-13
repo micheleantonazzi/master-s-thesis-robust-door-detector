@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import torch
 from generic_dataset.dataset_manager import DatasetManager
@@ -30,15 +31,17 @@ class DoorsDataset(Dataset):
         door_sample.pipeline_depth_data_to_image().run(use_gpu=False).get_data()
 
         target = {}
-        print(door_sample.get_bgr_image().shape)
         (h, w, _) = door_sample.get_bgr_image().shape
         target['size'] = torch.as_tensor([int(h), int(w)])
 
-        # Normalize bboxes' size. The bboxer are initially defined as (x_top_left, y_top_left, width, height)
-        # Bboxes representation changes, becoming a tuple (center_x, center_y, height, width).
-        # All values are normalized in [0, 1], relative to the image's size
-        #center_x, center_y =
+        # Normalize bboxes' size. The bboxes are initially defined as (x_top_left, y_top_left, width, height)
+        # Bboxes representation changes, becoming a tuple (center_x, center_y, width, height).
+        # All values must be normalized in [0, 1], relative to the image's size
+        boxes = door_sample.get_bboxes()
+        boxes = np.array([(x + 0.5 * w, y + 0.5 * h, w, h) for x, y, w, h in boxes])
+        bboxes = boxes / [(w, h, w, h) for _ in range(len(boxes))]
 
+        target['boxes'] = torch.tensor(bboxes)
         return self._transform(door_sample.get_bgr_image()), target, door_sample
 
 
