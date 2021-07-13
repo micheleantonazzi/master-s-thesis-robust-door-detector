@@ -42,7 +42,7 @@ class Detr(nn.Module):
     def __init__(self, model_name: ModelName, pretrained: bool):
         super(Detr, self).__init__()
         self._model_name = model_name
-        self.model = torch.hub.load('facebookresearch/detr', model_name, pretrained=True)
+        self.model = torch.hub.load('facebookresearch/detr', model_name, pretrained=pretrained)
 
     def forward(self, x):
         x = self.model(x)
