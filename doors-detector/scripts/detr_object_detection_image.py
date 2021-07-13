@@ -2,7 +2,8 @@ import torch
 import datasets as detr_dataset
 from matplotlib import pyplot as plt
 import torchvision.transforms as T
-from doors_detector.models.detr import Detr, DETR_RESNET50, PostProcess
+from doors_detector.models.detr import Detr, PostProcess
+from doors_detector.models.model_names import DETR_RESNET50
 
 CLASSES = [
     'N/A', 'person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',

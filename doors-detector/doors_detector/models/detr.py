@@ -1,10 +1,9 @@
 import torch.nn.functional as F
 import torch
 from torch import nn
-from doors_detector.utilities import converter
 
-ModelName = str
-DETR_RESNET50: ModelName = 'detr_resnet50'
+from doors_detector.models.model_names import ModelName
+from doors_detector.utilities import converter
 
 
 class PostProcess(nn.Module):
