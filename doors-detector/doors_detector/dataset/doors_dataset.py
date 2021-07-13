@@ -42,6 +42,7 @@ class DoorsDataset(Dataset):
         bboxes = boxes / [(w, h, w, h) for _ in range(len(boxes))]
 
         target['boxes'] = torch.tensor(bboxes)
+        target['labels'] = torch.tensor([1 for _ in range(len(bboxes))])
         return self._transform(door_sample.get_bgr_image()), target, door_sample
 
 
