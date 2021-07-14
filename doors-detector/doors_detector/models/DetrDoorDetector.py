@@ -21,13 +21,13 @@ class DetrDoorDetector(nn.Module):
         self._model_name = model_name
         self.model = torch.hub.load('facebookresearch/detr', model_name, pretrained=pretrained)
 
-        # Change the last part of the model
-        del self.model.class_embed
-        del self.model.bbox_embed
+        # Freeze the model parameters
+        for param in self.model.parameters():
+            param.requires_grad = False
 
+        # Change the last part of the model
         self.model.class_embed = nn.Linear(256, 2)
         self.model.bbox_embed = MLP(256, 256, 4, 3)
-
 
     def forward(self, x):
         x = self.model(x)
@@ -50,3 +50,6 @@ class DetrDoorDetector(nn.Module):
 
     def train(self):
         self.model.train()
+
+    def to(self, device):
+        self.model.to(device)
