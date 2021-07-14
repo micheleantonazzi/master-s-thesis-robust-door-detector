@@ -43,24 +43,18 @@ if __name__ == '__main__':
     img = img.unsqueeze(0)
     outputs = model(img)
 
-    print('OUUTPIT', outputs)
-
     post_processor = PostProcess()
     img_size = list(img.size()[2:])
     processed_data = post_processor(outputs=outputs, target_sizes=torch.tensor([img_size]))
 
-    print('PROCESSED', processed_data)
-
     for image_data in processed_data:
-        # keep only predictions with 0.9+ confidence
+        # keep only predictions with 0.7+ confidence
 
-        keep = image_data['scores'] > 0.6
+        keep = image_data['scores'] > 0.7
 
         # Show image with bboxes
 
         # Denormalize image tensor and convert to PIL image
-        print('KEEP', image_data['scores'][keep])
-
         pil_image = img * torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1)
         pil_image = pil_image + torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
         plt.figure(figsize=(16, 10))
