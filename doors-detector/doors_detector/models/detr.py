@@ -3,7 +3,7 @@ import torch
 from torch import nn
 
 from doors_detector.models.model_names import ModelName
-from doors_detector.utilities import converter
+from doors_detector.utilities import utils
 
 
 class PostProcess(nn.Module):
@@ -26,7 +26,7 @@ class PostProcess(nn.Module):
         scores, labels = prob[..., :-1].max(-1)
 
         # convert to [x0, y0, x1, y1] format
-        boxes = converter.box_cxcywh_to_xyxy(out_bbox)
+        boxes = utils.box_cxcywh_to_xyxy(out_bbox)
         # and from relative [0, 1] to absolute [0, height] coordinates
         img_h, img_w = target_sizes.unbind(1)
         scale_fct = torch.stack([img_w, img_h, img_w, img_h], dim=1)
