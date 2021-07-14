@@ -32,7 +32,7 @@ class DoorsDataset(Dataset):
 
         target = {}
         (h, w, _) = door_sample.get_bgr_image().shape
-        target['size'] = torch.as_tensor([int(h), int(w)])
+        target['size'] = torch.tensor([int(h), int(w)], dtype=torch.int)
 
         # Normalize bboxes' size. The bboxes are initially defined as (x_top_left, y_top_left, width, height)
         # Bboxes representation changes, becoming a tuple (center_x, center_y, width, height).
@@ -41,8 +41,8 @@ class DoorsDataset(Dataset):
         boxes = np.array([(x + 0.5 * w, y + 0.5 * h, w, h) for x, y, w, h in boxes])
         bboxes = boxes / [(w, h, w, h) for _ in range(len(boxes))]
 
-        target['boxes'] = torch.tensor(bboxes)
-        target['labels'] = torch.tensor([1 for _ in range(len(bboxes))])
+        target['boxes'] = torch.tensor(bboxes, dtype=torch.float)
+        target['labels'] = torch.tensor([1 for _ in range(len(bboxes))], dtype=torch.long)
         return self._transform(door_sample.get_bgr_image()), target, door_sample
 
 
