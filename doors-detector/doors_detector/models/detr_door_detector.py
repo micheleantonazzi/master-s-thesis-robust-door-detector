@@ -31,6 +31,11 @@ class DetrDoorDetector(nn.Module):
         self.model.class_embed = nn.Linear(256, 2)
         self.model.bbox_embed = MLP(256, 256, 4, 3)
 
+        if pretrained:
+            path = os.path.join(os.path.dirname(__file__), 'train_params', self._model_name)
+            self.model.class_embed.load_state_dict(torch.load(os.path.join(path, 'class_embed.pth')))
+            self.model.bbox_embed.load_state_dict(torch.load(os.path.join(path, 'bbox_embed.pth')))
+
     def forward(self, x):
         x = self.model(x)
 
@@ -62,5 +67,5 @@ class DetrDoorDetector(nn.Module):
         if not os.path.exists(path):
             os.mkdir(path)
 
-        torch.save(self.model.bbox_embed, os.path.join(path, 'bbox_embed.pth'))
-        torch.save(self.model.class_embed, os.path.join(path, 'class_embed.pth'))
+        torch.save(self.model.bbox_embed.state_dict(), os.path.join(path, 'bbox_embed.pth'))
+        torch.save(self.model.class_embed.state_dict(), os.path.join(path, 'class_embed.pth'))
