@@ -71,7 +71,6 @@ class DatasetsCreator:
 
         if not split_folder:
             train, test, _, _ = train_test_split(self._dataframe.index.tolist(), list(zip(self._dataframe.folder_name.to_list(), self._dataframe.label.to_list())), train_size=train_size, test_size=test_size, random_state=random_state)
-            print(train, test)
             train_dataframe = self._dataframe.loc[train]
             test_dataframe = self._dataframe.loc[test]
         else:
@@ -93,7 +92,6 @@ class DatasetsCreator:
                 if isinstance(test_size, float) and isinstance(train_size, float):
                     test_size = min(round(len(train_indexes) * test_size), len(test_dataframe.index) - 1)
                 test_indexes, _ = train_test_split(test_dataframe.index.tolist(), train_size=test_size, random_state=random_state)
-                print(train_indexes, test_indexes)
                 train_dataframe = train_dataframe.loc[train_indexes]
                 test_dataframe = test_dataframe.loc[test_indexes]
 
