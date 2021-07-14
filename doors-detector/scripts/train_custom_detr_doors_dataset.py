@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 import torchvision.transforms as T
 
 from doors_detector.dataset.datasets_creator import DatasetsCreator
-from doors_detector.models.DetrDoorDetector import DetrDoorDetector
+from doors_detector.models.detr_door_detector import DetrDoorDetector
 from doors_detector.models.detr import PostProcess
 from doors_detector.models.model_names import DETR_RESNET50
 from doors_detector.utilities.utils import collate_fn
@@ -118,3 +118,4 @@ if __name__ == '__main__':
 
             print(f'Epoch [{epoch}] -> [{i}/{len(data_loader_train)}]: ' + str([f'{k}: {v.item()}' for k, v in losses_dict.items()]))
 
+    #model.save()

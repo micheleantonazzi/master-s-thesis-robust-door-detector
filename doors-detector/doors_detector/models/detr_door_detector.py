@@ -1,3 +1,5 @@
+import os
+
 import torch
 from torch import nn
 
@@ -53,3 +55,12 @@ class DetrDoorDetector(nn.Module):
 
     def to(self, device):
         self.model.to(device)
+
+    def save(self):
+        path = os.path.join(os.path.dirname(__file__), 'train_params', self._model_name)
+
+        if not os.path.exists(path):
+            os.mkdir(path)
+
+        torch.save(self.model.bbox_embed, os.path.join(path, 'bbox_embed.pth'))
+        torch.save(self.model.class_embed, os.path.join(path, 'class_embed.pth'))
