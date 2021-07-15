@@ -1,3 +1,6 @@
+import random
+
+import numpy as np
 import torch
 from matplotlib import pyplot as plt
 import torchvision.transforms as T
@@ -13,7 +16,17 @@ COLORS = [[0.000, 0.447, 0.741], [0.850, 0.325, 0.098], [0.929, 0.694, 0.125],
 
 door_dataset_path = '/home/michele/myfiles/doors_dataset'
 
+params = {
+    'seed': 0
+}
+
 if __name__ == '__main__':
+
+    # Fix seeds
+    torch.manual_seed(params['seed'])
+    np.random.seed(params['seed'])
+    random.seed(params['seed'])
+
     datasets_creator = DatasetsCreator(door_dataset_path, numpy_seed=0)
     datasets_creator.consider_samples_with_label(label=1)
     datasets_creator.consider_n_folders(3)
