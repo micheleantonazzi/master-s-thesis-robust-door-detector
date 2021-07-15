@@ -34,7 +34,7 @@ class DatasetsCreator:
         folders = self._dataset_manager.get_folder_names()
         if n > len(folders):
             raise IndexError(f'You can not consider {n} folders: they are {len(folders)} in total!!')
-        selected_folders = np.array(folders)[np.random.choice(len(folders), size=n + 1, replace=False)]
+        selected_folders = np.array(folders)[np.random.choice(len(folders), size=n, replace=False)]
         self._dataframe = self._dataframe[self._dataframe.folder_name.isin(selected_folders)]
         return self
 
