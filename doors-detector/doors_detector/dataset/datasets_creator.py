@@ -9,11 +9,10 @@ from doors_detector.dataset.doors_dataset import DoorsDataset
 
 
 class DatasetsCreator:
-    def __init__(self, dataset_path: str, numpy_seed: int = 0):
+    def __init__(self, dataset_path: str):
         self._dataset_path = dataset_path
         self._dataset_manager = DatasetManager(dataset_path=dataset_path, sample_class=DoorSample)
         self._dataframe = self._dataset_manager.get_dataframe()
-        np.random.seed(numpy_seed)
 
     def consider_samples_with_label(self, label: int) -> 'DatasetsCreator':
         """
