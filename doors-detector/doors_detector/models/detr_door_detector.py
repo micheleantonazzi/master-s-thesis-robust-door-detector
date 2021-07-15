@@ -61,7 +61,7 @@ class DetrDoorDetector(nn.Module):
     def to(self, device):
         self.model.to(device)
 
-    def save(self):
+    def save(self, epoch, optimizer_state_dict, lr_scheduler_state_dict, params, logs):
         path = os.path.join(os.path.dirname(__file__), 'train_params', self._model_name)
 
         if not os.path.exists(path):
@@ -69,3 +69,16 @@ class DetrDoorDetector(nn.Module):
 
         torch.save(self.model.bbox_embed.state_dict(), os.path.join(path, 'bbox_embed.pth'))
         torch.save(self.model.class_embed.state_dict(), os.path.join(path, 'class_embed.pth'))
+        torch.save(
+            {'epoch': epoch,
+             'optimizer_state_dict': optimizer_state_dict,
+             'params': params,
+             'lr_scheduler_state_dict': lr_scheduler_state_dict,
+             'logs': logs}, os.path.join(path, 'checkpoint.pth'))
+
+    def load_checkpoint(self):
+        path = os.path.join(os.path.dirname(__file__), 'train_params', self._model_name)
+        return torch.load(os.path.join(path, 'checkpoint.pth'))
+
+
+
