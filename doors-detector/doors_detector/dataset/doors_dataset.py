@@ -37,7 +37,7 @@ class DoorsDataset(Dataset):
         # Normalize bboxes' size. The bboxes are initially defined as (x_top_left, y_top_left, width, height)
         # Bboxes representation changes, becoming a tuple (center_x, center_y, width, height).
         # All values must be normalized in [0, 1], relative to the image's size
-        boxes = door_sample.get_bboxes()
+        boxes = door_sample.get_bboxes_from_semantic_image()
         boxes = np.array([(x + 0.5 * w, y + 0.5 * h, w, h) for x, y, w, h in boxes])
         bboxes = boxes / [(w, h, w, h) for _ in range(len(boxes))]
 

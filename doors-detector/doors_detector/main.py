@@ -88,7 +88,7 @@ for c in range(5, 10):
     bgr_image = door_sample.get_bgr_image()
     pretty_img = door_sample.get_pretty_semantic_image()
 
-    bboxes = door_sample.get_bboxes()
+    bboxes = door_sample.get_bboxes_from_semantic_image()
     print(bboxes)
 
     for bbox in bboxes:
