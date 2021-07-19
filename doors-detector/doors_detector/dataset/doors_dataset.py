@@ -5,7 +5,8 @@ from generic_dataset.dataset_manager import DatasetManager
 from generic_dataset.utilities.color import Color
 from gibson_env_utilities.doors_dataset.door_sample import DoorSample
 from torch.utils.data import Dataset
-import torchvision.transforms as T
+import doors_detector.utilities.transforms as T
+from PIL import Image
 
 
 class DoorsDataset(Dataset):
@@ -13,6 +14,7 @@ class DoorsDataset(Dataset):
         self._doors_dataset = DatasetManager(dataset_path=dataset_path, sample_class=DoorSample)
         self._dataframe = dataframe
         self._transform = T.Compose([
+            T.RandomResize([800], max_size=1333),
             T.ToTensor(),
             T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ])
@@ -38,13 +40,14 @@ class DoorsDataset(Dataset):
         # Bboxes representation changes, becoming a tuple (center_x, center_y, width, height).
         # All values must be normalized in [0, 1], relative to the image's size
         boxes = door_sample.get_bounding_boxes()
-        boxes = np.array([(x + 0.5 * w, y + 0.5 * h, w, h) for label, x, y, w, h in boxes])
-        bboxes = boxes / [(w, h, w, h) for _ in range(len(boxes))]
+        boxes = np.array([(x, y, x + w, y + h) for label, x, y, w, h in boxes])
+        #bboxes = boxes / [(w, h, w, h) for _ in range(len(boxes))]
 
-        target['boxes'] = torch.tensor(bboxes, dtype=torch.float)
+        target['boxes'] = torch.tensor(boxes, dtype=torch.float)
         target['labels'] = torch.tensor([label for label, *box in door_sample.get_bounding_boxes()], dtype=torch.long)
 
         # The BGR image is convert in RGB
-        return self._transform(door_sample.get_bgr_image()[..., [2, 1, 0]]), target, door_sample
+        img, target = self._transform(Image.fromarray(door_sample.get_bgr_image()[..., [2, 1, 0]]), target)
+        return img, target, door_sample
 
 

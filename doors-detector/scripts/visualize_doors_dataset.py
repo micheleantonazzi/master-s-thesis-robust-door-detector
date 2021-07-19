@@ -57,7 +57,8 @@ if __name__ == '__main__':
         pil_image = pil_image + torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
         plt.figure(figsize=(16, 10))
 
-        plt.imshow(T.ToPILImage(mode='RGB')(pil_image).convert("RGB"))
+        img = T.ToPILImage(mode='RGB')(pil_image).convert("RGB")
+        plt.imshow(img)
         ax = plt.gca()
         print(processed['labels'][keep])
         for label, score, (xmin, ymin, xmax, ymax) in zip(processed['labels'][keep], processed['scores'][keep], processed['boxes'][keep]):
