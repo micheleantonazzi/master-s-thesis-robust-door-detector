@@ -37,12 +37,12 @@ class DoorsDataset(Dataset):
         # Normalize bboxes' size. The bboxes are initially defined as (x_top_left, y_top_left, width, height)
         # Bboxes representation changes, becoming a tuple (center_x, center_y, width, height).
         # All values must be normalized in [0, 1], relative to the image's size
-        boxes = door_sample.get_bboxes_from_semantic_image()
-        boxes = np.array([(x + 0.5 * w, y + 0.5 * h, w, h) for x, y, w, h in boxes])
+        boxes = door_sample.get_bounding_boxes()
+        boxes = np.array([(x + 0.5 * w, y + 0.5 * h, w, h) for label, x, y, w, h in boxes])
         bboxes = boxes / [(w, h, w, h) for _ in range(len(boxes))]
 
         target['boxes'] = torch.tensor(bboxes, dtype=torch.float)
-        target['labels'] = torch.tensor([1 for _ in range(len(bboxes))], dtype=torch.long)
+        target['labels'] = torch.tensor([label for label, *box in door_sample.get_bounding_boxes()], dtype=torch.long)
 
         # The BGR image is convert in RGB
         return self._transform(door_sample.get_bgr_image()[..., [2, 1, 0]]), target, door_sample
