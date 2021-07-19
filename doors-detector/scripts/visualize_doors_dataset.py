@@ -15,7 +15,7 @@ params = {
     'seed': 0
 }
 
-COLORS = np.array([[0, 0, 255], [0, 255, 0]], dtype=float) / np.array([[255, 255, 255], [255, 255, 255]], dtype=float)
+COLORS = np.array([[255, 0, 0], [0, 255, 0]], dtype=float) / np.array([[255, 255, 255], [255, 255, 255]], dtype=float)
 
 
 
