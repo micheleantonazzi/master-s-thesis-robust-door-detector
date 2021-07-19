@@ -22,9 +22,9 @@ def crop(image, target, region):
     # should we do something wrt the original size?
     target["size"] = torch.tensor([h, w])
 
-    fields = ["labels", "area", "iscrowd"]
+    fields = ["labels"]
 
-    if "boxes" in target:
+    if "boxes" in target and target["boxes"].size()[0] > 0:
         boxes = target["boxes"]
         max_size = torch.as_tensor([w, h], dtype=torch.float32)
         cropped_boxes = boxes - torch.as_tensor([j, i, j, i])
@@ -62,7 +62,7 @@ def hflip(image, target):
     w, h = image.size
 
     target = target.copy()
-    if "boxes" in target:
+    if "boxes" in target and target["boxes"].size()[0] > 0:
         boxes = target["boxes"]
         boxes = boxes[:, [2, 1, 0, 3]] * torch.as_tensor([-1, 1, -1, 1]) + torch.as_tensor([w, 0, w, 0])
         target["boxes"] = boxes
@@ -112,7 +112,7 @@ def resize(image, target, size, max_size=None):
     ratio_width, ratio_height = ratios
 
     target = target.copy()
-    if "boxes" in target:
+    if "boxes" in target and target["boxes"].size()[0] > 0:
         boxes = target["boxes"]
         scaled_boxes = boxes * torch.as_tensor([ratio_width, ratio_height, ratio_width, ratio_height])
         target["boxes"] = scaled_boxes
@@ -250,7 +250,7 @@ class Normalize(object):
             return image, None
         target = target.copy()
         h, w = image.shape[-2:]
-        if "boxes" in target:
+        if "boxes" in target and target["boxes"].size()[0] > 0:
             boxes = target["boxes"]
             boxes = box_xyxy_to_cxcywh(boxes)
             boxes = boxes / torch.tensor([w, h, w, h], dtype=torch.float32)
