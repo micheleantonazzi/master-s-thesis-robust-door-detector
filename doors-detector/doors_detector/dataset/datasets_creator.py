@@ -5,7 +5,7 @@ from gibson_env_utilities.doors_dataset.door_sample import DoorSample
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-from doors_detector.dataset.doors_dataset import DoorsDataset
+from doors_detector.dataset.doors_dataset import DoorsDataset, TRAIN_SET, TEST_SET
 
 
 class DatasetsCreator:
@@ -111,4 +111,4 @@ class DatasetsCreator:
             print(m)
             print_information(d)
 
-        return DoorsDataset(self._dataset_path, train_dataframe), DoorsDataset(self._dataset_path, test_dataframe)
+        return DoorsDataset(self._dataset_path, train_dataframe, TRAIN_SET), DoorsDataset(self._dataset_path, test_dataframe, TEST_SET)

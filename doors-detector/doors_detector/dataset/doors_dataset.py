@@ -7,17 +7,41 @@ from gibson_env_utilities.doors_dataset.door_sample import DoorSample
 from torch.utils.data import Dataset
 import doors_detector.utilities.transforms as T
 from PIL import Image
+from typing import Type
 
+
+SET = Type[str]
+
+TRAIN_SET: SET = 'train_set'
+TEST_SET: SET = 'test_set'
 
 class DoorsDataset(Dataset):
-    def __init__(self, dataset_path, dataframe: pd.DataFrame):
+    def __init__(self, dataset_path, dataframe: pd.DataFrame, set: SET):
         self._doors_dataset = DatasetManager(dataset_path=dataset_path, sample_class=DoorSample)
         self._dataframe = dataframe
-        self._transform = T.Compose([
-            T.RandomResize([800], max_size=1333),
-            T.ToTensor(),
-            T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-        ])
+        if set == TEST_SET:
+            self._transform = T.Compose([
+                T.RandomResize([400], max_size=800),
+                T.ToTensor(),
+                T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+            ])
+        else:
+            scales = [256 + i * 32 for i in range(7)]
+
+            self._transform = T.Compose([
+                T.RandomHorizontalFlip(),
+                T.RandomSelect(
+                    T.RandomResize(scales, max_size=800),
+                    T.Compose([
+                        T.RandomResize([200, 400, 600]),
+                        T.RandomSizeCrop(100, 400),
+                        T.RandomResize(scales, max_size=800),
+                    ])
+                ),
+                T.ToTensor(),
+                T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+            ])
+
 
     def __len__(self):
         return len(self._dataframe.index)
