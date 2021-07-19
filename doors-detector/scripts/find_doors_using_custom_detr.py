@@ -14,7 +14,7 @@ COLORS = [[0.000, 0.447, 0.741], [0.850, 0.325, 0.098], [0.929, 0.694, 0.125],
           [0.494, 0.184, 0.556], [0.466, 0.674, 0.188], [0.301, 0.745, 0.933]]
 
 
-door_dataset_path = '/home/michele/myfiles/doors_dataset'
+door_dataset_path = '/home/michele/myfiles/doors_dataset_labelled'
 
 params = {
     'seed': 0
@@ -29,8 +29,8 @@ if __name__ == '__main__':
 
     datasets_creator = DatasetsCreator(door_dataset_path)
     datasets_creator.consider_samples_with_label(label=1)
-    datasets_creator.consider_n_folders(3)
-    train, test = datasets_creator.creates_dataset(train_size=0.7, test_size=0.3, split_folder=False, folder_train_ratio=0.8, use_all_samples=True)
+    datasets_creator.consider_n_folders(1)
+    train, test = datasets_creator.creates_dataset(train_size=0.9, test_size=0.1, split_folder=False, folder_train_ratio=0.8, use_all_samples=True)
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
 

@@ -20,7 +20,7 @@ from doors_detector.models.detr import PostProcess
 from doors_detector.models.model_names import DETR_RESNET50
 from doors_detector.utilities.utils import collate_fn
 
-door_dataset_path = '/home/michele/myfiles/doors_dataset'
+door_dataset_path = '/home/michele/myfiles/doors_dataset_labelled'
 
 device = 'cuda'
 
@@ -31,7 +31,7 @@ COLORS = [[0.000, 0.447, 0.741], [0.850, 0.325, 0.098], [0.929, 0.694, 0.125],
 
 # Params
 params = {
-    'epochs': 2,
+    'epochs': 20,
     'batch_size': 10,
     'seed': 0,
     'lr': 1e-4,
@@ -47,7 +47,7 @@ params = {
     'set_cost_giou': 2,
 }
 
-restart_checkpoint = True
+restart_checkpoint = False
 
 if __name__ == '__main__':
 
@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
     datasets_creator = DatasetsCreator(door_dataset_path)
     datasets_creator.consider_samples_with_label(label=1)
-    datasets_creator.consider_n_folders(3)
+    datasets_creator.consider_n_folders(1)
     train, test = datasets_creator.creates_dataset(train_size=0.9, test_size=0.1, split_folder=False, folder_train_ratio=0.8, use_all_samples=True)
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
