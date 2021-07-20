@@ -66,7 +66,12 @@ class DetrDoorDetector(nn.Module):
         self.model.to(device)
 
     def save(self, epoch, optimizer_state_dict, lr_scheduler_state_dict, params, logs):
-        path = os.path.join(os.path.dirname(__file__), 'train_params', self._model_name, str(self._dataset_name))
+        path = os.path.join(os.path.dirname(__file__), 'train_params', self._model_name)
+
+        if not os.path.exists(path):
+            os.mkdir(path)
+
+        path = os.path.join(path, str(self._dataset_name))
 
         if not os.path.exists(path):
             os.mkdir(path)
