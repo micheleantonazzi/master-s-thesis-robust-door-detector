@@ -9,7 +9,7 @@ from doors_detector.models.detr import PostProcess
 from gibson_env_utilities.doors_dataset.door_sample import DOOR_LABELS
 from doors_detector.dataset.dataset_deep_doors_2.dataset_creator_deep_doors_2 import DatasetCreatorDeepDoors2
 
-door_dataset_path = '/home/michele/myfiles/doors_dataset_labelled'
+gibson_dataset_path = '/home/michele/myfiles/doors_dataset_labelled'
 deep_doors_2_dataset_path = '/home/michele/myfiles/deep_doors_2'
 
 params = {
@@ -20,7 +20,7 @@ COLORS = np.array([[255, 0, 0], [0, 0, 255], [0, 255, 0]], dtype=float) / np.arr
 
 
 def get_my_doors_sets():
-    datasets_creator = DatasetsCreatorGibson(door_dataset_path)
+    datasets_creator = DatasetsCreatorGibson(gibson_dataset_path)
     datasets_creator.consider_samples_with_label(label=1)
     datasets_creator.consider_n_folders(1)
     train, test = datasets_creator.creates_dataset(train_size=0.9, test_size=0.1, split_folder=False, folder_train_ratio=0.8, use_all_samples=True)
@@ -46,8 +46,8 @@ if __name__ == '__main__':
     np.random.seed(params['seed'])
     random.seed(params['seed'])
 
-    #train, test, labels = get_my_doors_sets()
-    train, test, labels = get_deep_doors_2_sets()
+    train, test, labels = get_my_doors_sets()
+    #train, test, labels = get_deep_doors_2_sets()
 
     post_processor = PostProcess()
 
