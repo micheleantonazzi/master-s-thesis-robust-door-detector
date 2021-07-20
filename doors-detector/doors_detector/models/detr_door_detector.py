@@ -22,14 +22,16 @@ class DetrDoorDetector(nn.Module):
         """
         super(DetrDoorDetector, self).__init__()
         self._model_name = model_name
-        self.model = torch.hub.load('facebookresearch/detr', model_name, pretrained=pretrained)
+        self.model = torch.hub.load('facebookresearch/detr', model_name, pretrained=False)
         self._dataset_name = dataset_name
 
         # Freeze the model parameters
         for param in self.model.parameters():
-            param.requires_grad = False
+            False
+            #param.requires_grad = False
 
         # Change the last part of the model
+        self.model.query_embed = nn.Embedding(10, self.model.transformer.d_model)
         self.model.class_embed = nn.Linear(256, 4)
         self.model.bbox_embed = MLP(256, 256, 4, 3)
 
@@ -48,9 +50,9 @@ class DetrDoorDetector(nn.Module):
                - "pred_boxes": The normalized boxes coordinates for all queries, represented as
                                (center_x, center_y, height, width). These values are normalized in [0, 1],
                                relative to the size of each individual image (disregarding possible padding).
-                               See PostProcess for information on how to retrieve the unnormalized bounding box.
-               - "aux_outputs": Optional, only returned when auxilary losses are activated. It is a list of
-                                dictionnaries containing the two above keys for each decoder layer.
+                               See PostProcess for information on how to retrieve the un-normalized bounding box.
+               - "aux_outputs": Optional, only returned when auxiliary losses are activated. It is a list of
+                                dictionaries containing the two above keys for each decoder layer.
         """
         return x
 
