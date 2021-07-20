@@ -3,11 +3,9 @@ import numpy as np
 import torch
 from gibson_env_utilities.doors_dataset.door_sample import DoorSample
 from matplotlib import pyplot as plt
-from torch import nn
-import torch.nn.functional as F
 import torchvision.transforms as T
 
-from doors_detector.dataset.datasets_creator import DatasetsCreator
+from doors_detector.dataset.my_doors_dataset.datasets_creator import DatasetsCreator
 from doors_detector.models.detr import Detr, DETR_RESNET50
 
 

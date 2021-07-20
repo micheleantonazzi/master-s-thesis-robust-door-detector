@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from matplotlib import pyplot as plt
 import torchvision.transforms as T
-from doors_detector.dataset.datasets_creator import DatasetsCreator
+from doors_detector.dataset.my_doors_dataset.datasets_creator import DatasetsCreator
 from doors_detector.models.detr import PostProcess
 from doors_detector.models.detr_door_detector import DetrDoorDetector
 from doors_detector.models.model_names import DETR_RESNET50

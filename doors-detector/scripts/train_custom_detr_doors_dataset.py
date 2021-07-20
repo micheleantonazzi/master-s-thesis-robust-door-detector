@@ -1,22 +1,14 @@
-import math
 import random
-import sys
 import time
 
 import numpy as np
-import util.misc as utils
 import torch.optim
-from engine import train_one_epoch
-from matplotlib import pyplot as plt
 from models.detr import SetCriterion
 from models.matcher import HungarianMatcher
-from tensorflow.python.keras.constraints import max_norm
 from torch.utils.data import DataLoader
-import torchvision.transforms as T
 
-from doors_detector.dataset.datasets_creator import DatasetsCreator
+from doors_detector.dataset.my_doors_dataset.datasets_creator import DatasetsCreator
 from doors_detector.models.detr_door_detector import DetrDoorDetector
-from doors_detector.models.detr import PostProcess
 from doors_detector.models.model_names import DETR_RESNET50
 from doors_detector.utilities.utils import collate_fn
 
