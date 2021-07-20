@@ -1,30 +1,26 @@
 import random
 import time
-
+from doors_detector.dataset.torch_dataset import DEEP_DOORS_2
 import numpy as np
 import torch.optim
 from models.detr import SetCriterion
 from models.matcher import HungarianMatcher
 from torch.utils.data import DataLoader
-
+from engine import evaluate, train_one_epoch
 from doors_detector.dataset.dataset_gibson.datasets_creator_gibson import DatasetsCreatorGibson
 from doors_detector.models.detr_door_detector import DetrDoorDetector
 from doors_detector.models.model_names import DETR_RESNET50
 from doors_detector.utilities.utils import collate_fn
+from scripts.dataset_configurator import *
 
-door_dataset_path = '/home/michele/myfiles/doors_dataset_labelled'
 
 device = 'cuda'
 
 
-COLORS = [[0.000, 0.447, 0.741], [0.850, 0.325, 0.098], [0.929, 0.694, 0.125],
-          [0.494, 0.184, 0.556], [0.466, 0.674, 0.188], [0.301, 0.745, 0.933]]
-
-
 # Params
 params = {
-    'epochs': 20,
-    'batch_size': 10,
+    'epochs': 2,
+    'batch_size': 5,
     'seed': 0,
     'lr': 1e-4,
     'weight_decay': 1e-4,
@@ -39,7 +35,7 @@ params = {
     'set_cost_giou': 2,
 }
 
-restart_checkpoint = False
+restart_checkpoint = True
 
 if __name__ == '__main__':
 
@@ -48,16 +44,11 @@ if __name__ == '__main__':
     np.random.seed(params['seed'])
     random.seed(params['seed'])
 
-    datasets_creator = DatasetsCreatorGibson(door_dataset_path)
-    datasets_creator.consider_samples_with_label(label=1)
-    datasets_creator.consider_n_folders(1)
-    train, test = datasets_creator.creates_dataset(train_size=0.9, test_size=0.1, split_folder=False, folder_train_ratio=0.8, use_all_samples=True)
+    train, test, labels = get_deep_doors_2_sets()
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
 
-    img, target, door_sample = train[0]
-
-    model = DetrDoorDetector(model_name=DETR_RESNET50, pretrained=restart_checkpoint)
+    model = DetrDoorDetector(model_name=DETR_RESNET50, pretrained=restart_checkpoint, dataset_name=DEEP_DOORS_2)
     model.to(device)
 
     # Loads params if training starts from a checkpoint
@@ -92,7 +83,7 @@ if __name__ == '__main__':
     losses = ['labels', 'boxes', 'cardinality']
     weight_dict = {'loss_ce': 1, 'loss_bbox': params['bbox_loss_coef'], 'loss_giou': params['giou_loss_coef']}
     matcher = HungarianMatcher(cost_class=params['set_cost_class'], cost_bbox=params['set_cost_bbox'], cost_giou=params['set_cost_giou'])
-    criterion = SetCriterion(1, matcher=matcher, weight_dict=weight_dict,
+    criterion = SetCriterion(3, matcher=matcher, weight_dict=weight_dict,
                              eos_coef=params['eos_coef'], losses=losses)
 
     data_loader_train = DataLoader(train, batch_size=params['batch_size'], collate_fn=collate_fn, shuffle=False, num_workers=4)
@@ -105,10 +96,10 @@ if __name__ == '__main__':
     start_time = time.time()
 
     for epoch in range(start_epoch, params['epochs']):
-        #train_stats = train_one_epoch(
-            #model, criterion, data_loader_train, optimizer, device, epoch,
-        #)
-
+        train_stats = train_one_epoch(
+            model, criterion, data_loader_train, optimizer, device, epoch,
+        )
+        """
         accumulate_losses = {}
 
         model.train()
@@ -149,13 +140,13 @@ if __name__ == '__main__':
                 print(f'Epoch [{epoch}] -> [{i}/{len(data_loader_train)}]: ' + ', '.join([f'{k}: {v}' for k, v in accumulate_losses.items()]))
                 logs.append(accumulate_losses)
                 accumulate_losses = {}
-
-        lr_scheduler.step()
+        """
+        #lr_scheduler.step()
 
     model.save(epoch=params['epochs'] - 1,
                optimizer_state_dict=optimizer.state_dict(),
                lr_scheduler_state_dict=lr_scheduler.state_dict(),
                params=params,
-               logs=logs
+               logs=logs,
                )
 

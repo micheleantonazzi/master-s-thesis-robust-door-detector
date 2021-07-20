@@ -5,16 +5,11 @@ import torch
 from matplotlib import pyplot as plt
 import torchvision.transforms as T
 from doors_detector.dataset.dataset_gibson.datasets_creator_gibson import DatasetsCreatorGibson
+from doors_detector.dataset.torch_dataset import DEEP_DOORS_2
 from doors_detector.models.detr import PostProcess
 from doors_detector.models.detr_door_detector import DetrDoorDetector
 from doors_detector.models.model_names import DETR_RESNET50
-
-
-COLORS = [[0.000, 0.447, 0.741], [0.850, 0.325, 0.098], [0.929, 0.694, 0.125],
-          [0.494, 0.184, 0.556], [0.466, 0.674, 0.188], [0.301, 0.745, 0.933]]
-
-
-door_dataset_path = '/home/michele/myfiles/doors_dataset_labelled'
+from scripts.dataset_configurator import *
 
 params = {
     'seed': 0
@@ -27,16 +22,11 @@ if __name__ == '__main__':
     np.random.seed(params['seed'])
     random.seed(params['seed'])
 
-    datasets_creator = DatasetsCreatorGibson(door_dataset_path)
-    datasets_creator.consider_samples_with_label(label=1)
-    datasets_creator.consider_n_folders(1)
-    train, test = datasets_creator.creates_dataset(train_size=0.9, test_size=0.1, split_folder=False, folder_train_ratio=0.8, use_all_samples=True)
+    train, test, labels = get_deep_doors_2_sets()
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
 
-    img, target, door_sample = train[0]
-
-    model = DetrDoorDetector(model_name=DETR_RESNET50, pretrained=True)
+    model = DetrDoorDetector(model_name=DETR_RESNET50, pretrained=True, dataset_name=DEEP_DOORS_2)
     model.eval()
 
     for i in range(0, 10):
@@ -57,7 +47,7 @@ if __name__ == '__main__':
         for image_data in processed_data:
             # keep only predictions with 0.7+ confidence
 
-            keep = image_data['scores'] > 0.6
+            keep = image_data['scores'] > 0.2
 
             # Show image with bboxes
 
@@ -69,11 +59,10 @@ if __name__ == '__main__':
             plt.imshow(T.ToPILImage(mode='RGB')(pil_image[0]).convert("RGB"))
             ax = plt.gca()
 
-            colors = COLORS * torch.count_nonzero(keep)
-            for label, score, (xmin, ymin, xmax, ymax), c in zip(image_data['labels'][keep], image_data['scores'][keep], image_data['boxes'][keep], colors):
+            for label, score, (xmin, ymin, xmax, ymax) in zip(image_data['labels'][keep], image_data['scores'][keep], image_data['boxes'][keep]):
                 ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
-                                           fill=False, color=c, linewidth=3))
-                text = f'Door: {score:0.2f}'
+                                           fill=False, color=COLORS[label], linewidth=3))
+                text = f'{labels[int(label)]}: {score:0.2f}'
                 ax.text(xmin, ymin, text, fontsize=15,
                         bbox=dict(facecolor='yellow', alpha=0.5))
 

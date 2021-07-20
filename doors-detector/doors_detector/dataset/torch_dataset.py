@@ -13,6 +13,10 @@ SET = Type[str]
 TRAIN_SET: SET = 'train_set'
 TEST_SET: SET = 'test_set'
 
+DATASET = Type[str]
+GIBSON_DATASET: DATASET = 'gibson_dataset'
+DEEP_DOORS_2: DATASET = 'deep_doors_2'
+
 
 class TorchDataset(Dataset):
     def __init__(self, dataset_path: str, dataframe: pd.DataFrame, set_type: SET, std_size: int, max_size: int, scales: List[int]):
