@@ -74,6 +74,8 @@ if __name__ == '__main__':
         },
     ]
 
+    #print(param_dicts)
+
     optimizer = torch.optim.AdamW(param_dicts, lr=params['lr'], weight_decay=params['weight_decay'])
 
     # StepLR decays the learning rate of each parameter group by gamma every step_size epochs
@@ -103,9 +105,7 @@ if __name__ == '__main__':
         #train_stats = train_one_epoch(
          #   model, criterion, data_loader_train, optimizer, device, epoch,
         #)
-
-        logs['train'].append([])
-        logs['test'].append([])
+        temp_logs = {'train': [], 'test': []}
         accumulate_losses = {}
 
         model.train()
@@ -144,8 +144,17 @@ if __name__ == '__main__':
             if i % print_logs_every == print_logs_every - 1:
                 accumulate_losses = {k: v.item() / print_logs_every for k, v in accumulate_losses.items()}
                 print(f'Train epoch [{epoch}] -> [{i}/{len(data_loader_train)}]: ' + ', '.join([f'{k}: {v}' for k, v in accumulate_losses.items()]))
-                logs['train'][epoch].append(accumulate_losses)
+                temp_logs['train'].append(accumulate_losses)
                 accumulate_losses = {}
+
+        epoch_total = {}
+        for d in temp_logs['train']:
+            for k in d:
+                epoch_total[k] = epoch_total.get(k, 0) + d[k]
+
+        logs['train'].append({k: v / len(temp_logs['train']) for k, v in epoch_total.items()})
+
+        print(f'----> EPOCH SUMMARY TRAIN [{epoch}] -> [{i}/{len(data_loader_train)}]: ' + ', '.join([f'{k}: {v}' for k, v in logs['train'][epoch].items()]))
 
         with torch.no_grad():
             model.eval()
@@ -175,8 +184,17 @@ if __name__ == '__main__':
                 if i % print_logs_every == print_logs_every - 1:
                     accumulate_losses = {k: v.item() / print_logs_every for k, v in accumulate_losses.items()}
                     print(f'Test epoch [{epoch}] -> [{i}/{len(data_loader_test)}]: ' + ', '.join([f'{k}: {v}' for k, v in accumulate_losses.items()]))
-                    logs['test'][epoch].append(accumulate_losses)
+                    temp_logs['test'].append(accumulate_losses)
                     accumulate_losses = {}
+
+        epoch_total = {}
+        for d in temp_logs['test']:
+            for k in d:
+                epoch_total[k] = epoch_total.get(k, 0) + d[k]
+
+        logs['test'].append({k: v / len(temp_logs['test']) for k, v in epoch_total.items()})
+
+        print(f'----> EPOCH SUMMARY TEST [{epoch}] -> [{i}/{len(data_loader_test)}]: ' + ', '.join([f'{k}: {v}' for k, v in logs['test'][epoch].items()]))
 
         #lr_scheduler.step()
 
