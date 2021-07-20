@@ -1,20 +1,23 @@
 from typing import Union
-
+from doors_detector.dataset.torch_dataset import TRAIN_SET, TEST_SET, SET
 from generic_dataset.dataset_manager import DatasetManager
-from gibson_env_utilities.doors_dataset.door_sample import DoorSample
+from gibson_env_utilities.doors_dataset.door_sample import DoorSample, DOOR_LABELS
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-from doors_detector.dataset.my_doors_dataset.doors_dataset import DoorsDataset, TRAIN_SET, TEST_SET
+from doors_detector.dataset.dataset_gibson.dataset_gibson import DatasetGibson
 
 
-class DatasetsCreator:
+class DatasetsCreatorGibson:
     def __init__(self, dataset_path: str):
         self._dataset_path = dataset_path
         self._dataset_manager = DatasetManager(dataset_path=dataset_path, sample_class=DoorSample)
         self._dataframe = self._dataset_manager.get_dataframe()
 
-    def consider_samples_with_label(self, label: int) -> 'DatasetsCreator':
+    def get_labels(self):
+        return DOOR_LABELS
+
+    def consider_samples_with_label(self, label: int) -> 'DatasetsCreatorGibson':
         """
         This method sets the class to consider only the samples with the given label.
         Other samples (with different labels) are not considered in the datasets' creations
@@ -24,7 +27,7 @@ class DatasetsCreator:
         self._dataframe = self._dataframe[self._dataframe.label == label]
         return self
 
-    def consider_n_folders(self, n: int) -> 'DatasetsCreator':
+    def consider_n_folders(self, n: int) -> 'DatasetsCreatorGibson':
         """
         Sets the DatasetsCreator to consider a fixed number of folder, randomly chosen.
         :raise IndexError if the folders to considers are more than the total number of folders
@@ -111,4 +114,5 @@ class DatasetsCreator:
             print(m)
             print_information(d)
 
-        return DoorsDataset(self._dataset_path, train_dataframe, TRAIN_SET), DoorsDataset(self._dataset_path, test_dataframe, TEST_SET)
+        return (DatasetGibson(self._dataset_path, train_dataframe, TRAIN_SET, std_size=500, max_size=700, scales=[256 + i * 32 for i in range(11)]),
+                DatasetGibson(self._dataset_path, test_dataframe, TEST_SET, std_size=500, max_size=700, scales=[256 + i * 32 for i in range(11)]))

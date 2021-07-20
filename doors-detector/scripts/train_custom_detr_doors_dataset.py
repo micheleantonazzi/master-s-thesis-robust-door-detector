@@ -7,7 +7,7 @@ from models.detr import SetCriterion
 from models.matcher import HungarianMatcher
 from torch.utils.data import DataLoader
 
-from doors_detector.dataset.my_doors_dataset.datasets_creator import DatasetsCreator
+from doors_detector.dataset.dataset_gibson.datasets_creator_gibson import DatasetsCreatorGibson
 from doors_detector.models.detr_door_detector import DetrDoorDetector
 from doors_detector.models.model_names import DETR_RESNET50
 from doors_detector.utilities.utils import collate_fn
@@ -48,7 +48,7 @@ if __name__ == '__main__':
     np.random.seed(params['seed'])
     random.seed(params['seed'])
 
-    datasets_creator = DatasetsCreator(door_dataset_path)
+    datasets_creator = DatasetsCreatorGibson(door_dataset_path)
     datasets_creator.consider_samples_with_label(label=1)
     datasets_creator.consider_n_folders(1)
     train, test = datasets_creator.creates_dataset(train_size=0.9, test_size=0.1, split_folder=False, folder_train_ratio=0.8, use_all_samples=True)

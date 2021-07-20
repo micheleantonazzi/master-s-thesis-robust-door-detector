@@ -1,60 +1,59 @@
-import numpy as np
-import pandas as pd
-import torch
-from generic_dataset.dataset_manager import DatasetManager
-from generic_dataset.utilities.color import Color
-from gibson_env_utilities.doors_dataset.door_sample import DoorSample
-from torch.utils.data import Dataset
-import doors_detector.utilities.transforms as T
+from abc import abstractmethod
+from typing import Type, List
 from PIL import Image
-from typing import Type
+import numpy as np
+import torch
+from gibson_env_utilities.doors_dataset.door_sample import DoorSample
 
+import doors_detector.utilities.transforms as T
+import pandas as pd
+from torch.utils.data import Dataset
 
 SET = Type[str]
-
 TRAIN_SET: SET = 'train_set'
 TEST_SET: SET = 'test_set'
 
-class DoorsDataset(Dataset):
-    def __init__(self, dataset_path, dataframe: pd.DataFrame, set: SET):
-        self._doors_dataset = DatasetManager(dataset_path=dataset_path, sample_class=DoorSample)
+
+class TorchDataset(Dataset):
+    def __init__(self, dataset_path: str, dataframe: pd.DataFrame, set_type: SET, std_size: int, max_size: int, scales: List[int]):
+        self._dataset_path = dataset_path
         self._dataframe = dataframe
+        self._set_type = set_type
+
         if set == TEST_SET:
             self._transform = T.Compose([
-                T.RandomResize([400], max_size=800),
+                T.RandomResize([std_size], max_size=max_size),
                 T.ToTensor(),
                 T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
             ])
         else:
-            scales = [256 + i * 32 for i in range(7)]
 
             self._transform = T.Compose([
                 T.RandomHorizontalFlip(),
                 T.RandomSelect(
-                    T.RandomResize(scales, max_size=800),
+                    T.RandomResize(scales, max_size=max_size),
                     T.Compose([
-                        T.RandomResize([200, 400, 600]),
-                        T.RandomSizeCrop(100, 400),
-                        T.RandomResize(scales, max_size=800),
+                        T.RandomResize([s - 80 for s in scales[:3]]),
+                        T.RandomSizeCrop(200, 400),
+                        T.RandomResize(scales, max_size=max_size),
                     ])
                 ),
                 T.ToTensor(),
                 T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
             ])
 
+    def get_dataframe(self) -> pd.DataFrame:
+        return self._dataframe
 
     def __len__(self):
         return len(self._dataframe.index)
 
+    @abstractmethod
+    def load_sample(self, idx) -> DoorSample:
+        pass
+
     def __getitem__(self, idx):
-        row = self._dataframe.iloc[idx]
-        folder_name, absolute_count = row.folder_name, row.folder_absolute_count
-
-        door_sample: DoorSample = self._doors_dataset.load_sample(folder_name=folder_name, absolute_count=absolute_count, use_thread=False)
-
-        door_sample.set_pretty_semantic_image(door_sample.get_semantic_image().copy())
-        door_sample.create_pretty_semantic_image(color=Color(red=0, green=255, blue=0))
-        door_sample.pipeline_depth_data_to_image().run(use_gpu=False).get_data()
+        door_sample = self.load_sample(idx)
 
         target = {}
         (h, w, _) = door_sample.get_bgr_image().shape
@@ -71,7 +70,6 @@ class DoorsDataset(Dataset):
         target['labels'] = torch.tensor([label for label, *box in door_sample.get_bounding_boxes()], dtype=torch.long)
 
         # The BGR image is convert in RGB
-        img, target = self._transform(Image.fromarray(door_sample.get_bgr_image()[..., [2, 1, 0]]), target)
+        img, target = self._transform(Image.fromarray(door_sample.get_bgr_image()), target)
+
         return img, target, door_sample
-
-
