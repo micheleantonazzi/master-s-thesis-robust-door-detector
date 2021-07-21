@@ -65,6 +65,10 @@ if __name__ == '__main__':
         lr_scheduler_state_dict = checkpoint['lr_scheduler_state_dict']
 
     print("Params to learn:")
+    for n, p in model.named_parameters():
+        if p.requires_grad:
+            print(n)
+
 
     param_dicts = [
         {"params": [p for n, p in model.named_parameters() if "backbone" not in n and p.requires_grad]},
