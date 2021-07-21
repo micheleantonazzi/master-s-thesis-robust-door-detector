@@ -12,6 +12,7 @@ DESCRIPTION = int
 
 PRETRAINED_FREEZEMODEL_CLASS_BBOX: DESCRIPTION = 1
 PRETRAINED_FREEZEMODEL_CLASS_BBOX_EOS05_WEIGHT1 = 2
+PRETRAINED_FREEZEMODEL_CLASS: DESCRIPTION = 1
 
 class DetrDoorDetector(nn.Module):
     """
@@ -32,13 +33,16 @@ class DetrDoorDetector(nn.Module):
         self._description = description
 
         # Freeze the model parameters
-        for param in self.model.parameters():
-            param.requires_grad = False
+        for n, param in self.model.named_parameters():
+            if 'bbox_embed' not in n:
+                param.requires_grad = False
+            else:
+                print(n)
 
         # Change the last part of the model
         #self.model.query_embed = nn.Embedding(10, self.model.transformer.d_model)
         self.model.class_embed = nn.Linear(256, 4)
-        self.model.bbox_embed = MLP(256, 256, 4, 3)
+        #self.model.bbox_embed = MLP(256, 256, 4, 3)
 
         if pretrained:
             path = os.path.join(os.path.dirname(__file__), 'train_params', self._model_name + '_' + str(self._description), str(self._dataset_name))
