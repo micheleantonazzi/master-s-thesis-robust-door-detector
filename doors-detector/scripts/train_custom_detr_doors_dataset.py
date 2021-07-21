@@ -19,7 +19,7 @@ device = 'cuda'
 
 # Params
 params = {
-    'epochs': 1,
+    'epochs': 3,
     'batch_size': 1,
     'seed': 0,
     'lr': 1e-4,
@@ -36,7 +36,7 @@ params = {
     'set_cost_giou': 2,
 }
 
-restart_checkpoint = False
+restart_checkpoint = True
 
 if __name__ == '__main__':
 
@@ -103,8 +103,9 @@ if __name__ == '__main__':
 
     for epoch in range(start_epoch, params['epochs']):
         #train_stats = train_one_epoch(
-         #   model, criterion, data_loader_train, optimizer, device, epoch,
+            #model, criterion, data_loader_train, optimizer, device, epoch,
         #)
+
         temp_logs = {'train': [], 'test': []}
         accumulate_losses = {}
 

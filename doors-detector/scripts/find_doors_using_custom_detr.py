@@ -29,7 +29,7 @@ if __name__ == '__main__':
     model = DetrDoorDetector(model_name=DETR_RESNET50, pretrained=True, dataset_name=DEEP_DOORS_2)
     model.eval()
 
-    for i in range(0, 10):
+    for i in range(10, 50):
         img, target, door_sample = test[i]
         img = img.unsqueeze(0)
         outputs = model(img)
