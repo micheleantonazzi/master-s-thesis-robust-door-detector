@@ -8,7 +8,7 @@ from models.matcher import HungarianMatcher
 from torch.utils.data import DataLoader
 from engine import evaluate, train_one_epoch
 from doors_detector.dataset.dataset_gibson.datasets_creator_gibson import DatasetsCreatorGibson
-from doors_detector.models.detr_door_detector import DetrDoorDetector
+from doors_detector.models.detr_door_detector import *
 from doors_detector.models.model_names import DETR_RESNET50
 from doors_detector.utilities.utils import collate_fn
 from scripts.dataset_configurator import *
@@ -19,7 +19,7 @@ device = 'cuda'
 
 # Params
 params = {
-    'epochs': 3,
+    'epochs': 1,
     'batch_size': 1,
     'seed': 0,
     'lr': 1e-4,
@@ -36,7 +36,7 @@ params = {
     'set_cost_giou': 2,
 }
 
-restart_checkpoint = True
+restart_checkpoint = False
 
 if __name__ == '__main__':
 
@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
 
-    model = DetrDoorDetector(model_name=DETR_RESNET50, pretrained=restart_checkpoint, dataset_name=DEEP_DOORS_2)
+    model = DetrDoorDetector(model_name=DETR_RESNET50, pretrained=restart_checkpoint, dataset_name=DEEP_DOORS_2, description=PRETRAINED_FREEZEMODEL_CLASS_BBOX)
     model.to(device)
 
     # Loads params if training starts from a checkpoint

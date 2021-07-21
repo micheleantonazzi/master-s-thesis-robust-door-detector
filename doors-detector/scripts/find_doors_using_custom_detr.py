@@ -7,7 +7,7 @@ import torchvision.transforms as T
 from doors_detector.dataset.dataset_gibson.datasets_creator_gibson import DatasetsCreatorGibson
 from doors_detector.dataset.torch_dataset import DEEP_DOORS_2
 from doors_detector.models.detr import PostProcess
-from doors_detector.models.detr_door_detector import DetrDoorDetector
+from doors_detector.models.detr_door_detector import *
 from doors_detector.models.model_names import DETR_RESNET50
 from scripts.dataset_configurator import *
 
@@ -26,7 +26,7 @@ if __name__ == '__main__':
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
 
-    model = DetrDoorDetector(model_name=DETR_RESNET50, pretrained=True, dataset_name=DEEP_DOORS_2)
+    model = DetrDoorDetector(model_name=DETR_RESNET50, pretrained=True, dataset_name=DEEP_DOORS_2, description=PRETRAINED_FREEZEMODEL_CLASS_BBOX)
     model.eval()
 
     for i in range(10, 50):
