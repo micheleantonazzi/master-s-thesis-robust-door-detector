@@ -11,6 +11,7 @@ from doors_detector.models.model_names import ModelName
 DESCRIPTION = int
 
 PRETRAINED_FREEZEMODEL_CLASS_BBOX: DESCRIPTION = 1
+PRETRAINED_FREEZEMODEL_CLASS_BBOX_EOS05_WEIGHT1 = 2
 
 class DetrDoorDetector(nn.Module):
     """
