@@ -15,12 +15,15 @@ params = {
     'seed': 0
 }
 
+
+def seedseed_everything(param):
+    pass
+
+
 if __name__ == '__main__':
 
     # Fix seeds
-    torch.manual_seed(params['seed'])
-    np.random.seed(params['seed'])
-    random.seed(params['seed'])
+    seedseed_everything(params['seed'])
 
     train, test, labels = get_deep_doors_2_sets()
 

@@ -12,6 +12,7 @@ from doors_detector.models.detr_door_detector import *
 from doors_detector.models.model_names import DETR_RESNET50
 from doors_detector.utilities.utils import collate_fn
 from scripts.dataset_configurator import *
+from doors_detector.utilities.utils import seed_everything
 
 
 device = 'cuda'
@@ -41,9 +42,7 @@ restart_checkpoint = False
 if __name__ == '__main__':
 
     # Fix seeds
-    torch.manual_seed(params['seed'])
-    np.random.seed(params['seed'])
-    random.seed(params['seed'])
+    seedseed_everything(params['seed'])
 
     train, test, labels = get_deep_doors_2_sets()
 
