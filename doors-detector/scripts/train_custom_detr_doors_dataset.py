@@ -42,7 +42,7 @@ restart_checkpoint = False
 if __name__ == '__main__':
 
     # Fix seeds
-    seedseed_everything(params['seed'])
+    seed_everything(params['seed'])
 
     train, test, labels = get_deep_doors_2_sets()
 
