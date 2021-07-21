@@ -22,16 +22,15 @@ class DetrDoorDetector(nn.Module):
         """
         super(DetrDoorDetector, self).__init__()
         self._model_name = model_name
-        self.model = torch.hub.load('facebookresearch/detr', model_name, pretrained=False)
+        self.model = torch.hub.load('facebookresearch/detr', model_name, pretrained=True)
         self._dataset_name = dataset_name
 
         # Freeze the model parameters
         for param in self.model.parameters():
-            False
-            #param.requires_grad = False
+            param.requires_grad = False
 
         # Change the last part of the model
-        self.model.query_embed = nn.Embedding(10, self.model.transformer.d_model)
+        #self.model.query_embed = nn.Embedding(10, self.model.transformer.d_model)
         self.model.class_embed = nn.Linear(256, 4)
         self.model.bbox_embed = MLP(256, 256, 4, 3)
 
