@@ -37,8 +37,6 @@ class DetrDoorDetector(nn.Module):
         for n, param in self.model.named_parameters():
             if 'bbox_embed' not in n:
                 param.requires_grad = False
-            else:
-                print(n)
 
         # Change the last part of the model
         #self.model.query_embed = nn.Embedding(10, self.model.transformer.d_model)
