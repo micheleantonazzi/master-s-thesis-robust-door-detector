@@ -83,7 +83,7 @@ class DatasetCreatorDeepDoors2:
             print(m)
             print_information(d)
 
-        return (DatasetDeepDoors2(dataset_path=self._dataset_path, dataframe=train_dataframe, set_type=TRAIN_SET, std_size=700, max_size=1500, scales=[640 + i * 32 for i in range(11)]), \
-               DatasetDeepDoors2(dataset_path=self._dataset_path, dataframe=test_dataframe, set_type=TEST_SET, std_size=700, max_size=1500, scales=[640 + i * 32 for i in range(11)]))
+        return (DatasetDeepDoors2(dataset_path=self._dataset_path, dataframe=train_dataframe, set_type=TRAIN_SET, std_size=800, max_size=1333, scales=[480 + i * 32 for i in range(11)]), \
+               DatasetDeepDoors2(dataset_path=self._dataset_path, dataframe=test_dataframe, set_type=TEST_SET, std_size=800, max_size=1333, scales=[480 + i * 32 for i in range(11)]))
 
 

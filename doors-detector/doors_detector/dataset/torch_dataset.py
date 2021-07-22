@@ -37,7 +37,7 @@ class TorchDataset(Dataset):
                 T.RandomSelect(
                     T.RandomResize(scales, max_size=max_size),
                     T.Compose([
-                        T.RandomResize([s - 80 for s in scales[:3]]),
+                        T.RandomResize([400, 500, 600]),
                         T.RandomSizeCrop(200, 400),
                         T.RandomResize(scales, max_size=max_size),
                     ])
