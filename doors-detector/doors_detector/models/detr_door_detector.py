@@ -11,7 +11,7 @@ from doors_detector.models.model_names import ModelName
 DESCRIPTION = int
 
 PRETRAINED_FREEZEMODEL_CLASS_BBOX: DESCRIPTION = 1
-PRETRAINED_FREEZEMODEL_CLASS_BBOX_EOS05_WEIGHT1 = 2
+PRETRAINED_FREEZEMODEL_CLASS_BBOX_EOS05_WEIGHT1: DESCRIPTION = 2
 PRETRAINED_FREEZEMODEL_CLASS: DESCRIPTION = 3
 PRETRAINED_NOFREEZEMODEL_CLASS: DESCRIPTION = 4
 
@@ -45,8 +45,7 @@ class DetrDoorDetector(nn.Module):
 
         if pretrained:
             path = os.path.join(os.path.dirname(__file__), 'train_params', self._model_name + '_' + str(self._description), str(self._dataset_name))
-            self.model.class_embed.load_state_dict(torch.load(os.path.join(path, 'class_embed.pth')))
-            self.model.bbox_embed.load_state_dict(torch.load(os.path.join(path, 'bbox_embed.pth')))
+            self.model.load_state_dict(torch.load(os.path.join(path, 'model.pth')))
 
     def forward(self, x):
         x = self.model(x)
@@ -84,18 +83,28 @@ class DetrDoorDetector(nn.Module):
         if not os.path.exists(path):
             os.mkdir(path)
 
-        torch.save(self.model.bbox_embed.state_dict(), os.path.join(path, 'bbox_embed.pth'))
-        torch.save(self.model.class_embed.state_dict(), os.path.join(path, 'class_embed.pth'))
+        torch.save(self.model.state_dict(), os.path.join(path, 'model.pth'))
         torch.save(
-            {'epoch': epoch,
-             'optimizer_state_dict': optimizer_state_dict,
-             'params': params,
-             'lr_scheduler_state_dict': lr_scheduler_state_dict,
-             'logs': logs}, os.path.join(path, 'checkpoint.pth'))
+            {
+                'optimizer_state_dict': optimizer_state_dict,
+                'lr_scheduler_state_dict': lr_scheduler_state_dict
+            }, os.path.join(path, 'checkpoint.pth')
+        )
+
+        torch.save(
+            {
+                'epoch': epoch,
+                'logs': logs,
+                'params': params,
+            }, os.path.join(path, 'training_data.pth')
+        )
 
     def load_checkpoint(self,):
         path = os.path.join(os.path.dirname(__file__), 'train_params', self._model_name + '_' + str(self._description), str(self._dataset_name))
-        return torch.load(os.path.join(path, 'checkpoint.pth'))
+        checkpoint = torch.load(os.path.join(path, 'checkpoint.pth'))
+        training_data = torch.load(os.path.join(path, 'training_data.pth'))
+
+        return {**checkpoint, **training_data}
 
 
 

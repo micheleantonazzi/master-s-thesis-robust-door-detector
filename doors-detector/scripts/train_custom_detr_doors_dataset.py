@@ -20,7 +20,7 @@ device = 'cuda'
 
 # Params
 params = {
-    'epochs': 1,
+    'epochs': 51,
     'batch_size': 1,
     'seed': 0,
     'lr': 1e-4,
@@ -37,7 +37,7 @@ params = {
     'set_cost_giou': 2,
 }
 
-restart_checkpoint = False
+restart_checkpoint = True
 
 if __name__ == '__main__':
 
@@ -48,7 +48,7 @@ if __name__ == '__main__':
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
 
-    model = DetrDoorDetector(model_name=DETR_RESNET50, pretrained=restart_checkpoint, dataset_name=DEEP_DOORS_2, description=PRETRAINED_FREEZEMODEL_CLASS_BBOX)
+    model = DetrDoorDetector(model_name=DETR_RESNET50, pretrained=restart_checkpoint, dataset_name=DEEP_DOORS_2, description=PRETRAINED_FREEZEMODEL_CLASS)
     model.to(device)
 
     # Loads params if training starts from a checkpoint
