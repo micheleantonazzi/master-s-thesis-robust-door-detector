@@ -21,13 +21,13 @@ device = 'cuda'
 
 # Params
 params = {
-    'epochs': 51,
+    'epochs': 100,
     'batch_size': 1,
     'seed': 0,
-    'lr': 1e-4,
+    'lr': 1e-5,
     'weight_decay': 1e-4,
-    'lr_drop': 200,
-    'lr_backbone': 1e-5,
+    'lr_drop': 10,
+    'lr_backbone': 1e-6,
     # Criterion
     'bbox_loss_coef': 5,
     'giou_loss_coef': 2,
@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
 
-    model = DetrDoorDetector(model_name=DETR_RESNET50, pretrained=restart_checkpoint, dataset_name=DEEP_DOORS_2, description=PRETRAINED_FREEZEMODEL_CLASS)
+    model = DetrDoorDetector(model_name=DETR_RESNET50, pretrained=restart_checkpoint, dataset_name=DEEP_DOORS_2, description=PRETRAINED_FINETUNE_ALL_LR_LOW_STEP)
     model.to(device)
 
     # Loads params if training starts from a checkpoint
@@ -201,7 +201,7 @@ if __name__ == '__main__':
 
         print(f'----> EPOCH SUMMARY TEST [{epoch}] -> [{i}/{len(data_loader_test)}]: ' + ', '.join([f'{k}: {v}' for k, v in logs['test'][epoch].items()]))
 
-        #lr_scheduler.step()
+        lr_scheduler.step()
 
         plot_losses(logs)
 

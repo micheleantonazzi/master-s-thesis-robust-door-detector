@@ -17,6 +17,7 @@ PRETRAINED_NOFREEZEMODEL_CLASS: DESCRIPTION = 4
 NOPRETRAINED_10_QUERIES: DESCRIPTION = 5
 PRETRAINED_FINETUNE_ALL: DESCRIPTION = 6
 PRETRAINED_FINETUNE_ALL_LR_HIGH_STEP: DESCRIPTION = 7
+PRETRAINED_FINETUNE_ALL_LR_LOW_STEP: DESCRIPTION = 8
 
 
 class DetrDoorDetector(nn.Module):
@@ -38,9 +39,9 @@ class DetrDoorDetector(nn.Module):
         self._description = description
 
         # Freeze the model parameters
-        for n, param in self.model.named_parameters():
-            if 'bbox_embed' not in n:
-                param.requires_grad = False
+        #for n, param in self.model.named_parameters():
+            #if 'bbox_embed' not in n:
+                #param.requires_grad = False
 
         # Change the last part of the model
         #self.model.query_embed = nn.Embedding(10, self.model.transformer.d_model)
