@@ -38,7 +38,7 @@ params = {
     'set_cost_giou': 2,
 }
 
-restart_checkpoint = True
+restart_checkpoint = False
 
 if __name__ == '__main__':
 
