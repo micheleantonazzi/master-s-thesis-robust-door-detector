@@ -203,7 +203,9 @@ if __name__ == '__main__':
 
         #lr_scheduler.step()
 
-        model.save(epoch=params['epochs'] - 1,
+        plot_losses(logs)
+
+        model.save(epoch=epoch,
                optimizer_state_dict=optimizer.state_dict(),
                lr_scheduler_state_dict=lr_scheduler.state_dict(),
                params=params,
