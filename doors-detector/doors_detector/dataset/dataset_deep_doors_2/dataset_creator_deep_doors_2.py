@@ -18,39 +18,16 @@ class DatasetCreatorDeepDoors2:
 
         file_names = sorted(list(os.listdir(os.path.join(self._dataset_path, 'door_detection', 'Images'))))
 
-        self._dataframe = pd.DataFrame(columns=['file_name', 'label'])
+        self._dataframe = pd.DataFrame(columns=['file_name', 'label', 'depth_image_path'])
         self._dataframe.file_name = np.array(file_names)
 
         # Collect labels from classification folder
         for set, folder, label in [(set, folder, label) for set in ['test', 'train', 'val'] for folder, label in [('Closed', 0), ('Open', 2), ('Semi', 1)]]:
             file_names = os.listdir(os.path.join(self._dataset_path, 'door_classification', 'RGB', set, folder))
             self._dataframe.label[self._dataframe.file_name.isin(file_names)] = label
+            self._dataframe.depth_image_path[self._dataframe.file_name.isin(file_names)] = os.path.join(self._dataset_path, 'door_classification', 'Depth', set, folder)
 
         self._dataframe.dropna(subset=['label'], inplace=True)
-
-        """
-        samples = [DoorSample(label=1) for _ in range(len(self._dataframe.index))]
-        
-        
-        for sample, file_name, label in zip(samples, self._dataframe.file_name, self._dataframe.label):
-            sample.set_bgr_image(
-                cv2.imread(
-                    os.path.join(self._dataset_path, 'door_detection', 'Images', file_name)
-                )
-            )
-
-            sample.set_pretty_semantic_image(
-                cv2.imread(
-                    os.path.join(self._dataset_path, 'door_detection', 'Annotations', file_name)
-                )
-            )
-
-            bboxes = sample.get_bboxes_from_semantic_image()
-
-            sample.set_bounding_boxes(np.array([(label, *rect) for rect in bboxes]))
-
-        self._dataframe.door_sample = np.array(samples)
-        """
 
     def get_label(self):
         return {0: 'Closed door', 1: 'Semi opened door', 2: 'Opened door'}
