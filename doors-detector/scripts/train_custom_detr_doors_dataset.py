@@ -10,6 +10,7 @@ from engine import evaluate, train_one_epoch
 from doors_detector.dataset.dataset_gibson.datasets_creator_gibson import DatasetsCreatorGibson
 from doors_detector.models.detr_door_detector import *
 from doors_detector.models.model_names import DETR_RESNET50
+from doors_detector.utilities.plot import plot_losses
 from doors_detector.utilities.utils import collate_fn
 from scripts.dataset_configurator import *
 from doors_detector.utilities.utils import seed_everything
@@ -202,7 +203,7 @@ if __name__ == '__main__':
 
         #lr_scheduler.step()
 
-    model.save(epoch=params['epochs'] - 1,
+        model.save(epoch=params['epochs'] - 1,
                optimizer_state_dict=optimizer.state_dict(),
                lr_scheduler_state_dict=lr_scheduler.state_dict(),
                params=params,
