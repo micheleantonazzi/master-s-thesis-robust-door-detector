@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
 
-    model = DetrDoorDetector(model_name=DETR_RESNET50, pretrained=True, dataset_name=DEEP_DOORS_2, description=PRETRAINED_FREEZEMODEL_CLASS_BBOX)
+    model = DetrDoorDetector(model_name=DETR_RESNET50, pretrained=True, dataset_name=DEEP_DOORS_2, description=PRETRAINED_FINETUNE_ALL_LR_LOW_NOSTEP_NOAUG_10OBJQUERIES_LABELLED)
     model.eval()
 
     for i in range(10, 50):
@@ -50,7 +50,7 @@ if __name__ == '__main__':
         for image_data in processed_data:
             # keep only predictions with 0.7+ confidence
 
-            keep = image_data['scores'] > 0.7
+            keep = image_data['scores'] > 0.2
 
             # Show image with bboxes
 
@@ -59,7 +59,7 @@ if __name__ == '__main__':
             pil_image = pil_image + torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
             plt.figure(figsize=(16, 10))
 
-            plt.imshow(T.ToPILImage(mode='RGB')(pil_image[0]).convert("RGB"))
+            plt.imshow(T.ToPILImage()(pil_image[0]))
             ax = plt.gca()
 
             for label, score, (xmin, ymin, xmax, ymax) in zip(image_data['labels'][keep], image_data['scores'][keep], image_data['boxes'][keep]):

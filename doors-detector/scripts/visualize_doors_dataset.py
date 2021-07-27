@@ -49,7 +49,7 @@ if __name__ == '__main__':
         pil_image = pil_image + torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
         plt.figure(figsize=(16, 10))
 
-        img = T.ToPILImage(mode='RGB')(pil_image).convert("RGB")
+        img = T.ToPILImage()(pil_image)
         plt.imshow(img)
         ax = plt.gca()
         print(processed['labels'][keep])
