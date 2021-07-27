@@ -26,21 +26,17 @@ class TorchDataset(Dataset):
 
         if set == TEST_SET:
             self._transform = T.Compose([
-                T.RandomResize([std_size], max_size=max_size),
+                #T.RandomResize([std_size], max_size=max_size),
                 T.ToTensor(),
                 T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
             ])
         else:
 
             self._transform = T.Compose([
-                T.RandomHorizontalFlip(),
+
                 T.RandomSelect(
                     T.RandomResize(scales, max_size=max_size),
-                    T.Compose([
-                        T.RandomResize([400, 500, 600]),
-                        T.RandomSizeCrop(200, 400),
-                        T.RandomResize(scales, max_size=max_size),
-                    ])
+                    T.RandomHorizontalFlip()
                 ),
                 T.ToTensor(),
                 T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
