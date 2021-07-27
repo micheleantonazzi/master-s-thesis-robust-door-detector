@@ -2,10 +2,12 @@ import numpy as np
 
 from doors_detector.dataset.dataset_deep_doors_2.dataset_creator_deep_doors_2 import DatasetCreatorDeepDoors2
 from doors_detector.dataset.dataset_gibson.datasets_creator_gibson import DatasetsCreatorGibson
+from doors_detector.dataset.dataset_deep_doors_2_labelled.dataset_deep_door_2_labelled import DatasetDeepDoors2Labelled
+from doors_detector.dataset.dataset_deep_doors_2_labelled.datasets_creator_deep_doors_2_labelled import DatasetsCreatorDeepDoors2Labelled
 
-
-gibson_dataset_path = '/home/michele/myfiles/doors_dataset_labelled'
+gibson_dataset_path = '/home/michele/myfiles/doors_dataset_small'
 deep_doors_2_dataset_path = '/home/michele/myfiles/deep_doors_2'
+deep_doors_2_labelled_dataset_path = '/home/michele/myfiles/deep_doors_2_labelled'
 
 COLORS = np.array([[255, 0, 0], [0, 0, 255], [0, 255, 0]], dtype=float) / np.array([[255, 255, 255], [255, 255, 255], [255, 255, 255]], dtype=float)
 
@@ -25,5 +27,14 @@ def get_deep_doors_2_sets():
 
     train, test = dataset_creator.creates_dataset(train_size=0.9, test_size=0.1)
     labels = dataset_creator.get_label()
+
+    return train, test, labels
+
+
+def get_deep_doors_2_labelled_sets():
+    dataset_creator = DatasetsCreatorDeepDoors2Labelled(dataset_path=deep_doors_2_labelled_dataset_path)
+    dataset_creator.consider_samples_with_label(label=1)
+    train, test = dataset_creator.creates_dataset(train_size=0.9, test_size=0.1)
+    labels = dataset_creator.get_labels()
 
     return train, test, labels
