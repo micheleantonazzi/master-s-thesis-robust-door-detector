@@ -70,6 +70,6 @@ class TorchDataset(Dataset):
         target['labels'] = torch.tensor([label for label, *box in door_sample.get_bounding_boxes()], dtype=torch.long)
 
         # The BGR image is convert in RGB
-        img, target = self._transform(Image.fromarray(door_sample.get_bgr_image()), target)
+        img, target = self._transform(Image.fromarray(door_sample.get_bgr_image()[..., [2, 1, 0]]), target)
 
         return img, target, door_sample
