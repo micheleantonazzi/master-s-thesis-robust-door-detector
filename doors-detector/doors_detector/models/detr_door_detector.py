@@ -21,6 +21,9 @@ PRETRAINED_FINETUNE_ALL_LR_LOW_STEP: DESCRIPTION = 8
 PRETRAINED_FINETUNE_ALL_LR_LOW_STEP_NOAUG: DESCRIPTION = 9
 PRETRAINED_FINETUNE_ALL_LR_LOW_STEP_NOAUG_10OBJQUERIES: DESCRIPTION = 10
 PRETRAINED_FINETUNE_ALL_LR_LOW_NOSTEP_NOAUG_10OBJQUERIES: DESCRIPTION = 11
+PRETRAINED_FINETUNE_ALL_LR_LOW_NOSTEP_LOWAUG_10OBJQUERIES: DESCRIPTION = 12
+PRETRAINED_FINETUNE_ALL_LR_LOW_STEP_LOWAUG_10OBJQUERIES: DESCRIPTION = 13
+
 
 
 class DetrDoorDetector(nn.Module):
@@ -47,7 +50,7 @@ class DetrDoorDetector(nn.Module):
                 #param.requires_grad = False
 
         # Change the last part of the model
-        #self.model.query_embed = nn.Embedding(10, self.model.transformer.d_model)
+        self.model.query_embed = nn.Embedding(10, self.model.transformer.d_model)
         self.model.class_embed = nn.Linear(256, 4)
         #self.model.bbox_embed = MLP(256, 256, 4, 3)
 
