@@ -46,7 +46,7 @@ class DatasetsCreatorDeepDoors2Labelled:
         assert isinstance(test_size, float) and isinstance(train_size, float) or isinstance(test_size, int) and isinstance(train_size, int)
 
 
-        train, test, _, _ = train_test_split(self._dataframe.index.tolist(), train_size=train_size, test_size=test_size, random_state=random_state)
+        train, test = train_test_split(self._dataframe.index.tolist(), train_size=train_size, test_size=test_size, random_state=random_state)
         train_dataframe = self._dataframe.loc[train]
         test_dataframe = self._dataframe.loc[test]
 
