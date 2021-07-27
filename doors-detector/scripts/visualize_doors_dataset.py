@@ -1,13 +1,9 @@
 import random
-
-import numpy as np
 import torch
 from matplotlib import pyplot as plt
 import torchvision.transforms as T
-from doors_detector.dataset.dataset_gibson.datasets_creator_gibson import DatasetsCreatorGibson
 from doors_detector.models.detr import PostProcess
-from gibson_env_utilities.doors_dataset.door_sample import DOOR_LABELS
-from doors_detector.dataset.dataset_deep_doors_2.dataset_creator_deep_doors_2 import DatasetCreatorDeepDoors2
+
 from scripts.dataset_configurator import *
 
 
@@ -23,8 +19,9 @@ if __name__ == '__main__':
     np.random.seed(params['seed'])
     random.seed(params['seed'])
 
-    train, test, labels = get_my_doors_sets()
+    #train, test, labels = get_my_doors_sets()
     #train, test, labels = get_deep_doors_2_sets()
+    train, test, labels = get_deep_doors_2_labelled_sets()
 
     post_processor = PostProcess()
 
