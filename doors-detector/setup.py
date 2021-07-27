@@ -64,7 +64,8 @@ setup(
         'torch',
         'torchvision',
         'gibson-env-utilities',
-        'scikit-learn'
+        'scikit-learn',
+        'deep-doors-2-labelled',
     ],
     entry_points={
         'console_scripts': [
