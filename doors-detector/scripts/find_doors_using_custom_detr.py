@@ -50,7 +50,7 @@ if __name__ == '__main__':
         for image_data in processed_data:
             # keep only predictions with 0.7+ confidence
 
-            keep = image_data['scores'] > 0.2
+            keep = image_data['scores'] > 0.7
 
             # Show image with bboxes
 
