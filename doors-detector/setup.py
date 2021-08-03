@@ -66,6 +66,7 @@ setup(
         'gibson-env-utilities',
         'scikit-learn',
         'deep-doors-2-labelled',
+        'src @ git+http://github.com/rafaelpadilla/review_object_detection_metrics.git#egg=src'
     ],
     entry_points={
         'console_scripts': [
