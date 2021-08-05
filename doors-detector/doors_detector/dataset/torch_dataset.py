@@ -34,10 +34,10 @@ class TorchDataset(Dataset):
 
             self._transform = T.Compose([
 
-                T.RandomSelect(
-                    T.RandomResize(scales, max_size=max_size),
-                    T.RandomHorizontalFlip()
-                ),
+                #T.RandomSelect(
+                    #T.RandomResize(scales, max_size=max_size),
+                    #T.RandomHorizontalFlip()
+                #),
                 T.ToTensor(),
                 T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
             ])
