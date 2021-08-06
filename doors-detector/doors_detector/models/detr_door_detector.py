@@ -27,8 +27,6 @@ PRETRAINED_FINETUNE_ALL_LR_LOW_NOSTEP_NOAUG_10OBJQUERIES_LABELLED: DESCRIPTION =
 PRETRAINED_FINETUNE_ALL_LR_LOW_STEP_NOAUG_10OBJQUERIES_LABELLED: DESCRIPTION = 15
 
 
-
-
 class DetrDoorDetector(nn.Module):
     """
     This class builds a door detector starting from a detr pretrained module.
