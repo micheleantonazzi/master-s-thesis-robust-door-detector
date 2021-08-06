@@ -9,6 +9,7 @@ from doors_detector.dataset.torch_dataset import DEEP_DOORS_2
 from doors_detector.models.detr import PostProcess
 from doors_detector.models.detr_door_detector import *
 from doors_detector.models.model_names import DETR_RESNET50
+from doors_detector.utilities.utils import seed_everything
 from scripts.dataset_configurator import *
 
 params = {
@@ -16,14 +17,10 @@ params = {
 }
 
 
-def seedseed_everything(param):
-    pass
-
-
 if __name__ == '__main__':
 
     # Fix seeds
-    seedseed_everything(params['seed'])
+    seed_everything(params['seed'])
 
     train, test, labels = get_deep_doors_2_sets()
 
