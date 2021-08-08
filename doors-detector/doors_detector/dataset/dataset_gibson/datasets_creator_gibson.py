@@ -113,6 +113,5 @@ class DatasetsCreatorGibson:
         for m, d in zip(['Datasets summary:', 'Train set summary:', 'Test set summary:'], [self._dataframe, train_dataframe, test_dataframe]):
             print(m)
             print_information(d)
-
-        return (DatasetGibson(self._dataset_path, train_dataframe, TRAIN_SET, std_size=256, max_size=600, scales=[256 + i * 32 for i in range(5)]),
-                DatasetGibson(self._dataset_path, test_dataframe, TEST_SET, std_size=256, max_size=600, scales=[256 + i * 32 for i in range(5)]))
+        return (DatasetGibson(self._dataset_path, train_dataframe, TRAIN_SET, std_size=256, max_size=600, scales=[256 + i * 64 for i in range(5)]),
+                DatasetGibson(self._dataset_path, test_dataframe, TEST_SET, std_size=256, max_size=600, scales=[256 + i * 64 for i in range(5)]))
