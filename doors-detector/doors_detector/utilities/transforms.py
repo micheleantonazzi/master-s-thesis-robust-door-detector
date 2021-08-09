@@ -145,6 +145,11 @@ def pad(image, target, padding):
     return padded_image, target
 
 
+class Identity(object):
+    def __call__(self, img, target):
+        return img, target
+
+
 class RandomCrop(object):
     def __init__(self, size):
         self.size = size

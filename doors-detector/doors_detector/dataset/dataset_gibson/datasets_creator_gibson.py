@@ -114,5 +114,5 @@ class DatasetsCreatorGibson:
             print(m)
             print_information(d)
 
-        return (DatasetGibson(self._dataset_path, train_dataframe, TRAIN_SET, std_size=500, max_size=700, scales=[256 + i * 32 for i in range(11)]),
-                DatasetGibson(self._dataset_path, test_dataframe, TEST_SET, std_size=500, max_size=700, scales=[256 + i * 32 for i in range(11)]))
+        return (DatasetGibson(self._dataset_path, train_dataframe, TRAIN_SET, std_size=256, max_size=800, scales=[256 + i * 32 for i in range(11)]),
+                DatasetGibson(self._dataset_path, test_dataframe, TEST_SET, std_size=256, max_size=800, scales=[256 + i * 32 for i in range(11)]))
