@@ -61,5 +61,5 @@ class DatasetsCreatorDeepDoors2Labelled:
             print(m)
             print_information(d)
 
-        return (DatasetDeepDoors2Labelled(self._dataset_path, train_dataframe, TRAIN_SET, std_size=500, max_size=700, scales=[256 + i * 32 for i in range(11)]),
-                DatasetDeepDoors2Labelled(self._dataset_path, test_dataframe, TEST_SET, std_size=500, max_size=700, scales=[256 + i * 32 for i in range(11)]))
+        return (DatasetDeepDoors2Labelled(self._dataset_path, train_dataframe, TRAIN_SET, std_size=480, max_size=1000, scales=[480 + i * 32 for i in range(11)]),
+                DatasetDeepDoors2Labelled(self._dataset_path, test_dataframe, TEST_SET, std_size=480, max_size=1000, scales=[480 + i * 32 for i in range(11)]))
