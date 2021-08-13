@@ -17,6 +17,7 @@ DATASET = Type[str]
 GIBSON_DATASET: DATASET = 'gibson_dataset'
 GIBSON_DATASET_SMALL: DATASET = 'gibson_dataset_small'
 DEEP_DOORS_2: DATASET = 'deep_doors_2'
+FINAL_DOORS_DATASET: DATASET = 'final_doors_dataset'
 
 
 class TorchDataset(Dataset):
