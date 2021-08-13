@@ -8,6 +8,7 @@ from doors_detector.dataset.dataset_deep_doors_2_labelled.datasets_creator_deep_
 gibson_dataset_path = '/home/michele/myfiles/doors_dataset_small'
 deep_doors_2_dataset_path = '/home/michele/myfiles/deep_doors_2'
 deep_doors_2_labelled_dataset_path = '/home/michele/myfiles/deep_doors_2_labelled'
+final_doors_dataset_path = '/home/antonazzi/myfiles/final_doors_dataset'
 
 COLORS = np.array([[255, 0, 0], [0, 0, 255], [0, 255, 0]], dtype=float) / np.array([[255, 255, 255], [255, 255, 255], [255, 255, 255]], dtype=float)
 
