@@ -1,25 +1,26 @@
 import numpy as np
 import torch
+from matplotlib import pyplot as plt
 from matplotlib.pyplot import subplots, show
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from doors_detector.dataset.torch_dataset import DEEP_DOORS_2
+from doors_detector.dataset.torch_dataset import DEEP_DOORS_2, FINAL_DOORS_DATASET
 from doors_detector.models.detr import PostProcess
-from doors_detector.models.detr_door_detector import DetrDoorDetector, PRETRAINED_FINETUNE_ALL_LR_LOW_STEP_NOAUG_10OBJQUERIES_LABELLED
+from doors_detector.models.detr_door_detector import *
 from doors_detector.models.model_names import DETR_RESNET50
 from doors_detector.utilities.utils import seed_everything, collate_fn
-from scripts.dataset_configurator import get_deep_doors_2_labelled_sets
+from scripts.dataset_configurator import get_deep_doors_2_labelled_sets, get_final_doors_dataset
 
 device = 'cuda'
 seed_everything(0)
-batch_size = 5
+batch_size = 2
 values = {'transformer': [], 'max_scores': [], 'labels': []}
 
-model = DetrDoorDetector(model_name=DETR_RESNET50, pretrained=True, dataset_name=DEEP_DOORS_2, description=PRETRAINED_FINETUNE_ALL_LR_LOW_STEP_NOAUG_10OBJQUERIES_LABELLED)
-train, test, labels = get_deep_doors_2_labelled_sets()
+model = DetrDoorDetector(model_name=DETR_RESNET50, pretrained=True, dataset_name=FINAL_DOORS_DATASET, description=PRETRAINED_FINETUNE_ALL_LR_LOW_NOSTEP_AUG_10OBJQUERIES_FINALDATASET)
+train, test, labels = get_final_doors_dataset()
 
 print(model)
 
@@ -35,29 +36,27 @@ model.model.transformer.register_forward_hook(
 model.to(device)
 model.eval()
 
-data_loader_training = DataLoader(train, batch_size=batch_size, collate_fn=collate_fn, shuffle=False, num_workers=6)
-
 post_processor = PostProcess()
 
-for i, training_data in tqdm(enumerate(data_loader_training), total=len(data_loader_training)):
-    images, targets = training_data
+for i, training_data in tqdm(enumerate(train), total=len(train)):
+    image, target, door_sample = training_data
 
-    images = images.to(device)
-    outputs = model(images)
+    target = (target,)
+    image = image.unsqueeze(0).to(device)
+    outputs = model(image)
 
-    processed_data = post_processor(outputs=outputs, target_sizes=torch.tensor([[100, 100] for _ in range(len(images))], device=device))
+    processed_data = post_processor(outputs=outputs, target_sizes=torch.tensor([[100, 100] for _ in range(len(image))], device=device))
     for item in processed_data:
         scores = item['scores']
         max_score = torch.argmax(scores).item()
         values['max_scores'].append(max_score)
-        values['labels'].append(item['labels'][max_score].item())
+        values['labels'].append(0 if door_sample.get_bgr_image().shape[0] <= 256 else 1)
 
 flatten_encoder = np.array([torch.squeeze(v)[m].flatten().tolist() for v, m in zip(values['transformer'], values['max_scores'])])
 flatten_encoder_pca = PCA(n_components=50, random_state=42).fit_transform(flatten_encoder)
 
 colors = np.array([
     "tab:red",
-    "tab:blue",
     "tab:green"
 ])
 
@@ -71,4 +70,4 @@ for perplexity, axis in tqdm(zip([30, 40, 50, 100, 500, 5000], axes.flatten()), 
                                                                                 'verticalalignment': 'baseline',
                                                                                 'horizontalalignment': 'center'})
 fig.tight_layout()
-show()
+plt.show()

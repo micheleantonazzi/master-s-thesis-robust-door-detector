@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+from matplotlib import pyplot as plt
 from matplotlib.pyplot import subplots, show
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
@@ -8,17 +9,17 @@ from tqdm import tqdm
 
 from doors_detector.dataset.torch_dataset import DEEP_DOORS_2
 from doors_detector.models.detr import PostProcess
-from doors_detector.models.detr_door_detector import DetrDoorDetector, PRETRAINED_FINETUNE_ALL_LR_LOW_STEP_NOAUG_10OBJQUERIES_LABELLED
+from doors_detector.models.detr_door_detector import *
 from doors_detector.models.model_names import DETR_RESNET50
 from doors_detector.utilities.utils import seed_everything, collate_fn
 from scripts.dataset_configurator import get_deep_doors_2_labelled_sets
 
 device = 'cuda'
 seed_everything(0)
-batch_size = 5
+batch_size = 1
 values = {'transformer': [], 'max_scores': [], 'labels': []}
 
-model = DetrDoorDetector(model_name=DETR_RESNET50, pretrained=True, dataset_name=DEEP_DOORS_2, description=PRETRAINED_FINETUNE_ALL_LR_LOW_STEP_NOAUG_10OBJQUERIES_LABELLED)
+model = DetrDoorDetector(model_name=DETR_RESNET50, pretrained=True, dataset_name=DEEP_DOORS_2, description=PRETRAINED_FINETUNE_ALL_LR_LOW_NOSTEP_AUG_10OBJQUERIES_LABELLED)
 train, test, labels = get_deep_doors_2_labelled_sets()
 
 print(model)
@@ -71,4 +72,4 @@ for perplexity, axis in tqdm(zip([30, 40, 50, 100, 500, 5000], axes.flatten()), 
                                                                                 'verticalalignment': 'baseline',
                                                                                 'horizontalalignment': 'center'})
 fig.tight_layout()
-show()
+plt.show()
