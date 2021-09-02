@@ -1,13 +1,13 @@
 import random
 import time
-from doors_detector.dataset.torch_dataset import DEEP_DOORS_2, GIBSON_DATASET_SMALL, FINAL_DOORS_DATASET
+from doors_detector.dataset.torch_dataset import DEEP_DOORS_2_LABELLED, FINAL_DOORS_DATASET
 import numpy as np
 import torch.optim
 from models.detr import SetCriterion
 from models.matcher import HungarianMatcher
 from torch.utils.data import DataLoader
 from engine import evaluate, train_one_epoch
-from doors_detector.dataset.dataset_doors_final.datasets_creator_doors_final import DatasetsCreatorGibson
+from doors_detector.dataset.dataset_doors_final.datasets_creator_doors_final import DatasetsCreatorDoorsFinal
 from doors_detector.models.detr_door_detector import *
 from doors_detector.models.model_names import DETR_RESNET50
 from doors_detector.utilities.plot import plot_losses
@@ -21,7 +21,7 @@ device = 'cuda'
 
 # Params
 params = {
-    'epochs': 200,
+    'epochs': 2,
     'batch_size': 1,
     'seed': 0,
     'lr': 1e-5,
@@ -46,11 +46,11 @@ if __name__ == '__main__':
     # Fix seeds
     seed_everything(params['seed'])
 
-    train, test, labels = get_my_doors_sets()
+    train, test, labels, _ = get_deep_doors_2_labelled_sets()
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
 
-    model = DetrDoorDetector(model_name=DETR_RESNET50, pretrained=reload_model, dataset_name=GIBSON_DATASET_SMALL, description=PRETRAINED_FINETUNE_ALL_LR_LOW_NOSTEP_AUG_10OBJQUERIES_MYDATASETLABELLED)
+    model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels.keys()), pretrained=reload_model, dataset_name=DEEP_DOORS_2_LABELLED, description=DEEP_DOORS_2_LABELLED_EXP)
     #model.set_description(description=PRETRAINED_FINETUNE_ALL_LR_LOW_NOSTEP_AUG_10OBJQUERIES_FIRST_LABELLED_FINETUNE_GIBSONSMALL)
     #model.set_dataset_name(dataset_name=GIBSON_DATASET_SMALL)
     model.to(device)

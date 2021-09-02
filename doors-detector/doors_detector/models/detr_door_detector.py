@@ -11,15 +11,19 @@ from doors_detector.models.model_names import ModelName
 DESCRIPTION = int
 
 
+DEEP_DOORS_2_LABELLED_EXP: DESCRIPTION = 0
+
+
 class DetrDoorDetector(nn.Module):
     """
     This class builds a door detector starting from a detr pretrained module.
     Basically it loads a dtr module and modify its structure to recognize door.
     """
-    def __init__(self, model_name: ModelName, pretrained: bool, dataset_name: DATASET, description: DESCRIPTION):
+    def __init__(self, model_name: ModelName, n_labels: int, pretrained: bool, dataset_name: DATASET, description: DESCRIPTION):
         """
 
         :param model_name: the name of the detr base model
+        :param n_labels: the labels' number
         :param pretrained: it refers to the DetrDoorDetector class, not to detr base model.
                             It True, the DetrDoorDetector's weights are loaded, otherwise the weights are loaded only for the detr base model
         """
@@ -31,8 +35,7 @@ class DetrDoorDetector(nn.Module):
 
         # Change the last part of the model
         self.model.query_embed = nn.Embedding(10, self.model.transformer.d_model)
-        self.model.class_embed = nn.Linear(256, 4)
-        #self.model.bbox_embed = MLP(256, 256, 4, 3)
+        self.model.class_embed = nn.Linear(256, n_labels + 1)
 
         if pretrained:
             path = os.path.join(os.path.dirname(__file__), 'train_params', self._model_name + '_' + str(self._description), str(self._dataset_name))
