@@ -29,11 +29,6 @@ class DetrDoorDetector(nn.Module):
         self._dataset_name = dataset_name
         self._description = description
 
-        # Freeze the model parameters
-        #for n, param in self.model.named_parameters():
-            #if 'bbox_embed' not in n:
-                #param.requires_grad = False
-
         # Change the last part of the model
         self.model.query_embed = nn.Embedding(10, self.model.transformer.d_model)
         self.model.class_embed = nn.Linear(256, 4)
