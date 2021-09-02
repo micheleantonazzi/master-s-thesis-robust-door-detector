@@ -1,6 +1,6 @@
 import random
 import time
-from doors_detector.dataset.torch_dataset import DEEP_DOORS_2
+from doors_detector.dataset.torch_dataset import DEEP_DOORS_2, GIBSON_DATASET_SMALL, FINAL_DOORS_DATASET
 import numpy as np
 import torch.optim
 from models.detr import SetCriterion
@@ -21,12 +21,12 @@ device = 'cuda'
 
 # Params
 params = {
-    'epochs': 30,
+    'epochs': 200,
     'batch_size': 1,
     'seed': 0,
     'lr': 1e-5,
     'weight_decay': 1e-4,
-    'lr_drop': 10,
+    'lr_drop': 20,
     'lr_backbone': 1e-6,
     # Criterion
     'bbox_loss_coef': 5,
@@ -38,6 +38,7 @@ params = {
     'set_cost_giou': 2,
 }
 
+reload_model = False
 restart_checkpoint = False
 
 if __name__ == '__main__':
@@ -45,11 +46,13 @@ if __name__ == '__main__':
     # Fix seeds
     seed_everything(params['seed'])
 
-    train, test, labels = get_deep_doors_2_sets()
+    train, test, labels = get_my_doors_sets()
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
 
-    model = DetrDoorDetector(model_name=DETR_RESNET50, pretrained=restart_checkpoint, dataset_name=DEEP_DOORS_2, description=PRETRAINED_FINETUNE_ALL_LR_LOW_STEP)
+    model = DetrDoorDetector(model_name=DETR_RESNET50, pretrained=reload_model, dataset_name=GIBSON_DATASET_SMALL, description=PRETRAINED_FINETUNE_ALL_LR_LOW_NOSTEP_AUG_10OBJQUERIES_MYDATASETLABELLED)
+    #model.set_description(description=PRETRAINED_FINETUNE_ALL_LR_LOW_NOSTEP_AUG_10OBJQUERIES_FIRST_LABELLED_FINETUNE_GIBSONSMALL)
+    #model.set_dataset_name(dataset_name=GIBSON_DATASET_SMALL)
     model.to(device)
 
     # Loads params if training starts from a checkpoint
@@ -201,7 +204,7 @@ if __name__ == '__main__':
 
         print(f'----> EPOCH SUMMARY TEST [{epoch}] -> [{i}/{len(data_loader_test)}]: ' + ', '.join([f'{k}: {v}' for k, v in logs['test'][epoch].items()]))
 
-        lr_scheduler.step()
+        #lr_scheduler.step()
 
         plot_losses(logs)
 
