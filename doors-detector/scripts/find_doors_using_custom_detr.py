@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from matplotlib import pyplot as plt
 import torchvision.transforms as T
-from doors_detector.dataset.dataset_gibson.datasets_creator_gibson import DatasetsCreatorGibson
+from doors_detector.dataset.dataset_doors_final.datasets_creator_doors_final import DatasetsCreatorGibson
 from doors_detector.dataset.torch_dataset import DEEP_DOORS_2
 from doors_detector.models.detr import PostProcess
 from doors_detector.models.detr_door_detector import *

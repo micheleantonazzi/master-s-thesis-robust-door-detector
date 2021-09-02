@@ -5,7 +5,7 @@ from gibson_env_utilities.doors_dataset.door_sample import DoorSample
 from matplotlib import pyplot as plt
 import torchvision.transforms as T
 
-from doors_detector.dataset.dataset_gibson.datasets_creator_gibson import DatasetsCreatorGibson
+from doors_detector.dataset.dataset_doors_final.datasets_creator_doors_final import DatasetsCreatorGibson
 from doors_detector.models.detr import Detr, DETR_RESNET50
 
 

@@ -19,9 +19,8 @@ if __name__ == '__main__':
     np.random.seed(params['seed'])
     random.seed(params['seed'])
 
-    #train, test, labels = get_my_doors_sets()
-    #train, test, labels = get_deep_doors_2_sets()
-    train, test, labels = get_deep_doors_2_labelled_sets()
+    train, test, labels, COLORS = get_deep_doors_2_labelled_sets()
+    #train, test, labels, COLORS = get_final_doors_dataset()
 
     post_processor = PostProcess()
 
@@ -52,7 +51,7 @@ if __name__ == '__main__':
         img = T.ToPILImage()(pil_image)
         plt.imshow(img)
         ax = plt.gca()
-        print(processed['labels'][keep])
+
         for label, score, (xmin, ymin, xmax, ymax) in zip(processed['labels'][keep], processed['scores'][keep], processed['boxes'][keep]):
             ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
                                        fill=False, color=COLORS[label], linewidth=3))
@@ -62,6 +61,8 @@ if __name__ == '__main__':
 
         plt.axis('off')
         plt.show()
+
+        door_sample.visualize()
 
 
 

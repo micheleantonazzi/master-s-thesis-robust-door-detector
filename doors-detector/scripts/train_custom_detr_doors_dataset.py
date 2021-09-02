@@ -7,7 +7,7 @@ from models.detr import SetCriterion
 from models.matcher import HungarianMatcher
 from torch.utils.data import DataLoader
 from engine import evaluate, train_one_epoch
-from doors_detector.dataset.dataset_gibson.datasets_creator_gibson import DatasetsCreatorGibson
+from doors_detector.dataset.dataset_doors_final.datasets_creator_doors_final import DatasetsCreatorGibson
 from doors_detector.models.detr_door_detector import *
 from doors_detector.models.model_names import DETR_RESNET50
 from doors_detector.utilities.plot import plot_losses

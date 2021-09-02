@@ -1,11 +1,9 @@
 import numpy as np
 from doors_detector.dataset.dataset_deep_doors_2_labelled.datasets_creator_deep_doors_2_labelled import DatasetsCreatorDeepDoors2Labelled
-
+from doors_detector.dataset.dataset_doors_final.datasets_creator_doors_final import DatasetsCreatorDoorsFinal
 
 deep_doors_2_labelled_dataset_path = '/home/michele/myfiles/deep_doors_2_labelled'
-final_doors_dataset_path = '/home/antonazzi/myfiles/final_doors_dataset'
-
-COLORS = np.array([[255, 0, 0], [0, 0, 255], [0, 255, 0]], dtype=float) / np.array([[255, 255, 255], [255, 255, 255], [255, 255, 255]], dtype=float)
+final_doors_dataset_path = '/home/michele/myfiles/final_doors_dataset'
 
 
 def get_deep_doors_2_labelled_sets():
@@ -14,13 +12,13 @@ def get_deep_doors_2_labelled_sets():
     train, test = dataset_creator.creates_dataset(train_size=0.8, test_size=0.2)
     labels = dataset_creator.get_labels()
 
-    return train, test, labels
+    return train, test, labels, np.array([[1, 0, 0], [0, 0, 1], [0, 1, 0]], dtype=float)
 
 
 def get_final_doors_dataset():
-    dataset_creator = DatasetsCreatorDeepDoors2Labelled(dataset_path=final_doors_dataset_path)
+    dataset_creator = DatasetsCreatorDoorsFinal(dataset_path=final_doors_dataset_path)
     dataset_creator.consider_samples_with_label(label=1)
-    train, test = dataset_creator.creates_dataset(train_size=0.8, test_size=0.2)
+    train, test = dataset_creator.creates_dataset(train_size=0.8, test_size=0.2, split_folder=False)
     labels = dataset_creator.get_labels()
 
-    return train, test, labels
+    return train, test, labels, np.array([[1, 0, 0], [0, 1, 0]], dtype=float)
