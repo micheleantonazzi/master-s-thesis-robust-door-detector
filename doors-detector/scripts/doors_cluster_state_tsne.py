@@ -25,10 +25,12 @@ model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels.keys()), 
 
 print(model)
 
+
 def extract_tranformer_weights(model, input, output):
     tensor = output[0].detach()
     b = torch.split(tensor[-1], 1, 0)
     values['transformer'].extend(b)
+
 
 model.model.transformer.register_forward_hook(
     extract_tranformer_weights
@@ -64,6 +66,7 @@ colors = np.array([
 ])
 
 fig, axes = subplots(nrows=2, ncols=3, figsize=(10, 5))
+
 for perplexity, axis in tqdm(zip([30, 40, 50, 100, 500, 5000], axes.flatten()), desc="Computing TSNEs", total=6):
     axis.scatter(*TSNE(n_components=2, perplexity=perplexity).fit_transform(flatten_encoder_pca).T, s=1, color=colors[values['labels']])
     axis.xaxis.set_visible(False)
