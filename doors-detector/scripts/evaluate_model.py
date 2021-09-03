@@ -30,20 +30,7 @@ if __name__ == '__main__':
 
     for images, targets in tqdm(data_loader_test, total=len(data_loader_test), desc='Evaluate model'):
         images = images.to(device)
-
         outputs = model(images)
-
         coco_evaluator.add_predictions(targets=targets, predictions=outputs)
 
-    """img, target, sample = test[0]
-
-    sample.visualize()
-
-    img = img.to(device)
-
-    outputs = model(img.unsqueeze(0))
-
-    
-
-    coco_evaluator.add_predictions(targets=(target,), predictions=outputs)"""
     print(coco_evaluator.get_coco_metrics())
