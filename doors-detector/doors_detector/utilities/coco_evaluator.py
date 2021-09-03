@@ -30,7 +30,6 @@ class CocoEvaluator:
         scores_images, labels_images = prob[..., :-1].max(-1)
         #print(scores_images, labels_images)
         for scores, labels, pred_boxes in zip(scores_images, labels_images, pred_boxes_images):
-            #print(scores, labels, pred_boxes)
             for score, label, [x, y, w, h] in zip(scores, labels, pred_boxes):
                 label = label.item()
                 score = score.item()
@@ -46,14 +45,6 @@ class CocoEvaluator:
                         )
                     )
             img_count_temp += 1
-        """ for logits, [x, y, w, h] in zip(pred_logits, pred_boxes):
-                labels = F.softmax(logits, -1)
-                score, label = labels.max(-1)
-                score, label = score.item(), label.item() - 1
-
-                
-            
-            """
 
     def get_coco_metrics(self):
         return get_coco_summary(self._gt_bboxes, self._predicted_bboxes)
