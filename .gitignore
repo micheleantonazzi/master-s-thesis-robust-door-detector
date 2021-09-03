@@ -1,6 +1,9 @@
 *.iml
 .idea
 
+checkpoint.pth
+model.pth
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
