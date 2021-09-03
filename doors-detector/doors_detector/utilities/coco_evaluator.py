@@ -28,7 +28,7 @@ class CocoEvaluator:
         pred_logits, pred_boxes_images = predictions['pred_logits'], predictions['pred_boxes']
         prob = F.softmax(pred_logits, -1)
         scores_images, labels_images = prob[..., :-1].max(-1)
-        #print(scores_images, labels_images)
+
         for scores, labels, pred_boxes in zip(scores_images, labels_images, pred_boxes_images):
             for score, label, [x, y, w, h] in zip(scores, labels, pred_boxes):
                 label = label.item()
