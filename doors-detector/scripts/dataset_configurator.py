@@ -15,10 +15,11 @@ def get_deep_doors_2_labelled_sets():
     return train, test, labels, np.array([[1, 0, 0], [0, 0, 1], [0, 1, 0]], dtype=float)
 
 
-def get_final_doors_dataset():
+def get_final_doors_dataset(experiment: int, folder_name: str, train_size: float = 0.1):
     dataset_creator = DatasetsCreatorDoorsFinal(dataset_path=final_doors_dataset_path)
     dataset_creator.consider_samples_with_label(label=1)
-    train, test = dataset_creator.creates_dataset(train_size=0.8, test_size=0.2, split_folder=False)
+    dataset_creator.set_experiment_number(experiment=experiment, folder_name=folder_name)
+    train, test = dataset_creator.creates_dataset(train_size=train_size)
     labels = dataset_creator.get_labels()
 
     return train, test, labels, np.array([[1, 0, 0], [0, 1, 0]], dtype=float)

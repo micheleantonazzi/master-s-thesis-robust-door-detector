@@ -21,7 +21,7 @@ device = 'cuda'
 
 # Params
 params = {
-    'epochs': 2,
+    'epochs': 30,
     'batch_size': 1,
     'seed': 0,
     'lr': 1e-5,
@@ -46,7 +46,8 @@ if __name__ == '__main__':
     # Fix seeds
     seed_everything(params['seed'])
 
-    train, test, labels, _ = get_deep_doors_2_labelled_sets()
+    #train, test, labels, _ = get_deep_doors_2_labelled_sets()
+    train, test, labels, _ = get_final_doors_dataset(experiment=1, folder_name='house1')
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
 
@@ -96,7 +97,7 @@ if __name__ == '__main__':
     losses = ['labels', 'boxes', 'cardinality']
     weight_dict = {'loss_ce': 1, 'loss_bbox': params['bbox_loss_coef'], 'loss_giou': params['giou_loss_coef']}
     matcher = HungarianMatcher(cost_class=params['set_cost_class'], cost_bbox=params['set_cost_bbox'], cost_giou=params['set_cost_giou'])
-    criterion = SetCriterion(3, matcher=matcher, weight_dict=weight_dict,
+    criterion = SetCriterion(len(labels.keys()), matcher=matcher, weight_dict=weight_dict,
                              eos_coef=params['eos_coef'], losses=losses)
 
     data_loader_train = DataLoader(train, batch_size=params['batch_size'], collate_fn=collate_fn, shuffle=False, num_workers=4)
