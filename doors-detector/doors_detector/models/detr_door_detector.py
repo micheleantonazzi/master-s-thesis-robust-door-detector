@@ -12,6 +12,7 @@ DESCRIPTION = int
 
 
 DEEP_DOORS_2_LABELLED_EXP: DESCRIPTION = 0
+EXP_1_HOUSE_1: DESCRIPTION = 1
 
 
 class DetrDoorDetector(nn.Module):
