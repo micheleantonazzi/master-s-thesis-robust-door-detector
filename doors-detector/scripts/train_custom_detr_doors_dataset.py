@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
     # Loads params if training starts from a checkpoint
     start_epoch = 0
-    logs = {'train': [], 'test': []}
+    logs = {'train': [], 'test': [], 'time': []}
     optimizer_state_dict = {}
     lr_scheduler_state_dict = {}
     if restart_checkpoint:
@@ -202,6 +202,7 @@ if __name__ == '__main__':
                 epoch_total[k] = epoch_total.get(k, 0) + d[k]
 
         logs['test'].append({k: v / len(temp_logs['test']) for k, v in epoch_total.items()})
+        logs['time'].append(time.time() - start_time)
 
         print(f'----> EPOCH SUMMARY TEST [{epoch}] -> [{i}/{len(data_loader_test)}]: ' + ', '.join([f'{k}: {v}' for k, v in logs['test'][epoch].items()]))
 
