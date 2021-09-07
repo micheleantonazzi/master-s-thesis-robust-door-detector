@@ -13,6 +13,7 @@ DESCRIPTION = int
 
 DEEP_DOORS_2_LABELLED_EXP: DESCRIPTION = 0
 EXP_1_HOUSE_1: DESCRIPTION = 1
+EXP_2_HOUSE_1_20: DESCRIPTION = 2
 
 
 class DetrDoorDetector(nn.Module):
@@ -100,6 +101,9 @@ class DetrDoorDetector(nn.Module):
         training_data = torch.load(os.path.join(path, 'training_data.pth'))
 
         return {**checkpoint, **training_data}
+
+    def set_description(self, description: DESCRIPTION):
+        self._description = description
 
 
 
