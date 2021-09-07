@@ -55,10 +55,16 @@ class DatasetsCreatorDoorsFinal:
         if isinstance(train_size, float):
             assert 0.0 < train_size < 1.0
 
+
+        shuffled_dataframe = shuffle(self._dataframe)
         if self._experiment == 1:
-            shuffled_dataframe = shuffle(self._dataframe)
             train_dataframe = shuffled_dataframe[shuffled_dataframe.folder_name != self._folder_name]
             test_dataframe = shuffled_dataframe[shuffled_dataframe.folder_name == self._folder_name]
+        elif self._experiment == 2:
+            shuffled_dataframe = shuffled_dataframe[shuffled_dataframe.folder_name == self._folder_name]
+            train, test = train_test_split(shuffled_dataframe.index.tolist(), train_size=train_size, random_state=random_state)
+            train_dataframe = shuffled_dataframe.loc[train]
+            test_dataframe = shuffled_dataframe.loc[test]
 
         def print_information(dataframe):
             print(f'    - total samples = {len(dataframe.index)}\n'
