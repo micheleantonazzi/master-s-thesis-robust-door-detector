@@ -4,8 +4,8 @@ import numpy as np
 import torch
 from matplotlib import pyplot as plt
 import torchvision.transforms as T
-from doors_detector.dataset.dataset_doors_final.datasets_creator_doors_final import DatasetsCreatorGibson
-from doors_detector.dataset.torch_dataset import DEEP_DOORS_2
+from doors_detector.dataset.dataset_doors_final.datasets_creator_doors_final import DatasetsCreatorDoorsFinal
+from doors_detector.dataset.torch_dataset import DEEP_DOORS_2_LABELLED, FINAL_DOORS_DATASET
 from doors_detector.models.detr import PostProcess
 from doors_detector.models.detr_door_detector import *
 from doors_detector.models.model_names import DETR_RESNET50
@@ -22,11 +22,11 @@ if __name__ == '__main__':
     # Fix seeds
     seed_everything(params['seed'])
 
-    train, test, labels = get_deep_doors_2_sets()
+    train, test, labels, COLORS = get_final_doors_dataset(experiment=2, folder_name='house1', train_size=0.8)
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
 
-    model = DetrDoorDetector(model_name=DETR_RESNET50, pretrained=True, dataset_name=DEEP_DOORS_2, description=PRETRAINED_FINETUNE_ALL_LR_LOW_NOSTEP_NOAUG_10OBJQUERIES_LABELLED)
+    model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels.keys()), pretrained=True, dataset_name=FINAL_DOORS_DATASET, description=EXP_2_HOUSE_1_80)
     model.eval()
 
     for i in range(10, 50):
