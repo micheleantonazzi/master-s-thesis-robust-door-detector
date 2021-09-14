@@ -9,16 +9,16 @@ from gibson_env_utilities.doors_dataset.door_sample import DoorSample, DOOR_LABE
 from doors_detector.dataset.dataset_doors_final.door_sample import DoorSample as DoorSampleFinal
 
 
-dataset_load_path = '/media/antonazzi/hdd/doors_dataset_small'
-dataset_save_path = '/home/antonazzi/myfiles/final_doors_dataset'
-folder_name = 'house1'
+dataset_load_path = '/home/michele/myfiles/doors_dataset_small'
+dataset_save_path = '/home/michele/myfiles/final_doors_dataset'
+folder_name = 'house2'
 folder_manager_load = DatasetFolderManager(dataset_path=dataset_load_path, folder_name=folder_name, sample_class=DoorSample)
 folder_manager_save = DatasetFolderManager(dataset_path=dataset_save_path, folder_name=folder_name, sample_class=DoorSampleFinal)
 
 possible_labels = sorted(list(DOOR_LABELS.keys()))
 colors = {0: (0, 0, 255), 1:(255, 0, 0), 2: (0, 255, 0)}
 class_index = 0
-img_absolute_counts = folder_manager_load.get_samples_absolute_counts(label=0)[0:]
+img_absolute_counts = (folder_manager_load.get_samples_absolute_counts(label=1) + folder_manager_load.get_samples_absolute_counts(label=0))[0:]
 img_indexes_iter = iter(img_absolute_counts)
 
 sample: DoorSample = None
