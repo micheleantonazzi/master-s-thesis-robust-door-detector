@@ -23,27 +23,19 @@ class DatasetsCreatorDoorsFinal:
     def get_labels(self):
         return DOOR_LABELS
 
-    def consider_samples_with_label(self, label: int) -> 'DatasetsCreatorGibson':
-        """
-        This method sets the class to consider only the samples with the given label.
-        Other samples (with different labels) are not considered in the datasets' creations
-        :param label: the label of the samples to include in the dataset
-        :return: the instance of DatasetsCreatorDoorsFinal
-        """
-        self._dataframe = self._dataframe[self._dataframe.label == label]
-        return self
-
     def set_experiment_number(self, experiment: int, folder_name: str) -> 'DatasetsCreatorDoorsFinal':
         """
         This method is used to set up the experiment to run.
-        This first experiment involves training the model using k-1 folders and
+        1) This first experiment involves training the model using k-1 folders and
         testing it with all the examples in the remaining folder.
-        The second experiment involves fine-tuning the previously trained model using some examples of the test data used in experiment 1.
+        2) The second experiment involves fine-tuning the previously trained model using some examples of the test data used in experiment 1.
         This new training data belongs to a new environment, never seen in the first training phase. The remaining sample of the k-th folder are used as a test set.
-        :param experiment: the number of the experiment to perform
+        :param experiment: the number of the experiment to perform. It's value must be 0 or 1
         :param folder_name: the name of the folder to use as a test set in experiment 1 or to split into training a test sets in experiment 2.
         :return: the instance of DatasetsCreatorDoorsFinal
         """
+        assert experiment == 1 or experiment == 2
+
         self._experiment = experiment
         self._folder_name = folder_name
 
@@ -55,10 +47,9 @@ class DatasetsCreatorDoorsFinal:
         if isinstance(train_size, float):
             assert 0.0 < train_size < 1.0
 
-
         shuffled_dataframe = shuffle(self._dataframe)
         if self._experiment == 1:
-            train_dataframe = shuffled_dataframe[shuffled_dataframe.folder_name != self._folder_name]
+            train_dataframe = shuffled_dataframe[(shuffled_dataframe.folder_name != self._folder_name) & (shuffled_dataframe.label == 1)]
             test_dataframe = shuffled_dataframe[shuffled_dataframe.folder_name == self._folder_name]
         elif self._experiment == 2:
             shuffled_dataframe = shuffled_dataframe[shuffled_dataframe.folder_name == self._folder_name]

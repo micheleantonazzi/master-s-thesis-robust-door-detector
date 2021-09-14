@@ -17,7 +17,6 @@ def get_deep_doors_2_labelled_sets():
 
 def get_final_doors_dataset(experiment: int, folder_name: str, train_size: float = 0.1):
     dataset_creator = DatasetsCreatorDoorsFinal(dataset_path=final_doors_dataset_path)
-    dataset_creator.consider_samples_with_label(label=1)
     dataset_creator.set_experiment_number(experiment=experiment, folder_name=folder_name)
     train, test = dataset_creator.creates_dataset(train_size=train_size)
     labels = dataset_creator.get_labels()
