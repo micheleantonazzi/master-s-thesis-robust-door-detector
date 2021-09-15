@@ -1,11 +1,10 @@
-from typing import Union
+from typing import Union, Tuple
 
 from sklearn.utils import shuffle
 
 from doors_detector.dataset.torch_dataset import TRAIN_SET, TEST_SET, SET
 from generic_dataset.dataset_manager import DatasetManager
 from doors_detector.dataset.dataset_doors_final.door_sample import DoorSample, DOOR_LABELS
-import numpy as np
 from sklearn.model_selection import train_test_split
 
 from doors_detector.dataset.dataset_doors_final.final_doors_dataset import DatasetDoorsFinal
@@ -19,6 +18,7 @@ class DatasetsCreatorDoorsFinal:
 
         self._experiment = 1
         self._folder_name = None
+        self._use_negatives = False
 
     def get_labels(self):
         return DOOR_LABELS
@@ -38,8 +38,18 @@ class DatasetsCreatorDoorsFinal:
 
         self._experiment = experiment
         self._folder_name = folder_name
+        return self
 
-    def creates_dataset(self, train_size: float = 0.1, random_state: int = 42) -> DatasetDoorsFinal:
+    def use_negatives(self, use_negatives: bool) -> 'DatasetsCreatorDoorsFinal':
+        """
+        Sets the presence of the negative samples in the test set.
+        :param use_negatives: True for including the negatives samples (samples with no doors) in the test set, False to use only positives ones
+        :return: the instance of DatasetsDoorsF
+        """
+        self._use_negatives = use_negatives
+        return self
+
+    def create_datasets(self, train_size: float = 0.1, random_state: int = 42) -> Tuple[DatasetDoorsFinal, DatasetDoorsFinal]:
         """
         This method returns the training and test sets.
         :param train_size: the size of the training set in experiment 2. For the first experiment this parameter is not considered, all samples of folders k-1 are considered.
@@ -51,6 +61,10 @@ class DatasetsCreatorDoorsFinal:
         if self._experiment == 1:
             train_dataframe = shuffled_dataframe[(shuffled_dataframe.folder_name != self._folder_name) & (shuffled_dataframe.label == 1)]
             test_dataframe = shuffled_dataframe[shuffled_dataframe.folder_name == self._folder_name]
+
+            if not self._use_negatives:
+                test_dataframe = test_dataframe[test_dataframe.label == 1]
+
         elif self._experiment == 2:
             shuffled_dataframe = shuffled_dataframe[shuffled_dataframe.folder_name == self._folder_name]
             train, test = train_test_split(shuffled_dataframe.index.tolist(), train_size=train_size, random_state=random_state)
