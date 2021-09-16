@@ -69,7 +69,11 @@ class DatasetsCreatorDoorsFinal:
             shuffled_dataframe = shuffled_dataframe[shuffled_dataframe.folder_name == self._folder_name]
             train, test = train_test_split(shuffled_dataframe.index.tolist(), train_size=train_size, random_state=random_state)
             train_dataframe = shuffled_dataframe.loc[train]
+            train_dataframe = train_dataframe[train_dataframe.label == 1]
             test_dataframe = shuffled_dataframe.loc[test]
+
+            if not self._use_negatives:
+                test_dataframe = test_dataframe[test_dataframe.label == 1]
 
         def print_information(dataframe):
             print(f'    - total samples = {len(dataframe.index)}\n'
