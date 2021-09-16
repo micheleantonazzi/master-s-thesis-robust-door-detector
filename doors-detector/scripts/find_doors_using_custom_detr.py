@@ -22,11 +22,11 @@ if __name__ == '__main__':
     # Fix seeds
     seed_everything(params['seed'])
 
-    train, test, labels, COLORS = get_final_doors_dataset(experiment=1, folder_name='house1', train_size=0.8, use_negatives=False)
+    train, test, labels, COLORS = get_final_doors_dataset(experiment=1, folder_name='house1', train_size=0.8, use_negatives=True)
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
 
-    model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels.keys()), pretrained=True, dataset_name=FINAL_DOORS_DATASET, description=EXP_2_HOUSE_1_80)
+    model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels.keys()), pretrained=True, dataset_name=FINAL_DOORS_DATASET, description=EXP_1_HOUSE_1)
     model.eval()
 
     for i in range(10, 50):
