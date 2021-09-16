@@ -1,7 +1,7 @@
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from doors_detector.dataset.torch_dataset import DEEP_DOORS_2_LABELLED
+from doors_detector.dataset.torch_dataset import DEEP_DOORS_2_LABELLED, FINAL_DOORS_DATASET
 from doors_detector.models.detr import PostProcess
 from doors_detector.models.model_names import DETR_RESNET50
 from doors_detector.utilities.coco_evaluator import CocoEvaluator
@@ -16,11 +16,11 @@ batch_size = 1
 if __name__ == '__main__':
     seed_everything(0)
 
-    train, test, labels, _ = get_deep_doors_2_labelled_sets()
+    train, test, labels, _ = get_final_doors_dataset(experiment=1, folder_name='house1', train_size=0.2, use_negatives=False)
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
 
-    model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels.keys()), pretrained=True, dataset_name=DEEP_DOORS_2_LABELLED, description=DEEP_DOORS_2_LABELLED_EXP)
+    model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels.keys()), pretrained=True, dataset_name=FINAL_DOORS_DATASET, description=EXP_1_HOUSE_1)
 
     model.eval()
     model.to(device)

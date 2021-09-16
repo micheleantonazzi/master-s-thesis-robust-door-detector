@@ -22,7 +22,7 @@ if __name__ == '__main__':
     # Fix seeds
     seed_everything(params['seed'])
 
-    train, test, labels, COLORS = get_final_doors_dataset(experiment=2, folder_name='house1', train_size=0.8)
+    train, test, labels, COLORS = get_final_doors_dataset(experiment=1, folder_name='house1', train_size=0.8, use_negatives=False)
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
 
