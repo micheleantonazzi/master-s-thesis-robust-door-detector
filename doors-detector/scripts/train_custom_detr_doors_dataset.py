@@ -21,7 +21,7 @@ device = 'cuda'
 
 # Params
 params = {
-    'epochs': 30,
+    'epochs': 20,
     'batch_size': 1,
     'seed': 0,
     'lr': 1e-5,
@@ -47,12 +47,12 @@ if __name__ == '__main__':
     seed_everything(params['seed'])
 
     #train, test, labels, _ = get_deep_doors_2_labelled_sets()
-    train, test, labels, _ = get_final_doors_dataset(experiment=1, folder_name='house1')
+    train, test, labels, _ = get_final_doors_dataset(experiment=2, folder_name='house1', train_size=0.2, use_negatives=False)
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
 
     model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels.keys()), pretrained=reload_model, dataset_name=FINAL_DOORS_DATASET, description=EXP_1_HOUSE_1)
-    #model.set_description(description=PRETRAINED_FINETUNE_ALL_LR_LOW_NOSTEP_AUG_10OBJQUERIES_FIRST_LABELLED_FINETUNE_GIBSONSMALL)
+    model.set_description(description=EXP_2_HOUSE_1_20)
     #model.set_dataset_name(dataset_name=GIBSON_DATASET_SMALL)
     model.to(device)
 

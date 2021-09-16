@@ -1,4 +1,5 @@
-from typing import List
+from abc import abstractmethod
+from typing import List, Dict
 
 from src.bounding_box import BoundingBox
 from src.utils.enumerators import BBType, BBFormat
@@ -59,3 +60,7 @@ class ModelEvaluator:
                         )
                     )
             img_count_temp += 1
+
+    @abstractmethod
+    def get_metrics(self) -> Dict:
+        pass

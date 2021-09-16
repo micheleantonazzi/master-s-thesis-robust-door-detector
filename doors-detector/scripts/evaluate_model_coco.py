@@ -1,7 +1,9 @@
+from src.evaluators.pascal_voc_evaluator import plot_precision_recall_curve
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from doors_detector.dataset.torch_dataset import FINAL_DOORS_DATASET
+from doors_detector.evaluators.pascal_evaluator import PascalEvaluator
 from doors_detector.models.model_names import DETR_RESNET50
 from doors_detector.evaluators.coco_evaluator import CocoEvaluator
 from doors_detector.utilities.utils import seed_everything, collate_fn
@@ -15,7 +17,7 @@ batch_size = 1
 if __name__ == '__main__':
     seed_everything(0)
 
-    train, test, labels, _ = get_final_doors_dataset(experiment=1, folder_name='house1', train_size=0.2, use_negatives=True)
+    train, test, labels, _ = get_final_doors_dataset(experiment=1, folder_name='house1', train_size=0.2, use_negatives=False)
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
 
@@ -25,11 +27,12 @@ if __name__ == '__main__':
     model.to(device)
 
     data_loader_test = DataLoader(test, batch_size=batch_size, collate_fn=collate_fn, drop_last=False, num_workers=4)
-    coco_evaluator = CocoEvaluator()
+    evaluator = CocoEvaluator()
 
     for images, targets in tqdm(data_loader_test, total=len(data_loader_test), desc='Evaluate model'):
         images = images.to(device)
         outputs = model(images)
-        coco_evaluator.add_predictions(targets=targets, predictions=outputs)
+        evaluator.add_predictions(targets=targets, predictions=outputs)
 
-    print(coco_evaluator.get_coco_metrics())
+    print(evaluator.get_metrics())
+
