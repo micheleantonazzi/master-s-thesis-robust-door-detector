@@ -1,10 +1,9 @@
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from doors_detector.dataset.torch_dataset import DEEP_DOORS_2_LABELLED, FINAL_DOORS_DATASET
-from doors_detector.models.detr import PostProcess
+from doors_detector.dataset.torch_dataset import FINAL_DOORS_DATASET
 from doors_detector.models.model_names import DETR_RESNET50
-from doors_detector.utilities.coco_evaluator import CocoEvaluator
+from doors_detector.evaluators.coco_evaluator import CocoEvaluator
 from doors_detector.utilities.utils import seed_everything, collate_fn
 from dataset_configurator import *
 from doors_detector.models.detr_door_detector import *
@@ -16,7 +15,7 @@ batch_size = 1
 if __name__ == '__main__':
     seed_everything(0)
 
-    train, test, labels, _ = get_final_doors_dataset(experiment=1, folder_name='house1', train_size=0.2, use_negatives=False)
+    train, test, labels, _ = get_final_doors_dataset(experiment=1, folder_name='house1', train_size=0.2, use_negatives=True)
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
 

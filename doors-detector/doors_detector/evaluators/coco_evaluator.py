@@ -1,0 +1,9 @@
+from src.evaluators.coco_evaluator import get_coco_summary
+
+from doors_detector.evaluators.model_evaluator import ModelEvaluator
+
+
+class CocoEvaluator(ModelEvaluator):
+    def get_coco_metrics(self):
+        return get_coco_summary(self.get_gt_bboxes(), self.get_predicted_bboxes())
+

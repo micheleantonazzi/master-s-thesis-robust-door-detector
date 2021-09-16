@@ -1,15 +1,29 @@
+from typing import List
+
 from src.bounding_box import BoundingBox
-from src.evaluators.coco_evaluator import get_coco_summary
 from src.utils.enumerators import BBType, BBFormat
 import torch.nn.functional as F
 
-
-class CocoEvaluator:
+class ModelEvaluator:
     def __init__(self):
         self._gt_bboxes = []
         self._predicted_bboxes = []
 
         self._img_count = 0
+
+    def get_gt_bboxes(self) -> List[BoundingBox]:
+        """
+        Returns a list containing the ground truth bounding boxes
+        :return:
+        """
+        return self._gt_bboxes
+
+    def get_predicted_bboxes(self) -> List[BoundingBox]:
+        """
+        Returns a list containing the predicted bounding boxes
+        :return:
+        """
+        return self._predicted_bboxes
 
     def add_predictions(self, targets, predictions):
         img_count_temp = self._img_count
@@ -45,7 +59,3 @@ class CocoEvaluator:
                         )
                     )
             img_count_temp += 1
-
-    def get_coco_metrics(self):
-        return get_coco_summary(self._gt_bboxes, self._predicted_bboxes)
-
