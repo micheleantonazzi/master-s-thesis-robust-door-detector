@@ -41,10 +41,11 @@ if __name__ == '__main__':
     for label, values in metrics['per_bbox'].items():
         mAP += values['AP']
         print(f'\tLabel {label} -> AP = {values["AP"]}, Total positives = {values["total_positives"]}, TP = {values["TP"]}, FP = {values["FP"]}')
+        print(f'\t\tPositives = {values["TP"] / values["total_positives"] * 100:.2f}%, False positives = {values["FP"] / (values["TP"] + values["FP"]) * 100:.2f}%')
     print(f'\tmAP = {mAP / len(metrics["per_bbox"].keys())}')
 
     mAP = 0
     print('Results per image')
     for label, values in metrics['per_image'].items():
         print(f'\tLabel {label} -> Total positives = {values["total_positives"]}, TP = {values["TP"]}, FP = {values["FP"]}, FN = {values["FN"]}')
-        print(f'\t\tPrecision = {values["TP"] / values["total_positives"]}')
+        print(f'\t\tPositives = {values["TP"] / values["total_positives"] * 100:.2f}%, False positives = {values["FP"] / (values["TP"] + values["FP"]) * 100:.2f}%')
