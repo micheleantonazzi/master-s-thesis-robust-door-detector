@@ -38,7 +38,7 @@ if __name__ == '__main__':
     metrics = evaluator.get_metrics(iou_threshold=0.5, confidence_threshold=0.5, plot_curves=True)
     mAP = 0
     print('Results per bounding box:')
-    for label, values in sorted(metrics['per_bbox'].items(), key=lambda k, v: k):
+    for label, values in sorted(metrics['per_bbox'].items(), key=lambda v: v0):
         mAP += values['AP']
         print(f'\tLabel {label} -> AP = {values["AP"]}, Total positives = {values["total_positives"]}, TP = {values["TP"]}, FP = {values["FP"]}')
         print(f'\t\tPositives = {values["TP"] / values["total_positives"] * 100:.2f}%, False positives = {values["FP"] / (values["TP"] + values["FP"]) * 100:.2f}%')
@@ -46,6 +46,6 @@ if __name__ == '__main__':
 
     mAP = 0
     print('Results per image')
-    for label, values in sorted(metrics['per_image'].items(), key=lambda k, v: k):
+    for label, values in sorted(metrics['per_image'].items(), key=lambda v: v[0]):
         print(f'\tLabel {label} -> Total positives = {values["total_positives"]}, TP = {values["TP"]}, FP = {values["FP"]}, FN = {values["FN"]}')
         print(f'\t\tPositives = {values["TP"] / values["total_positives"] * 100:.2f}%, False positives = {values["FP"] / (values["TP"] + values["FP"]) * 100:.2f}%')
