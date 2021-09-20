@@ -57,7 +57,7 @@ class DatasetsCreatorDoorsFinal:
         if isinstance(train_size, float):
             assert 0.0 < train_size < 1.0
 
-        shuffled_dataframe = shuffle(self._dataframe)
+        shuffled_dataframe = shuffle(self._dataframe, random_state=random_state)
         if self._experiment == 1:
             train_dataframe = shuffled_dataframe[(shuffled_dataframe.folder_name != self._folder_name) & (shuffled_dataframe.label == 1)]
             test_dataframe = shuffled_dataframe[shuffled_dataframe.folder_name == self._folder_name]
