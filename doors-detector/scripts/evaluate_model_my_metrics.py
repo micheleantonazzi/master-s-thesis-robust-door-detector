@@ -47,3 +47,4 @@ if __name__ == '__main__':
     print('Results per image')
     for label, values in metrics['per_image'].items():
         print(f'\tLabel {label} -> Total positives = {values["total_positives"]}, TP = {values["TP"]}, FP = {values["FP"]}, FN = {values["FN"]}')
+        print(f'\t\tPrecision = {values["TP"] / values["total_positives"]}')
