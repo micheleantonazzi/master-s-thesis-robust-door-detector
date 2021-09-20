@@ -18,7 +18,7 @@ batch_size = 1
 if __name__ == '__main__':
     seed_everything(0)
 
-    train, test, labels, _ = get_final_doors_dataset(experiment=1, folder_name='house1', train_size=0.2, use_negatives=False)
+    train, test, labels, _ = get_final_doors_dataset(experiment=1, folder_name='house1', train_size=0.2, use_negatives=True)
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
 
@@ -35,9 +35,15 @@ if __name__ == '__main__':
         outputs = model(images)
         evaluator.add_predictions(targets=targets, predictions=outputs)
 
-    metrics = evaluator.get_metrics(iou_threshold=0.5, confidence_threshold=0.2)
-    #plot_precision_recall_curve(metrics['per_class'])
-    #print(f'mAP = {metrics["mAP"]}')
-    #print(metrics['per_class']["0"].keys())
-    for label, values in metrics.items():
-        print(f'Label {label} -> Total positives = {values["total_positives"]}, TP = {values["TP"]}, FP = {values["FP"]}')
+    metrics = evaluator.get_metrics(iou_threshold=0.5, confidence_threshold=0.5, plot_curves=True)
+    mAP = 0
+    print('Results per bounding box:')
+    for label, values in metrics['per_bbox'].items():
+        mAP += values['AP']
+        print(f'\tLabel {label} -> AP = {values["AP"]}, Total positives = {values["total_positives"]}, TP = {values["TP"]}, FP = {values["FP"]}')
+    print(f'\tmAP = {mAP / len(metrics["per_bbox"].keys())}')
+
+    mAP = 0
+    print('Results per image')
+    for label, values in metrics['per_image'].items():
+        print(f'\tLabel {label} -> Total positives = {values["total_positives"]}, TP = {values["TP"]}, FP = {values["FP"]}, FN = {values["FN"]}')

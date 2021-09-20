@@ -40,3 +40,5 @@ if __name__ == '__main__':
     print(metrics['per_class']["0"].keys())
     for label, values in metrics['per_class'].items():
         print(f'Label {label} -> AP = {values["AP"]}, Total positives = {values["total positives"]}, TP = {values["total TP"]}, FP = {values["total FP"]}')
+
+    #print(metrics['per_class']["0"]['precision'])
