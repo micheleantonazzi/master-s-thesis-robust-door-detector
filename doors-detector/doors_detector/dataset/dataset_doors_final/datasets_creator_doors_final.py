@@ -73,7 +73,7 @@ class DatasetsCreatorDoorsFinal:
             train, test = train_test_split(positive_dataframe.index.tolist(), test_size=0.25, random_state=random_state)
 
             if train_size < 0.75:
-                train, _ = train_test_split(train, test_size=train_size * (4 / 3), random_state=random_state)
+                train, _ = train_test_split(train, train_size=train_size * (4 / 3), random_state=random_state)
 
             train_dataframe = shuffled_dataframe.loc[train]
             test_dataframe = shuffle(pd.concat([shuffled_dataframe.loc[test], negative_dataframe]), random_state=random_state)
