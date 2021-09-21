@@ -35,7 +35,7 @@ if __name__ == '__main__':
         outputs = model(images)
         evaluator.add_predictions(targets=targets, predictions=outputs)
 
-    metrics = evaluator.get_metrics(iou_threshold=0.5, confidence_threshold=0.5, plot_curves=True)
+    metrics = evaluator.get_metrics(iou_threshold=0.90, confidence_threshold=0.5, plot_curves=True)
     mAP = 0
     print('Results per bounding box:')
     for label, values in sorted(metrics['per_bbox'].items(), key=lambda v: v[0]):

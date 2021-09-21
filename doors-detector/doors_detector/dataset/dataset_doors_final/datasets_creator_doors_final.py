@@ -1,5 +1,6 @@
 from typing import Union, Tuple
 
+import pandas as pd
 from sklearn.utils import shuffle
 
 from doors_detector.dataset.torch_dataset import TRAIN_SET, TEST_SET, SET
@@ -67,9 +68,14 @@ class DatasetsCreatorDoorsFinal:
 
         elif self._experiment == 2:
             shuffled_dataframe = shuffled_dataframe[shuffled_dataframe.folder_name == self._folder_name]
-            train, test = train_test_split(shuffled_dataframe.index.tolist(), train_size=train_size, random_state=random_state)
-            train_dataframe = shuffled_dataframe.loc[train]
-            train_dataframe = train_dataframe[train_dataframe.label == 1]
+            positive_dataframe = shuffled_dataframe[shuffled_dataframe.label == 1]
+            negative_dataframe = shuffled_dataframe[shuffled_dataframe.label == 0]
+            train, test = train_test_split(positive_dataframe.index.tolist(), test_size=0.25, random_state=random_state)
+
+            if train_size < 0.75:
+                train, _ = train_test_split(train, test_size=train_size * (4 / 3), random_state=random_state)
+
+            train_dataframe = shuffle(pd.concat([shuffled_dataframe.loc[train], negative_dataframe]), random_state=random_state)
             test_dataframe = shuffled_dataframe.loc[test]
 
             if not self._use_negatives:
