@@ -2,10 +2,11 @@
 
 ## Capitolo 2: State of the Art
 
-* Inizio introducendo il problema del riconoscere le porte, cito qualche articolo
-* Spiego perchè è utile per la robotica (map segmentation e cito qualche lavoro)
-* Dico che gran parte di questi lavori usano moduli di computer vision end to end
-* spiego che in questo task è molto usata la compouter vision (object detection in particolare) e cito le milestone in questo ambito (YOLO; Transformer ecc) e porto le metriche più famose e utilizzate per valutare tali modelli
+* Inizio introducendo il problema del riconoscere le porte, perchè può essere utile per la robotica 
+* Cito qualche lavoro di door detection con feature based method, in ambito robotico e non 
+* spiego che in object detection i metodi deep hanno soppiantato i vecchi metodi feature based
+* Faccio una carrellata delle milestone più importanti in object detection per definirne un po la storia evolutiva (ho due survey da cui prendere spunto,)
+* Procedo col citare alcuni lavori dei object detection che utlizzano metodi deep
 * spiego che l'applicazione del deep learning alla robotica presenta delle criticità e dei problemi ancora aperti (cito il survey)
 * il survey cita anche il problema di acquisire dai in simulazione (per la loro differenza dai reali e per la presenza di imprecisioni), posso collegarmi e citare alcuni ambienti di simulazione e alcuni dataset di ambienti
 * Concludo dicendo che nella tesi si cerca di trovare superare alcune delle criticità citate sopra. Si propone modello per riconoscere porte utlizzando un modello end-to-end (DETR) e un metodo per aumentare le sue performance sfruttando il principio del wayfinding (*lo cito prima o qui??*) e offrendo un metodo di valutazione del modello più esaustivo e adatto ad un contesto di mobile robotics.
