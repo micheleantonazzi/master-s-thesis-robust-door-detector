@@ -2,109 +2,63 @@
 
 ## Capitolo 2: State of the Art
 
-* Inizio introducendo il problema del riconoscere le porte, perchè può essere utile per la robotica 
-* Cito qualche lavoro di door detection con feature based method, in ambito robotico e non 
+* Inizio spiegando che il riconoscimento di porte puo essre utile per un mobile robot.
+* Cito qualche lavoro di door detection con feature based method
 * spiego che in object detection i metodi deep hanno soppiantato i vecchi metodi feature based
-* Faccio una carrellata delle milestone più importanti in object detection per definirne un po la storia evolutiva (ho due survey da cui prendere spunto,)
+* Faccio una carrellata delle milestone più importanti in object detection per definirne un po la storia evolutiva (ho due survey da cui prendere spunto). Il primo arriva fino a retinanet, il secondo parla di objet detection usando transformer.
 * Procedo col citare alcuni lavori dei object detection che utlizzano metodi deep
 * spiego che l'applicazione del deep learning alla robotica presenta delle criticità e dei problemi ancora aperti (cito il survey)
 * il survey cita anche il problema di acquisire dai in simulazione (per la loro differenza dai reali e per la presenza di imprecisioni), posso collegarmi e citare alcuni ambienti di simulazione e alcuni dataset di ambienti
-* Concludo dicendo che nella tesi si cerca di trovare superare alcune delle criticità citate sopra. Si propone modello per riconoscere porte utlizzando un modello end-to-end (DETR) e un metodo per aumentare le sue performance sfruttando il principio del wayfinding (*lo cito prima o qui??*) e offrendo un metodo di valutazione del modello più esaustivo e adatto ad un contesto di mobile robotics.
 
-## Capitolo 3: Problem Formulation
-
-* Piccolo preambolo in cui riscrivo lo scopo della tesi (formulazione di un metodo per aumentare le performance di un modello deep che riconosce le porte, sfruttando il principio di wayfinding e offrendo una metrica più esaustiva di quelle classiche usate in computer vision).
+## Capitolo 3: Problem Formulation 
 
 ### Motivazioni e goal
 
-Qui si possono scrivere le motivazioni della tesi. Scrivo in modo più esaustivo le difficoltà di applicare deep learning alla robotica, quali sono le limitazioni (prendo spunto dal survey) e quali tento di risolvere con questa tesi. Specifico quindi quali sono gli obiettivi.
-
-### Definizioni
-
-* Definisco cos'è una porta per me (implicita esplicita)
-* definisco i dati che utilizzo (RGB, bounding box)
-* definisco cosè un modello end-to-end (formule)
-* definisco un modello deep per l'object detection
-* definisco le metriche che vengono più utilizzare (COCO, Pascal VOC, AP, mAP con le formule)
-
-### Formulazione del problema
-
-* Spiego che utilizziamo un metodo di machine learning supervisionato
-* Definisco cos'è un problema di machine learning supervisionato, un modello e cos'è la funzione di loss ecc (review machine learning principles)
-* Spiego che per aumentare le perfomance di questo classificatore è possibile fare fine tune in quanto le porte saranno simili (wayfinding), cos'è fine tune e come si fa (magari con formule)
-* Spiego perchè le metriche classiche per valutare un modello di object detection non sono sufficienti.
+Qui descrivo lo scopo della tesi: creazione di un modulo per il riconoscimento di porte applicato ad un mobile robot. Spiego brevemente che un robot andrà ad operare in uno stesso ambiente, che in un ambiente le porte sono simili e che quindi si può sfruttare il wayfinding per aumentare le performance del modello. Riporto inoltre brevemente quali sono alcune criticità di applicare modelli deep in robotica (come l'assenza di metriche e l'assenza di dataset per la robotica). Spiego che il dataset lo acquisisco da me in modo da costruirne uno adatto ad un task robotico e spiego che voglio offrire un miglior metodo di valutazione.
 
 ### Assunzioni
 
-Riporto le assunzioni che faccio:
-
-* sul robot (il fatto che è simulato e che si teletrasporta nello spazio, altezza della camera, risoluzione della camera)
-* su gibson, quindi sull'ambiente si simulazione (assumo che i dati RGB acquisiti siamo realistici anche se sono processati da un modello deep che riempie i buchi, che simuli correttamente luce e ombre ecc. )
+* Definisco cos'è una porta per me (implicita esplicita)
+* definisco i dati che utilizzo (RGB, bounding box)
 * sugli ambienti (devono essere indoor, sono statici, sono di vario tipo case, uffici, laboratori ecc)
-* sull'algoritmo di acquisizione dei dati (assumo che l'algoritmo scelga location plausibili per il robot e non incontri mai ostacoli come muri, mobili o scale)
-* sui dati (assumo che siamo stai utilizzati tutti quelli raccolti e che le label siamo corrette)
 
 ## Capitolo 4: Soluzione logica
 
-### Data acquisition
+Spiego come ho risolverò il problema:
 
-* Spiego come ho acquisito i dati. Dico che ho usato la simulazione e perchè (devo acquisire tanti dati da molti ambienti diversi, più economico e veloce ecc)
-* Spiego bene il problema di acquisire dati da gibson e matterport (il robot simulato non riesce a navigare)
-* Spiego in linea generale come l'ho risolto, creando un algoritmo che data la mappa 2D di un ambiente ne estratta un grafo di possibili posizioni che il robot può acquisire, che verranno poi campionate utilizzando una valore che indica la distanza l'una dall'altra
+* Dico che mi sono costruito il dataset con l'obiettivo di ottenere immagini di porte che siamo viste da più angolazioni e da posizioni plausibili per il robot
+* Il modulo per riconoscere le porte sarà un modello deep utilizzato sviluppato per object detection. Dico che si tratta di DETR, un modello basato sui transformer, così si effettua anche un esperimento per valutare questi modelli sul task delle porte, cosa che in letteratura ancora non c'è
+* Definisco (molto brevemente) cos'è un problema di machine learning supervisionato, un modello e cos'è la funzione di loss ecc (review machine learning principles)
+* spiego che per sfruttare il fatto che le porte sono simili (wayfinding) si farà un fine tune del modello solo con immagini acquisite e labellate manualmente da quel mondo. Dico che il fine tuning sarà incrementale per valutare la quantità di immagini da utilizzare (**qui definisco che la mia tecnica si chiamerà incremental-learning**). In questo modo si aumentano le performance del classificatore
+* spiego che per migliorare il metodo di valutazione è importante andare a valutare anche le immagini negative (senza porte)
 
-### Data manipulation and correction
+**capitolo 3 e 4 forse vengono troppo corti, è il caso di unirli?**
 
-* i dati acquisiti sono labellati a mano a causa dell'imprecisione di Gibson e matterport e dei dati semantici
+## Capitolo 5: Proposed solution in detail
 
-### Model evaluation
+Qui descrivo quali sono le parti principali del mio sistema. Faccio prima una overview generale del sistema con tutte le sue parti software. Per ognuna poi ci sarà una sezione dedicata:
 
-Spiego come è costruito il dataset e come si puo utilizzare per addestrare DETR e fare gli esperimenti. Descrivo la tecnica che ho adottato per aumentare le performance del calssificatore facendo un fine tune incrementale con esempi raccolti dall'ambiente in questione (**Potremmo chiamare la tecnica incremental fine-tune(?))**
+### Simulazione
 
-## Capitolo 5: Proposed solution
+Qui scrivo che i dati sono stati acquisiti in simulazione (per averne tanti e per ridurre i costi di tempo). Spiego quale simulatore ho usato (Gibson) e il dataset di mondi (Matterport). Spiego in dettaglio il funzionaneto del simulatore, il fatto che il robot non naviga e le modifiche che ho apportato per risolvere il problema.
 
-Faccio una overview generale del sistema e di tutte le parti software della tesi (simulatore, pose estimator, software per gestire il dataset, acquisizione dati, modello end-to-end, modulo per valure i modelli ottenuti)
+### Pose estimator
 
-Per ogni modulo faccio una sotto-sezione in cui spiego il suo funzionamento (eventuali algoritmi implementati) e le tecnologie utilizzate.
-
-* Per il simulatore spiego dettagliatamente il suo funzionamento e le modifiche che ho apportato a Gibson linkando il codice aggiornato
-* Per il pose estimator spiego esattamente l'algoritmo per estrarre le posizioni da cui acquisire i dati e i parametri utilizzati
-* Per il modello end-to-end spiego il suo funzionamento, l'architettura e i principi matematici che lo caratterizzano (formule, losses ecc)
-* per il modulo di valutazione spiego in dettaglio le metriche adottate con le opportune formule
-
-## Capitolo 6: System architecure
-
-In questo capitolo verranno descritti più a basso livello i vari componenti software elencati precedentemente. In particolare, verranno descritte le tecnologie utilizzare, le funzioni di libreria impiegate negli algoritmi riportati e i loro parametri per garantire la riproducibilità degli esperimenti
-
-## Capitolo 7
-
-In questo capitolo verranno riportati i dettagli degli esperimenti
-
-### Data acquisition
-
-Verranno specificati i mondi di matterport utilizzati (quanti e quali) e la procedure per acquisire le immagini (dataset)
+Spiego che ho dovuto realizzare un modulo per la stima delle posizioni del robot (dato che non usa il suo navigation stack) e spiego come funziona
 
 ### Image dataset
 
-Viene descritto in dettaglio il dataset di immagini negative e positive che verrà utilizzato per gli esperimenti finali (numero di immagini ecc).
+Viene descritto in dettaglio il dataset di immagini negative e positive che verrà utilizzato per gli esperimenti finali (numero di immagini ecc). Spiego in dettaglio il funzionamento del software che o scritto per gestire ed elaborare il dataset
 
-### A preliminary test of DETR
+### DETR
 
-Verrà definito il procedimento di valutazione di DETR come modello per riconoscere porte. Attraverso un dataset di immagini di porte già ampiamente conosciuto (deep doors 2), verrà valutato se DETR è adatto per queto tipo di task. Verrà quindi addestrato e valutato il modello utilizzando questo dataset esterno (la valutazione si può fare utilizzando le stesse metriche utilizzate per latesi o le metriche utilizzate nell'articolo del dataset, ma devo capire quanto è complicato utilizzare il loro metro di valutazione).
+Riporto il modello scelto per riconoscere le porte. Ne descrivo il funzionamento (implementazione e loss functions). Riporto anche l'esperimento che ho fatto con il dataset di porte trovato su internet  (deep doors 2) e spiego che mi è servito sia per imparare a fine-tunare questo enorme modello sia per capire se è adatto per il task di door detection.
 
-### Training and testing procedure
+### Model evaluator
 
-Verrà spiegato dettagliatamente la procedura per effettuare il training dei modelli utilizzando il dataset da me raccolto. Poi si porcederà a illustrare la procedure di testing dei modelli addestrati
+qui scrivo esattamente come si svolge la tecnica dell'incremental learning. Spiego inoltre in modo dettagliato come è implementata la nuova metrica delle immagini negative.
 
-### Results
+## Capitolo 7: Results
 
-In questa sezione verranno riportati i risultati derivanti dal training e testing
-
-* training: tempo di addestramento (sia del modello generico sia dei vari fine tune), grafico losses
-* testing: valori delle metriche, grafici AP per ogni label
-
-## Capitolo 8 
-
-Qui verranno riportati i fatti deducibili dalla fase di sperimentazione e possibili future direzioni di ricerca per migliorare questo lavoro (evidenziandone quindi le lacune)
-
-## 
+Qui verranno riportati i risultati della fase sperimentale (grafici e tabelle, risultati di training, testing ecc) e verranno riportate le considerazioni e i fatti deducibili dai risultati. *II future work posso riportarlo qui sotto e faccio un altro capitolo?*
 
