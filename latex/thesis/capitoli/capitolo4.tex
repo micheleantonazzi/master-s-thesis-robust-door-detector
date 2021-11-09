@@ -1,8 +1,25 @@
 \chapter{Proposed Solution}
 
-\section{Doors Detector}
+In this chapter we define in detail the solutions proposed by this thesis. The main goal is performing doors detection by autonomous agent.
 
-The main objective of this thesis is to propose a door detection module that is able both to find doors within RGB images and to understand their status (open or closed). We reduce these problems to a precise Computer Vision's task: object detection. Today, the most relevant techniques used in Computer Vision are based on the power of Deep Learning. This is because the doors detector is based on DETR \cite{detr}, a novel end-to-end deep module based on Tranformers. Before talking about DETR and how it is used to detect doors, we review the most relevant aspects in the theory of Deep Learning.
+\section{Work Overview}
+
+In this thesis, we face the problem of doors detection in autonomous mobile robots. In the following paragraphs, we expose the proposed solutions about the three main problems this work addresses: how to build of the doors detector, how to improve the module's performance, and how to compose and evaluate a visual dataset in a Robotic Vision application.
+
+\paragraph{Build the Doors Detector Module} At first, we reduce to problem of finding doors in indoor environments to a well-known Computer Vision task: object detection in RGB images. After a literature review about this subject, we propose a module to detect doors based on DETR (DEtection TRanformer) \cite{detr}, a deep end-to-end architecture that performs object detection exploiting the Transformers' power \cite{transformer}. DETR views object detection as direct set prediction problem, removing the need for many hand-designed components (like a non-maximum suppression or anchor generation) that explicitly encode prior knowledge about the task. Thanks to the novel Transformer's architecture, DETR extract features from the image and then finds the pair-wire relations between them. In this way, it reasons about the entire image as context. The authors demonstrates that DETR accuracy and run-time performance are comparable the well-established and highly-optimized Faster R-CNN baseline \cite{fasterrcnn} on the challenging COCO object detection dataset \cite{coco}. Despite this, DETR is an enormous networks with tens of millions of parameters and it is extremely data hungry: the authors train DETR for 300 epoch with COCO's examples randomly modified with data augmentation procedures (e.g. resize, crop, scale, etc.). This thesis demonstrates the versatility of DETR with respect to other object detection task, even with smaller dataset than COCO.
+
+\paragraph{Increase the Detector's Performance} Another goal of this thesis is to improve the doors detector's accuracy. To address this problem, we do not focus on the deep module that performs object detection, but we reason about its context of use. We focus on an typical deployment scenario for indoor mobile robots (as described in Sec. \ref{sec:deploymentscenario}). We argue that, often, a robot is deployed in a single environment and works inside it for a log time. Furthermore, thanks to  the wayfinding principles described in Sec. \ref{sec:goals}, an indoor scenes presents the a coherent visual aspect. This is also true for doors: a single environment presents a few types of doors that are repeated in multiple locations. The method to increase the doors detector's accuracy exploits these intuitions. Our approach aims to specialize the model for working in a precise environment using the fine-tune technique. Fine-tuning on pre-trained ImageNet classification models \cite{verydeepimagenet, resnet} has achieved impressive results for tasks such as object detection \cite{fasterrcnn, yolo, yolov2} and is becoming the common way for solving computer vision problems. Fine-tuning is a simple and effective
+approach of transfer learning: it concerns on training a deep model with common large datasets (such as ImageNet \cite{imagenet} or Microsoft COCO \cite{coco}). Then, the pre-trained model is re-trained with a few new data to solve a more refined task. In this way, the network's weights are set using a source dataset with a large number of examples providing a better
+model initialization for a target task than random initialization. This is useful to speed up the training, overcome small dataset size, or prevent overfitting. We use the same principle to increase the performance of the proposed doors detector. Initially, DETR is trained with a general doors dataset that contains examples from multiple environments. After that, to emulate the ideal deployment scenario in which a robot operates in an unknown environment not included in the training phase, DETR is fine-tuned using a little set of new unseen data acquired directly form the new scene. In this way, the general door detector, built in the development phase, specializes itself using new examples for working in a precise environment, thus increasing its accuracy. We also investigates the quantity of new data necessary to obtain a significant performance improvement.
+
+\paragraph{Compose and Evaluate the Visual Dataset}
+This thesis address a Robotic Vision task that completely differs from Computer Vision application. As reported in \cite{surveydeeplimits}, perception is only one part of a more complex, embodied, active, and goal-driven system in robotics.
+In a simplified view, whereas Computer Vision takes images and translates them into information, Robotic Vision translates images into actions. Furthermore, an autonomous agents operates in open-set conditions. A module used by a robot can assign high-confidence scores to unknown objects or falsely recognize them as one of the known classes. In order to understand how the doors detector performs in different environments, this thesis proposes a method to acquire a dataset of RGB images trough simulation. We collect both positive images (that contains doors to detect) and negative frames (that do not depict objects of interest) from multiple scenes. We use Gibson \cite{gibson} to simulate an agent and its visual perception in environments taken from Matterport3D worlds dataset \cite{matterport}. A mobile robot navigates in an environment following an exploration strategy, avoiding going too close to walls, furniture, and obstacles in general. Furthermore, a robot percept the environment from different point of views, according to its position in the scene and the height of the camera. To take this fact into account, we propose an approach to select the different locations from which to acquire the data. This method, based on the work presented by \citeauthor{segmentationsurvey} \cite{segmentationsurvey}, computes the Voronoi Graph of the occupancy grid maps of an environment. The locations form which acquire the RGB images are chosen by sub-sampling the Voronoi Graph with a distance value. Thank to this algorithm, the doors dataset is acquired simulating a possible exploration strategy, avoiding to acquire wrong or noise images that can degrade the model accuracy.
+
+
+\section{Doors Detection}
+
+The main goal of this thesis is to propose a doors detector that is able both to find doors within RGB images and understand their status (open or closed). We reduce these problems to a precise Computer Vision's task: object detection. Today, the most relevant techniques used in Computer Vision are based on the power of Deep Learning. This is because the doors detector is based on DETR \cite{detr}, a novel end-to-end deep module based on Tranformers. Before talking about DETR and how it is used to detect doors, we review the most relevant aspects in the theory of Deep Learning.
 
 \subsection{Deep Learning Review}
 
@@ -174,16 +191,57 @@ actual number of objects of interest in an image, an additional special class la
 \subsubsection{DETR Loss Functions}
 \label{sec:detrlosses}
 
-DETR \cite{detr} simplifies the detection pipeline by dropping multiple hand-designed components that encode prior knowledge, like spatial anchors or non-maximal suppression. To address set prediction in a fully end-to-end way, DETR uses a novel loss function, called object detection set prediction loss, that produces
+DETR \cite{detr} simplifies the detection pipeline by dropping multiple hand-designed components that encode prior knowledge, like spatial anchors or non-maximal suppression. To address set prediction in a fully end-to-end way, DETR uses a novel loss function, called \textit{object detection set prediction loss}, that produces
 an optimal bipartite matching between predicted and ground truth objects, considering both the class labels and the bounding boxes.
 
-\paragraph{Object detection set prediction loss} DETR \cite{detr} infers a fixed-size set of $N$ predictions through the $N$ object queries produced by the Transformer's decoder. It is important that $N$ is set to be significantly larger than the typical number of objects in an image. One of the main difficulties of training is to score predicted objects (class, position, size) with respect to the ground truth. The authors propose a loss function that produces
+\paragraph{Object Detection Set Prediction Loss} DETR \cite{detr} infers a fixed-size set of $N$ predictions through the $N$ object queries produced by the Transformer's decoder. It is important that $N$ is set to be significantly larger than the typical number of objects in an image. One of the main difficulties of training is to score predicted objects (class, position, size) with respect to the ground truth. The authors propose a loss function that produces
 an optimal bipartite matching between predicted and ground truth objects, and
 then optimize object-specific (bounding box) losses. 
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.6\linewidth]{images/bipartitematching.png}
-	\caption{The Transformer model architecture. Image from \cite{transformer}.}
+	\includegraphics[width=0.8\linewidth]{images/bipartitematching.png}
+	\caption{A matching in a bipartite graph. It consists in a set of the edges chosen in such a way that no two edges share an endpoint. The loss function $\hat \sigma$ finds the best match with low cost between the predicted bounding boxes and the ground truth objects.}
 	\label{}
 \end{figure}
+
+Let $y$ be the ground truth set of objects, and $\hat y = \{\hat y_i\}^{N}_{i = 1}$ the set of $N$ predictions. The bipartite matching between these two sets is a permutation $\hat \sigma$ of $N$ elements $\sigma \in \mathcal{G}_N$ with the lowest cost:
+
+\begin{equation}
+\label{formula:bipartitematching}
+\hat \sigma = \argmin_{\sigma \in \mathcal{G}_N} \sum_{i}^{N} \mathcal{L}_{match}(y_i, \hat y_{\sigma(i)}),
+\end{equation}
+
+where $\mathcal{L}_{match}(y_i, \hat y_{\sigma(i)})$ is a pair-wise \textit{matching cost} between ground truth $y_i$ and a prediction with index $\sigma(i)$. This optimal assignment is computed efficiently
+with the Hungarian algorithm \cite{hungarian}. The matching cost taking into account both the class prediction and the similarity between predicted nand ground truth bounding boxes. Each element $i$ can be seen as $y_i = (c_i
+, b_i)$ where $c_i$
+is the target class label (which may be $\varnothing$) and $b_i \in [0, 1]^{4}$
+is a vector that defines ground truth box coordinates and dimensions. For the
+prediction with index $\sigma(i)$, the probability of class $c_i$ is defined as $ \hat p_{\sigma(i)}(c_i)$ and
+the predicted box as $\hat b_\sigma(i)$. Whit this notations, the authors defines the matching cost as
+
+\begin{equation}
+	\mathcal{L}_{match}(y_i, \hat y_{\sigma(i)}) = -\mathds{1}_{\{c \neq \varnothing\}}\hat p_{\sigma(i)}(c_i) + \mathds{1}_{\{c \neq \varnothing\}}\mathcal{L}_{box}(b_i, \hat b_{\sigma(i)}),
+\end{equation}
+which performs one-to-one matching for direct set prediction without duplicates. The next step is to compute the loss function, called \textit{Hungarian loss}, for all pairs matched in the previous step. It is a linear combination of a negative log-likelihood for class prediction and a box loss defined later:
+
+\begin{equation}
+\mathcal{L}_{\text{Hungarian}}(y, \hat y) = \sum_{i = 1}^{N} \bigg [-\log \hat p_{\hat\sigma(i)}(c_i) + \mathds{1}_{\{c \neq \varnothing\}}\mathcal{L}_{box}(b_i, \hat b_{\hat\sigma(i)}) \bigg ]
+\end{equation}
+where $\hat \sigma$ is the optimal assignment computed in Eq. \ref{formula:bipartitematching}. In practice, the authors
+down-weight the log-probability term when $c_i = \varnothing$ by a factor 10 to account for class imbalance. 
+
+\paragraph{Bounding Box Loss} The second part of the matching cost and the Hungarian loss is $\mathcal{L}_{box}(\cdot, \cdot)$ that scores the bounding boxes. The authors makes box predictions directly without some initial guesses using the $\ell_1$ loss. In our context, this loss measures the distance between the ground truth bounding box ($b_i$) and the best predicted box ($\hat b_{\sigma(i)}$) through the L1 norm:
+
+\begin{equation}
+\ell_1(b_i - \hat b_{\sigma(i)}) = ||b_i - \hat b_{\sigma(i)}||_1.
+\end{equation}
+
+While such approach simplify the implementation, the $\ell_1$ loss will have different scales for small and large boxes even if their relative errors are similar. To mitigate this issue, the final $\mathcal{L}_{box}(\cdot, \cdot)$ is a linear combination of the $\ell_1$ loss and the generalized IoU loss \cite{generalizediou} $\mathcal{L}_{iou}(\cdot, \cdot)$, that is scale invariant. The final bounding box loss is:
+
+\begin{equation}
+\mathcal{L}_{box}(b_i, \hat b_{\sigma(i)}) = \lambda_{iou}\mathcal{L}_{iou}(b_i, \hat b_{\sigma(i)}) + \lambda_{L1}||b_i - \hat b_{\sigma(i)}||_1,
+\end{equation}
+where $\lambda_{iou}$ and $\lambda_{L1}$ are hyper-parameters.
+
+
