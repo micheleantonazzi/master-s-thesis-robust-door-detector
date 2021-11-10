@@ -2,13 +2,26 @@ name: compile_deploy_latex
 on: [push]
 jobs:
   thesis:
-    using: 'docker'
-    image: 'ghcr.io/xu-cheng/texlive-full:latest'
-    env:
-      DIR: draft
-      FILE: main
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Compile
-        run: ls
+      - name: Intall texlive
+        run: |
+          ls
+          sudo apt update
+          sudo apt-get install texlive-full
+      - name: Build
+        run: |
+          pdflatex latex/thesis/michele_antonazzi_thesis.tex
+          bibtex latex/thesis/michele_antonazzi_thesis.aux
+          pdflatex latex/thesis/michele_antonazzi_thesis.tex
+          pdflatex latex/thesis/michele_antonazzi_thesis.tex
+      - name: Publish release
+        uses: actions/upload-artifact@v2
+        with:
+          name: michele_antonazzi_thesis.pdf
+          path: latex/thesis/michele_antonazzi_thesis.pdf
+
+
+
