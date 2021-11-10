@@ -280,6 +280,10 @@ scene database, denoted as $v_{j,1}, v_{j,2}, ..., v_{j,k}$, are chosen. The poi
 points in one equirectangular image to reduce the empty space between rendered pixels (Fig. \ref{fig:gibsonrenderingpipeline}c). Finally, the method uses a neural network, called $f$ or ``filler'', to fix artifacts and generate a more real looking image given the output of geometric point cloud rendering (Fig. \ref{fig:gibsonrenderingpipeline}d). This deep model trains a network for making rendered frames look more like real images (forward function) as well as another network which makes real images look like renderings (backward function). The two functions are trained to produce equal outputs. The backward function resembles deployment-time corrective
 glasses for the agent, so the authors call it \textit{Goggles}.
 
+\subsection{Matterport3D}
+
+
+
 
 
 

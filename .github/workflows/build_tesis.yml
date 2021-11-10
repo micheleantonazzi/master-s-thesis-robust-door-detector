@@ -13,15 +13,15 @@ jobs:
           sudo apt-get install texlive-full
       - name: Build
         run: |
-          pdflatex latex/thesis/michele_antonazzi_thesis.tex
-          bibtex latex/thesis/michele_antonazzi_thesis.aux
-          pdflatex latex/thesis/michele_antonazzi_thesis.tex
-          pdflatex latex/thesis/michele_antonazzi_thesis.tex
+          pdflatex latex/thesis/tesi.tex
+          bibtex latex/thesis/tesi.aux
+          pdflatex latex/thesis/tesi.tex
+          pdflatex latex/thesis/tesi.tex
       - name: Publish release
         uses: actions/upload-artifact@v2
         with:
-          name: michele_antonazzi_thesis.pdf
-          path: latex/thesis/michele_antonazzi_thesis.pdf
+          name: thesis.pdf
+          path: latex/thesis/tesi.pdf
 
 
 
