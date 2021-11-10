@@ -1,0 +1,14 @@
+name: compile_deploy_latex
+on: [push]
+jobs:
+  paper:
+    using: 'docker'
+    image: 'ghcr.io/xu-cheng/texlive-full:latest'
+    env:
+      DIR: draft
+      FILE: main
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Compile
+        run: ls
