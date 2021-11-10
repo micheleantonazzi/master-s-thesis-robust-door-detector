@@ -3,7 +3,7 @@
 In this chapter we define in detail the solutions proposed by this thesis. The main goal is performing doors detection by autonomous agent.
 
 \section{Work Overview}
-
+\label{sec:solution}
 In this thesis, we face the problem of doors detection in autonomous mobile robots. In the following paragraphs, we expose the proposed solutions about the three main problems this work addresses: how to build of the doors detector, how to improve the module's performance, and how to compose and evaluate a visual dataset in a Robotic Vision application.
 
 \paragraph{Build the Doors Detector Module} At first, we reduce to problem of finding doors in indoor environments to a well-known Computer Vision task: object detection in RGB images. After a literature review about this subject, we propose a module to detect doors based on DETR (DEtection TRanformer) \cite{detr}, a deep end-to-end architecture that performs object detection exploiting the Transformers' power \cite{transformer}. DETR views object detection as direct set prediction problem, removing the need for many hand-designed components (like a non-maximum suppression or anchor generation) that explicitly encode prior knowledge about the task. Thanks to the novel Transformer's architecture, DETR extract features from the image and then finds the pair-wire relations between them. In this way, it reasons about the entire image as context. The authors demonstrates that DETR accuracy and run-time performance are comparable the well-established and highly-optimized Faster R-CNN baseline \cite{fasterrcnn} on the challenging COCO object detection dataset \cite{coco}. Despite this, DETR is an enormous networks with tens of millions of parameters and it is extremely data hungry: the authors train DETR for 300 epoch with COCO's examples randomly modified with data augmentation procedures (e.g. resize, crop, scale, etc.). This thesis demonstrates the versatility of DETR with respect to other object detection task, even with smaller dataset than COCO.
@@ -17,9 +17,9 @@ This thesis address a Robotic Vision task that completely differs from Computer 
 In a simplified view, whereas Computer Vision takes images and translates them into information, Robotic Vision translates images into actions. Furthermore, an autonomous agents operates in open-set conditions. A module used by a robot can assign high-confidence scores to unknown objects or falsely recognize them as one of the known classes. In order to understand how the doors detector performs in different environments, this thesis proposes a method to acquire a dataset of RGB images trough simulation. We collect both positive images (that contains doors to detect) and negative frames (that do not depict objects of interest) from multiple scenes. We use Gibson \cite{gibson} to simulate an agent and its visual perception in environments taken from Matterport3D worlds dataset \cite{matterport}. A mobile robot navigates in an environment following an exploration strategy, avoiding going too close to walls, furniture, and obstacles in general. Furthermore, a robot percept the environment from different point of views, according to its position in the scene and the height of the camera. To take this fact into account, we propose an approach to select the different locations from which to acquire the data. This method, based on the work presented by \citeauthor{segmentationsurvey} \cite{segmentationsurvey}, computes the Voronoi Graph of the occupancy grid maps of an environment. The locations form which acquire the RGB images are chosen by sub-sampling the Voronoi Graph with a distance value. Thank to this algorithm, the doors dataset is acquired simulating a possible exploration strategy, avoiding to acquire wrong or noise images that can degrade the model accuracy.
 
 
-\section{Doors Detection}
+\section{Doors Detector}
 
-The main goal of this thesis is to propose a doors detector that is able both to find doors within RGB images and understand their status (open or closed). We reduce these problems to a precise Computer Vision's task: object detection. Today, the most relevant techniques used in Computer Vision are based on the power of Deep Learning. This is because the doors detector is based on DETR \cite{detr}, a novel end-to-end deep module based on Tranformers. Before talking about DETR and how it is used to detect doors, we review the most relevant aspects in the theory of Deep Learning.
+The main goal of this thesis is to propose a doors detector that is able both to find doors within RGB images and understand their status (open or closed). We reduce these problems to a precise Computer Vision's task: object detection. The doors detector we propose is built with DETR \cite{detr}, a novel end-to-end deep module based on Tranformers. Before talking about DETR and how it is used to detect doors, we review the most relevant aspects in the theory of Deep Learning.
 
 \subsection{Deep Learning Review}
 
@@ -142,7 +142,7 @@ The architecture of DETR (reported in Fig. \ref{fig:detrarchiecture}) consists o
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=\linewidth]{images/detrarchitecture.png}
+	\includegraphics[width=\linewidth]{images/detrarchitecture.pdf}
 	\caption{The architecture of DETR. It uses a conventional CNN backbone to learn a 2D representation of an input image. Then, this representation is flattened and encoded before being passed into the transformer encoder. The transformer decoder then takes as input a small fixed number of learned positional embeddings, called \textit{object queries}, and additionally attends to the encoder output. Finally, each output embedding of the decoder is processed by a  feed forward network (FFN) that predicts either a detection (class and bounding box) or a ``no object'' class. Image from \cite{detr}.}
 	\label{fig:detrarchiecture}
 \end{figure}
@@ -159,7 +159,7 @@ mapping, than to learn the function as a new one. This means that subsequent blo
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.6\linewidth]{images/residualblock.png}
+	\includegraphics[width=0.9\linewidth]{images/residualblock.pdf}
 	\caption{Residual learning: a building block. The formulation of $\mathcal{F}(x)+x$ can be realized with a ``shortcut connection'', that skips one or more layers. Image from \cite{resnet}.}
 	\label{fig:resblock}
 \end{figure}
@@ -243,5 +243,43 @@ While such approach simplify the implementation, the $\ell_1$ loss will have dif
 \mathcal{L}_{box}(b_i, \hat b_{\sigma(i)}) = \lambda_{iou}\mathcal{L}_{iou}(b_i, \hat b_{\sigma(i)}) + \lambda_{L1}||b_i - \hat b_{\sigma(i)}||_1,
 \end{equation}
 where $\lambda_{iou}$ and $\lambda_{L1}$ are hyper-parameters.
+
+\section{The Simulation Environment}
+
+In this section, it is described the method we propose to build the doors dataset. As mentioned in Sec. \ref{sec:importanceofsimulation}, efficiently collecting a large and heterogeneous visual dataset in the real-world is extremely expensive and time-consuming. The images should be captured from different point of views and illumination conditions to emulate the freedom of movement that characterizes an autonomous agent. Furthermore, the collection procedure must be performed in a large numbers of different scenes and building types, to well generalize the problem. The visual aspect of indoor environments changes a lot according to the building type, the internal design, and the furniture's position.
+
+Following this requirements, we use simulation to compose the visual dataset used in this thesis. As anticipated in Sec. \ref{sec:solution}, we use Gibson \cite{gibson} as simulation environment and Matterport3D \cite{matterport} as worlds dataset. We describe these packages in the following sub-sections.
+
+\subsection{Gibson Environment}
+
+In \citeyear{gibson}, \citeauthor{gibson} published a robotic simulation environment called Gibson \cite{gibson}. Gibson offers real-world perception mechanism for active agents. By perceptual active agent, the authors refer to a
+an agent that receives a visual observation from the environment and accordingly effectuates a set of actions, such as locomotion or manipulation. A key question is \textit{where} this sensory observation should come from. Conventional Computer Vision dataset \cite{coco, imagenet} are static and passive, so not suitable for this purpose.  Similarly, learning in the physical world, is not the ideal scenario: the learning speed is extremely slow and the robots are often costly and fragile. Simulation can be solution to mitigate these issues. 
+The primary problems around this option are naturally around \textit{generalization
+from simulation to real-world}: how to ensure
+\begin{enumerate}
+	\item \label{enum:generalizationtorealworld1} the semantic
+	complexity of the simulated environment is comparable with the real-word, and
+	\item \label{enum:generalizationtorealworld2} the rendered frames in simulation are closed enough to the images captured by a camera in the real world (photorealism).
+\end{enumerate} 
+The main goal of Gibson is to facilitate transferring the
+models trained therein to real-world. To overcame the first issue, Gibson offers a frameworks to virtualize environments scanned from the real world and simulates real agents that can interact with the virtual scene. The agent is subject to constraints of space and physics (e.g. collision, gravity). In addition, Gibson implements a mechanism to dissolve differences between virtual renderings and what a real camera would produce (this mitigate the second problem). A neural networks trained to fill the perceptual gap between rendered and real frames.
+
+Gibson’s underlying database of spaces includes 572 full buildings composed of 1447 floors covering a total area of 211k $m^{2}$. Each space has a set of RGB panoramas with global camera poses and reconstructed 3D meshes. To include semantically annotated worlds, the authors also integrated 2D-3D-Semantic dataset \cite{stanford2d3d} and Matterport3D \cite{matterport} (used in this thesis) for easy use.
+
+The Gibson's rendering engine takes a sparse set of RGB-D panoramas in the input and renders a new panorama from an arbitrary novel viewpoint. A ``view'' is a 6D camera pose of $x, y, z$ Cartesian coordinates and roll, pitch, yaw angles, denoted as $\theta, \phi, \gamma$. 
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=\linewidth]{images/gibson_rendering_pipeline.pdf}
+	\caption{The Gibson's rendering pipeline. Image from \cite{gibson}.}
+	\label{fig:gibsonrenderingpipeline}
+\end{figure}
+At first, the given RGB-D panoramas are transformed into point clouds and each pixel is projected from equirectangular coordinates to Cartesian coordinates. For the desired target view $v_j =
+(x_j , y_j , z_j , \theta_j, \phi_j, \gamma_j )$, there are chosen the nearest $k$ views in the
+scene database, denoted as $v_{j,1}, v_{j,2}, ..., v_{j,k}$, are chosen. The point cloud of each $v_{j,i}$ coordinate are transformed to $v_j$ coordinate with a rigid body transformation and the final point cloud are projected onto an equirectangular image (Fig. \ref{fig:gibsonrenderingpipeline}a). Then, the points from all reference panoramas are aggregated to make a single panorama using a locally weighted mixture (Fig. \ref{fig:gibsonrenderingpipeline}b). To do this, the proposed approach calculates the point density for each spatial position (average number of points per pixel) of each panorama. Hence, the points in the aggregated panorama are adaptively selected from all views. Next, the authors performs a bilinear interpolation on the aggregated points of the final panorama
+points in one equirectangular image to reduce the empty space between rendered pixels (Fig. \ref{fig:gibsonrenderingpipeline}c). Finally, the method uses a neural network, called $f$ or ``filler'', to fix artifacts and generate a more real looking image given the output of geometric point cloud rendering (Fig. \ref{fig:gibsonrenderingpipeline}d). This deep model trains a network for making rendered frames look more like real images (forward function) as well as another network which makes real images look like renderings (backward function). The two functions are trained to produce equal outputs. The backward function resembles deployment-time corrective
+glasses for the agent, so the authors call it \textit{Goggles}.
+
+
 
 
