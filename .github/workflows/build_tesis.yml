@@ -22,7 +22,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: thesis.pdf
-          path: tesi.pdf
+          path: latex/thesis/tesi.pdf
 
 
 
