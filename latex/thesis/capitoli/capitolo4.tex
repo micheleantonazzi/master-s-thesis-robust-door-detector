@@ -282,7 +282,13 @@ glasses for the agent, so the authors call it \textit{Goggles}.
 
 \subsection{Matterport3D}
 
+In \citeyear{matterport}, \citeauthor{matterport} introduced Matterport3D, a large-scale RGB-D dataset of 90 digitizes real environments. The dataset comprises a set of 194,400 RGB-D images captured in 10,800 panoramas from 90 real world scenes. It includes both depth and color $360^{\circ} $ panoramas for each viewpoint and provides camera poses that are globally consistent and aligned with a textured surface reconstruction. Furthermore, Matterport3D includes instance-level semantic segmentations into region and object categories.
 
+In the Matterport data acquisition process, an operator captures
+a set of panoramas uniformly spaced at approximately 2.5m
+throughout the entire walkable floor plan of the environment. It uses a camera system rig with three color and three depth cameras pointing slightly up, horizontal, and slightly down. At each panorama (acquisition point), the rig rotates around the direction of gravity to
+6 distinct orientations, acquiring an HDR photo from each of the 3 RGB cameras for each orientation. The 3 depth cameras acquire data continuously as the rig rotates, which is integrated to synthesize a 1280x1024 depth image aligned
+with each color image. The result for each panorama are 18 RGB-D images
 
 
 
