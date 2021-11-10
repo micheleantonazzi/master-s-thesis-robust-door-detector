@@ -13,15 +13,16 @@ jobs:
           sudo apt-get install texlive-full
       - name: Build
         run: |
-          pdflatex latex/thesis/tesi.tex
-          bibtex latex/thesis/tesi.aux
-          pdflatex latex/thesis/tesi.tex
-          pdflatex latex/thesis/tesi.tex
+          cd latex/thesis
+          pdflatex tesi.tex
+          bibtex tesi.aux
+          pdflatex tesi.tex
+          pdflatex tesi.tex
       - name: Publish release
         uses: actions/upload-artifact@v2
         with:
           name: thesis.pdf
-          path: latex/thesis/tesi.pdf
+          path: tesi.pdf
 
 
 
