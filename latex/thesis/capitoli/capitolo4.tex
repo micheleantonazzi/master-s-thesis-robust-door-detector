@@ -286,10 +286,104 @@ In \citeyear{matterport}, \citeauthor{matterport} introduced Matterport3D, a lar
 
 In the Matterport data acquisition process, an operator captures
 a set of panoramas uniformly spaced at approximately 2.5m
-throughout the entire walkable floor plan of the environment. It uses a camera system rig with three color and three depth cameras pointing slightly up, horizontal, and slightly down. At each panorama (acquisition point), the rig rotates around the direction of gravity to
+throughout the entire walkable floor plan of the environment (Fig. \ref{fig:matterport-panoramas}). It uses a camera system rig with three color and three depth cameras pointing slightly up, horizontal, and slightly down. At each panorama (acquisition point), the rig rotates around the direction of gravity to
 6 distinct orientations, acquiring an HDR photo from each of the 3 RGB cameras for each orientation. The 3 depth cameras acquire data continuously as the rig rotates, which is integrated to synthesize a 1280x1024 depth image aligned
-with each color image. The result for each panorama are 18 RGB-D images
+with each color image. The result for each panorama are 18 RGB-D images. 
 
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.85\textwidth]{images/panoramas.pdf}
+	\caption{The viewpoints from which panoramas are captured. Image from \cite{matterport}.}
+	\label{fig:matterport-panoramas}
+\end{figure}
+
+The authors also provide instance-level semantic annotations in 3D. The first step of the annotation process is to break down each building into region components by specifying the 3D spatial extent and semantic category label for
+each room-like region. This is done using a simple interactive tool in which the annotator draws a 2D polygon on the floor plans for each region (Fig. \ref{fig:matterport-floor-annotation}). The second step provides an instance and a category level segmentation on objects in each region. Given a 3D mesh of region (\ref{fig:matterport_object_annotation_1}), the first type of segmentation (instance-level) assigns a different label for each object instance (\ref{fig:matterport_object_annotation_2}) while the latter (category-level) associates different labels for different object types (\ref{fig:matterport_object_annotation_3}). To do that, the authors extract a mesh for each region and process it with the crowd-source interface of ScanNet  proposed by \citeauthor{scannet} \cite{scannet}. Using the open-source code provided with ScanNet, the authors of Matterport performs surface reconstruction of regions' meshes to ``paint'' triangles to segment and name all object instances
+within each region. The 3D segmentations contain a total of 50,811 object
+instance annotations divided in 40 objects categories.
+
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{\linewidth}
+		\centering
+		\begin{subfigure}[b]{0.48\linewidth}
+			\centering
+			\includegraphics[width=\textwidth]{images/matterport_surfaces_by_label.pdf}
+		\end{subfigure}
+		\hfil
+		\begin{subfigure}[b]{0.48\linewidth}
+			\centering
+			\includegraphics[width=\textwidth]{images/surfaces_by_label.pdf}
+			
+		\end{subfigure}
+	\caption{}
+	\label{fig:matterport-floor-annotation}
+	\end{subfigure}
+	\newline
+	\begin{subfigure}[b]{\linewidth}
+		\centering
+		\begin{subfigure}[b]{0.32\linewidth}
+			\centering
+			\includegraphics[width=\textwidth]{images/matterport_room22_color.pdf}
+			\caption{}
+			\label{fig:matterport_object_annotation_1}
+		\end{subfigure}
+		\hfil
+		\begin{subfigure}[b]{0.32\linewidth}
+			\centering
+			\includegraphics[width=\textwidth]{images/matterport_room22_instances.pdf}
+			\caption{}
+			\label{fig:matterport_object_annotation_2}
+		\end{subfigure}
+		\hfil
+		\begin{subfigure}[b]{0.32\linewidth}
+			\centering
+			\includegraphics[width=\textwidth]{images/matterport_room22_categories.pdf}
+			\caption{}
+			\label{fig:matterport_object_annotation_3}
+		\end{subfigure}
+	\end{subfigure}
+	\caption{(a) Region annotation on floor plans. (b, c, d) Instance and category object segmentation of floor plan's region. Images from \cite{matterport}.}
+\end{figure}
+
+\subsection{New Gibson Version}
+
+Gibson and Matterport3D are the selected packages to acquire the dataset to train and evaluate the proposed robotic doors detector. In the first experiments, we argue that these technologies present some problems and limitations that affect an easy and fast data collection procedure. 
+
+A suitable way for acquiring a visual robotic dataset in simulation is to embodies a virtual agent which autonomously explores a simulated environment using the standard navigation stack. In this way, the examples captured during its navigation are coherent with a real exploration strategy, reflecting how a real robot perceives an indoor scene. Unfortunately, this solution is infeasible with the selected technologies. 
+
+First of all, this technique is extremely time-consuming. Gibson perfectly simulates the real features of mobile agents (e.g. the speed of movement, the sensors accuracy, and the physical characteristics). This fact allows us to use the standard navigation stack that is generally provided for well known mobile robots (e.g. Turtlebot2 \cite{turtlebot2}, Turtlebot3 \cite{turtlebot3}, or Husky car \cite{husky}). Despite this, the real time simulation provided by Gibson makes the data acquisition extremely slow, especially for large environments.  Furthermore, the dataset would be suitable for multiple robots with different navigation packages and camera heights. This fact implies performing multiple runs in the same environments with different agents, further extending the acquisition time. Due to exploration is a challenging task, an autonomous agent can crash into an obstacle or iterate the same actions due to a software issue. In simulated environment, fixing robot failures is often infeasible, making the run useless. 
+
+Exploration is a challenging task performed through different strategies (such as frontier based exploration \cite{frontierexploration}) which not guarantees the experiments' repeatability. In different runs, the robot can follows different paths and the exploration time can vary a lot. In addition, the dataset is heavily dependent on the chosen exploration strategy.
+
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.32\linewidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/table.png}
+		\caption{}
+		\label{fig:matterport_issues_meshes_furniture}
+	\end{subfigure}
+	\hfil
+	\begin{subfigure}[b]{0.32\linewidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/holes.png}
+		\caption{}
+		\label{fig:matterport_issues_hole}
+	\end{subfigure}
+	\hfil
+	\begin{subfigure}[b]{0.32\linewidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/floor_plan_irregularity.png}
+		\caption{}
+		\label{fig:matterport_issues_floor_plan}
+	\end{subfigure}
+	\caption{Matterport3D mesh malformations. (a) A suspended table and chair. (b) A holes in a bedroom. (c) Floor plan irregularities.}
+\end{figure}
+
+While the issues just reported can be solved using appropriates techniques, the problem related to the Matterport3D dataset makes completely infeasible data collection using Gibson ``as is''. The physical structure of the Matterport's environments are encoded in 3D polygonal meshes. A polygon mesh is a collection of vertices, edges and faces that defines the shape of a polyhedral object. These meshes are extremely cluttered and noisy. The furniture models are malformed and incomplete, for example a table can be composed by the horizontal plan omitting one or more legs (Fig. \ref{fig:matterport_issues_meshes_furniture}) or some faces are disconnected from the principal object mesh. Furthermore, the walls often presents holes at windows, mirrors or other undefined locations (Fig. \ref{fig:matterport_issues_hole}). These malformations affect the robot perception, making autonomous navigation impossible. Another important aspect concerns the floor plan surfaces, that are extremely irregular. They are composed by a series of triangles but the vertex are not perfectly aligned (Fig. \ref{fig:matterport_issues_floor_plan}). This further complicates the robot navigation, which often crashes over floor irregularities.
+
+To overcome these difficulties, we provide an upgraded version of Gibson available on Github\footnote{The code of the new Gibson version: \url{https://github.com/micheleantonazzi/GibsonEnv}.}. We developed a new simulation mechanism without any physical constraints: gravity and collision detection are removed. Inside this stage, the robot can not move autonomously using motors, but the user can set an absolute position and orientation in which the robot must be located at each instant. In other words, we implement an unreal simulation mechanism in which a robot can both instantly teleport to any point in the environment and can traverse obstacles. In this way, the user can performing data acquisition in batch without any failure. The robot does not crash over floor's irregularities, does not go out of the mesh, and can autonomously traverse multiple floors without considering architectural barriers (such as stairs or elevators).
 
 
 
