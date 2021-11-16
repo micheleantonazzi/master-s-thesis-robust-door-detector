@@ -14,7 +14,7 @@ model initialization for a target task than random initialization. This is usefu
 
 \paragraph{Compose and Evaluate the Visual Dataset}
 This thesis address a Robotic Vision task that completely differs from Computer Vision application. As reported in \cite{surveydeeplimits}, perception is only one part of a more complex, embodied, active, and goal-driven system in robotics.
-In a simplified view, whereas Computer Vision takes images and translates them into information, Robotic Vision translates images into actions. Furthermore, an autonomous agents operates in open-set conditions. A module used by a robot can assign high-confidence scores to unknown objects or falsely recognize them as one of the known classes. In order to understand how the doors detector performs in different environments, this thesis proposes a method to acquire a dataset of RGB images trough simulation. We collect both positive images (that contains doors to detect) and negative frames (that do not depict objects of interest) from multiple scenes. We use Gibson \cite{gibson} to simulate an agent and its visual perception in environments taken from Matterport3D worlds dataset \cite{matterport}. A mobile robot navigates in an environment following an exploration strategy, avoiding going too close to walls, furniture, and obstacles in general. Furthermore, a robot percept the environment from different point of views, according to its position in the scene and the height of the camera. To take this fact into account, we propose an approach to select the different locations from which to acquire the data. This method, based on the work presented by \citeauthor{segmentationsurvey} \cite{segmentationsurvey}, computes the Voronoi Graph of the occupancy grid maps of an environment. The locations form which acquire the RGB images are chosen by sub-sampling the Voronoi Graph with a distance value. Thank to this algorithm, the doors dataset is acquired simulating a possible exploration strategy, avoiding to acquire wrong or noise images that can degrade the model accuracy.
+In a simplified view, whereas Computer Vision takes images and translates them into information, Robotic Vision translates images into actions. Furthermore, an autonomous agents operates in open-set conditions. A module used by a robot can assign high-confidence scores to unknown objects or falsely recognize them as one of the known classes. In order to understand how the doors detector performs in different environments, this thesis proposes a method to acquire a dataset of RGB images trough simulation. We collect both positive images (that contains doors to detect) and negative frames (that do not depict objects of interest) from multiple scenes. We use Gibson \cite{gibson} to simulate an agent and its visual perception in environments taken from Matterport3D worlds dataset \cite{matterport}. A mobile robot navigates in an environment following an exploration strategy, avoiding going too close to walls, furniture, and obstacles in general. Furthermore, a robot percept the environment from different point of views, according to its position in the scene and the height of the camera. To take this fact into account, we propose an approach to select the different locations from which to acquire the data. This method, based on the work presented by \citeauthor{repeatabilityslamarxiv} \cite{repeatabilityslamarxiv, repeatabilityslam}, computes the Voronoi Graph of the occupancy grid maps of an environment. The locations form which acquire the RGB images are chosen by sub-sampling the Voronoi Graph with a distance value. Thank to this algorithm, the doors dataset is acquired simulating a possible exploration strategy, avoiding to acquire wrong or noise images that can degrade the model accuracy.
 
 
 \section{Doors Detector}
@@ -244,7 +244,7 @@ While such approach simplify the implementation, the $\ell_1$ loss will have dif
 \end{equation}
 where $\lambda_{iou}$ and $\lambda_{L1}$ are hyper-parameters.
 
-\section{The Simulation Environment}
+\section{Simulation Environment}
 
 In this section, it is described the method we propose to build the doors dataset. As mentioned in Sec. \ref{sec:importanceofsimulation}, efficiently collecting a large and heterogeneous visual dataset in the real-world is extremely expensive and time-consuming. The images should be captured from different point of views and illumination conditions to emulate the freedom of movement that characterizes an autonomous agent. Furthermore, the collection procedure must be performed in a large numbers of different scenes and building types, to well generalize the problem. The visual aspect of indoor environments changes a lot according to the building type, the internal design, and the furniture's position.
 
@@ -347,6 +347,7 @@ instance annotations divided in 40 objects categories.
 \end{figure}
 
 \subsection{New Gibson Version}
+\label{sec:new_gibson_version}
 
 Gibson and Matterport3D are the selected packages to acquire the dataset to train and evaluate the proposed robotic doors detector. In the first experiments, we argue that these technologies present some problems and limitations that affect an easy and fast data collection procedure. 
 
@@ -383,9 +384,136 @@ Exploration is a challenging task performed through different strategies (such a
 
 While the issues just reported can be solved using appropriates techniques, the problem related to the Matterport3D dataset makes completely infeasible data collection using Gibson ``as is''. The physical structure of the Matterport's environments are encoded in 3D polygonal meshes. A polygon mesh is a collection of vertices, edges and faces that defines the shape of a polyhedral object. These meshes are extremely cluttered and noisy. The furniture models are malformed and incomplete, for example a table can be composed by the horizontal plan omitting one or more legs (Fig. \ref{fig:matterport_issues_meshes_furniture}) or some faces are disconnected from the principal object mesh. Furthermore, the walls often presents holes at windows, mirrors or other undefined locations (Fig. \ref{fig:matterport_issues_hole}). These malformations affect the robot perception, making autonomous navigation impossible. Another important aspect concerns the floor plan surfaces, that are extremely irregular. They are composed by a series of triangles but the vertex are not perfectly aligned (Fig. \ref{fig:matterport_issues_floor_plan}). This further complicates the robot navigation, which often crashes over floor irregularities.
 
-To overcome these difficulties, we provide an upgraded version of Gibson available on Github\footnote{The code of the new Gibson version: \url{https://github.com/micheleantonazzi/GibsonEnv}.}. We developed a new simulation mechanism without any physical constraints: gravity and collision detection are removed. Inside this stage, the robot can not move autonomously using motors, but the user can set an absolute position and orientation in which the robot must be located at each instant. In other words, we implement an unreal simulation mechanism in which a robot can both instantly teleport to any point in the environment and can traverse obstacles. In this way, the user can performing data acquisition in batch without any failure. The robot does not crash over floor's irregularities, does not go out of the mesh, and can autonomously traverse multiple floors without considering architectural barriers (such as stairs or elevators).
+To overcome these difficulties, we provide an upgraded version of Gibson available on Github\footnote{The code of the new Gibson version: \url{https://github.com/micheleantonazzi/GibsonEnv}.}. We developed a new simulation mechanism without any physical constraints: gravity and collision detection are removed. Inside this stage, the robot can not move autonomously using motors, but the user can set an absolute position and orientation in which the robot must be located at each instant. In other words, we implement an unreal simulation mechanism in which a robot can both instantly teleport to any point in the environment and can traverse obstacles. In this way, the user can performing data acquisition in batch without any failure. The robot does not crash over floor's irregularities, does not go out of the mesh, and can autonomously traverse multiple floors without overcoming architectural barriers (such as stairs or elevators).
 
-The new version of Gibson we released implements further improvements. First of all, we resolve some building errors (that occurs specially in Ubuntu 20.04), and automatize the compile procedure, implementing it inside the setup.py file. In this way, with a simple command \textit{pip install gibson}, the simulation environment is compiled and installed. The necessary dependencies have been added as Git sub-modules: in this way they are automatically downloaded and compiled, simplifying the dependencies management. Then, we developed a new and more efficient module to manage the Gibson's assets, such as the neural network's weights, the virtualized agents, or the worlds dataset). We also offer a command line interface to automatically download and extract the assets files from the links provided by the authors. To use it, the user can type three different commands (after Gibson's installation) in a console terminal: \textit{gibson-set-assets-path} for specifying the assets' folder, \textit{gibson-download-dataset} to download the provided worlds dataset, and \textit{gibson-download-assets-core} to retrieve the remaining assets files. Finally, we provide a compiled version of Gibson available on PyPI\footnote{The compiled version of Gibson: \url{https://pypi.org/project/gibson/}.} following the manylinux standard\footnote{The manylinux repository: \url{https://github.com/pypa/manylinux}.}.
+The new version of Gibson we released implements further improvements. First of all, we resolve some building errors (that occurs specially in Ubuntu 20.04), and automatize the compile procedure, implementing it inside the \textsf{setup.py} file. In this way, with a simple command \textit{pip install gibson}, the simulation environment is compiled and installed. The necessary dependencies have been added as Git sub-modules: in this way they are automatically downloaded and compiled, simplifying the dependencies management. Then, we developed a new and more efficient module to manage the Gibson's assets, such as the neural network's weights, the virtualized agents, or the worlds dataset). We also offer a command line interface to automatically download and extract the assets files from the links provided by the authors. To use it, the user can type three different commands (after Gibson's installation) in a console terminal: \textit{gibson-set-assets-path} for specifying the assets' folder, \textit{gibson-download-dataset} to download the provided worlds dataset, and \textit{gibson-download-assets-core} to retrieve the remaining assets files. Finally, we provide a compiled version of Gibson available on PyPI\footnote{The compiled version of Gibson: \url{https://pypi.org/project/gibson/}.} following the manylinux standard\footnote{The manylinux repository: \url{https://github.com/pypa/manylinux}.}. We offers also a utility package, called \textit{gibson-env-utilities}\footnote{The gibson-env-utilities source code: \url{https://github.com/micheleantonazzi/gibson-env-utilities}.}, to facilitates the usage of Gibson. It automatizes the launch of simulation runs, by offering a class that automatically creates the Gibson configuration file in which the run parameters are specified. Furthermore, \textit{gibson-env-utilities} provides a mechanism to store and retrieve the metadata related to the Gibson's scenes. These metadata includes: the environment name, the belonging dataset (Matterport3D \cite{matterport} or Stanford-2D-3D \cite{stanford2d3d}) a boolean values which indicates if the environment is semantically annotated, and the number of floors. In addition, for each floor is provided the floor's height and a valid position on such a floor in which the robot can be placed.
 
 
+\section{Pose Estimator}
+
+Thanks to our new simulation stage integrated in the new version of Gibson (described in Sec. \ref{sec:new_gibson_version}), a virtual autonomous agent can be freely positioned and oriented in any environment location. Despite this, to acquire a vision dataset, we need to determine the valid positions in which the robot can be placed: it must be in a free space inside the building perimeter, not overlapping obstacles (walls, floors, or furniture). Furthermore, the dataset is used in a robotic vision application, so the samples must be collected in locations consistent with a possible exploration strategy followed by a mobile agent. Typically, a robot walks away from obstacles and chooses shortest path for moving between different areas. To address these requirements, we developed a method called Pose Estimator, which is based on the work proposed by \citeauthor{repeatabilityslamarxiv} in \cite{repeatabilityslamarxiv, repeatabilityslam}.
+
+Pose Estimator is the component that extract plausible positions for an autonomous agent from which collect the dataset. This tool performs the computation of the Voronoi graph over the 2D occupancy grid map \cite{cuupancygridfirst} of a floor plan and chooses the positions by sub-sampling this graph. A Voronoi diagram is a partition of a plane into regions close to a given set of points (also called seeds, sites, or generators). Each Voronoi cell contains all points of the plane closer to that seed than to any other. The following paragraphs describes the procedures performed by this module, which is implemented in the \textit{gibson-env-utilities} package.
+
+
+
+\paragraph{Extract the 2D Occupancy Grid} The first step concerns the computation of a 2D occupancy grid map (Fig. \ref{fig:pose_estimator_occupancy_grid}) of a floor starting from a 3D mesh (Fig. \ref{fig:pose_estimator_3dmesh}). Each environment of Matterport3D is modeled by a 3D Wavefront file (with \textit{.obj} extension) that stores the position of each vertex and the faces that compose each polygon. The 3D model of a an environment is rendered, using a software like Blender\footnote{The Blender's web page: \url{https://www.blender.org/}.}, to estimate the average height of the points that compose the selected floor plan. Then, the method performs multiple cross sections of the 3D mesh with parallel planes, starting from a few centimeters over the floor. The 2D cross sections, that detect obstacles at multiple heights, are aggregated and projected in a 2D image. Finally, this image is manually fixed to fill the shortcomings due to mesh inaccuracies or to remove artifacts produced by the cross section. In addition, it is particularly important that the user closes all the opened contours in the image. This final 2D image (Fig. \ref{fig:pose_estimator_occupancy_grid}) stores the occupancy grid map of a floor plan, where each pixel represents a sub-portion of the environment and contains the probability that it is occupied by an obstacle. Together with the image map, important metadata are also saved, in order to enable conversion operations between map and simulation coordinates. The metadata include the map's origin (in pixels) and the scale, which specifies how many meters corresponds to a pixel.
+
+These operations are implemented in the \textsf{GibsonAssetsUtilities} class of \textit{gibson-env-utilities} package. In particular, \textsf{load\_obj} method loads the Wavefront file while \textsf{create\_floor\_map} extract the floor map and the relative metadata, saving them to the disk. The mesh file loading and the computation of multiple cross sections are performed using Trimesh\footnote{The Trimesh source code: \url{https://github.com/mikedh/trimesh}.}, a pure Python library for loading and using triangular meshes. The final image is rendered using Matplotlib\footnote{The Matplotlib web site: \url{https://matplotlib.org/}.}, a comprehensive library for creating static, animated, and interactive visualizations in Python. 
+
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.49\linewidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/pose_estimator_3dmesh.png}
+		\caption{}
+		\label{fig:pose_estimator_3dmesh}
+	\end{subfigure}
+	\hfil
+	\begin{subfigure}[b]{0.49\linewidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/pose_estimator_1.png}
+		\caption{}
+		\label{fig:pose_estimator_occupancy_grid}
+	\end{subfigure}
+	\caption{The computation of the 2D occupancy grid map (right) from the 3D mesh (left) of an environment.}
+\end{figure}
+
+\paragraph{Compute the Voronoi Bitmap} This step aims to extract the Voronoi bitmap graph from the 2D occupancy grid of a floor (Fig. \ref{fig:pose_estimator_1}). In order to do this, Pose Estimator processes the occupancy grid map, stored in a \textsf{png} image, using OpenCV\footnote{The OpenCV home page \url{https://opencv.org/}.}: a library of programming functions mainly aimed at real-time computer vision. At first, the image is thresholded to obtain a more uniform mask which indicates the free and occupied location. To do this, the module uses the OpenCV's \textsf{threshold} method, which suppresses (leads to zero) all pixel with a color value less than 250. Then, this optimized occupancy grid is eroded and dilated (through the \textsf{erode} and \textsf{dilate} methods of OpenCV) using a $3 \times 3$ kernel to reduce the noise. Now, the method finds the contours (using the OpenCV \textsf{findContours} method) in the smoothed image to identify the boundaries in which the robot can move. The methods return all the contours in the image without any approximation organized in a tree structure, thanks to the \textsf{CHAIN\_APPROX\_NONE} and \textsf{RETR\_TREE} flags. The longest contour is assumed to be the floor's perimeter. The area outside the floor's outline and all its internal contours (that represent the furniture) are black filled: the resulting image (Fig. \ref{fig:pose_estimator_filled}) highlights in white the free area in which the robot can be located. Now, the Voronoi diagram is calculated using the Delaunay triangulation \cite{delaunayproof} (implemented by the OpenCV class \textsf{SubDiv2D}) using all the points belonging to the identified contours.  The Voronoi facets, obtained with \textsf{getVoronoiFacetList} method of the \textsf{SubDiv2D} instance, are drawn in a new image, reporting only the segments inside the white area of the black filled image. The drawn segments compose the bitmap of the Voronoi graph (Fig. \ref{fig:pose_estimator_voronoi_bitmap}) computed over a floor occupancy grid map. As shown by (Fig. \ref{fig:pose_estimator_voronoi_bitmap_map}), the Voronoi bitmap does not exceed the floor's contours and does not overlap furniture. 
+
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.49\linewidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/pose_estimator_1.png}
+		\caption{}
+		\label{fig:pose_estimator_1}
+	\end{subfigure}
+	\hfil
+	\begin{subfigure}[b]{0.49\linewidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/pose_estimator_filled_contours.png}
+		\caption{}
+		\label{fig:pose_estimator_filled}
+	\end{subfigure}
+	\newline
+	\begin{subfigure}[b]{0.49\linewidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/pose_estimator_bitmap_voronoi.png}
+		\caption{}
+		\label{fig:pose_estimator_voronoi_bitmap}
+	\end{subfigure}
+	\hfil
+	\begin{subfigure}[b]{0.49\linewidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/pose_estimator_bitmap_map.png}
+		\caption{}
+		\label{fig:pose_estimator_voronoi_bitmap_map}
+	\end{subfigure}
+	\caption{The computation of the Voronoi bitmap. In a 2D occupancy grid map of a floor (a), the free space is isolated in white (b) and the Voronoi graph is generated through Delaunay triangulation (c, d).}
+	\label{fig:pose_estimator}
+\end{figure}
+
+\paragraph{Voronoi Graph Pruning and Digitization} The last step aims to extracts the graph described by the Voronoi bitmap and prune it to remove the spurious side lines. More formally, we represent this graph as $G = (V, E)$, where the vertices are the black pixels in the Voronoi bitmap and the edges, that define symmetric relations between vertices, are implicitly stored inside nodes (each nodes specifies its neighbors). 
+
+To build a graph starting from a Voronoi bitmap (Fig. \ref{pose_estimator_bitmap}), we parse the image and build an instance node for each black pixel in the bitmap, adding them to a graph object. The \textsf{node} and \textsf{graph} classes are implemented in a file called \textsf{utilities/graph.py} of \textit{gibson-env-utilities} package. Each node is described by its coordinates in the image expressed in pixel. Then, the method proceeds with the identification of adjacent nodes that compose the graph. For each node, the method searches the neighboring nodes inside the $3 \times 3$ pixels area centered in the current node's image coordinates. If a pixel in such area belongs to the Voronoi bitmap, the correspondent node is added to the neighbors list of the current node and vice-versa, creating a double connection between them. The graph can be composed by multiple sub-components disconnected from each others. In other words, the initial graph $G = (N, V)$ is partitioned in multiple sub-graphs $g_1, g_2, ..., g_n$, where each sub-graphs $g_i$ is a connected component formed by a sub-set of nodes $g_i \in N \setminus \bigcup_{y=1}^{n} g_{y}, \mid y  \neq i$. Initially, the method preserves all the sub-graphs. 
+
+The proposed approach now prunes the spurious side line. To do this, the method parses each sub-graphs to recursively removes each nodes with a single neighbor. In other words, when the recursive function encounter the end of a side line, remove the last node and consequently removes the others until the line beginning, where there is a crossroads. A plot of the pruned graphs is shown in Fig. \ref{fig:pose_estimator_pruned_lines}. 
+
+Then the graph is printed in a new Voronoi bitmap to be further refined. The new image is subject to a dilation operation immediately followed by an image skeletonization. These two operations are necessary to obtain a bitmap Voronoi graph as clean and uniform as possible. The images dilation is performed through the OpenCV's \textsf{dilate} method, applied with a $3 \times 3$ kernel, while the skeletonization is implemented by function provided by scikit-image\footnote{The scikit-image website: \url{https://scikit-image.org/}.}, a library designed for image processing.
+Since the skeletonization function requires a binary image expressed in $[0, 1]$ range, the Voronoi bitmap is converted in a binary image encoded in such interval. After this operation, the image is re-converted in the OpenCV's format, in which pixels can assume a value between 0 and 255. The skeletonized Voronoi bitmap is shown in Fig. \ref{fig:pose_estimator_skelethon}. 
+
+Finally, the last pruned and skeletonized Voronoi bitmap is re-parsed to build a new and more refined Voronoi graph, using the same procedure previously explained. A representation of the final graph can be seen in Fig. \ref{fig:pose_estimator_skelethon_map}. 
+ 
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.49\linewidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/pose_estimator_bitmap_voronoi.png}
+		\caption{}
+		\label{fig:pose_estimator_bitmap}
+	\end{subfigure}
+	\hfil
+	\begin{subfigure}[b]{0.49\linewidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/pose_estimator_pruned_lines.png}
+		\caption{}
+		\label{fig:pose_estimator_pruned_lines}
+	\end{subfigure}
+	\newline
+	\begin{subfigure}[b]{0.49\linewidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/pose_estimator_skelethonization.png}
+		\caption{}
+		\label{fig:pose_estimator_skelethon}
+	\end{subfigure}
+	\hfil
+	\begin{subfigure}[b]{0.49\linewidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/pose_estimator_skelethon_map.png}
+		\caption{}
+		\label{fig:pose_estimator_skelethon_map}
+	\end{subfigure}
+	\caption{The steps for pruning the Voronoi bitmap. The initial image (a) is digitized and pruned using a recursive algorithm to remove the side lines (b). Then, the Voronoi graph is print in a new image and skeletonized using scikit-image function (c, d). }
+\end{figure}
+
+\paragraph{Voronoi Graph Sub-sampling} The last step performed by Pose Estimator concerns sub-sampling the Voronoi graph to extract the positions from which collect the visual dataset. As mentioned in the previous paragraph, the Voronoi graph is composed by multiple sub-graphs, that are not connected with each others. At first, the method discard all the sub-components except the longest one. Then, the approach extract from the Voronoi graph a list of positions divided by a certain distance. The distance value is passed as hyper-parameter to control the number and the granularity of extracted location. The Voronoi graph is composed by multiple nodes that represents point in the simulated environment. The procedure, starting from a initial node described with its coordinates in the Voronoi bitmap, calculates its position in the simulated environment using the map's metadata (the map's origin and the scale). After that, the methods begins to walk through the graph until a certain distance has been reached: at this point a position is sub-sampled. The method runs until the entire graph has been traversed, returning a list of positions equally spaced in the Voronoi graph (as shown by Fig. \ref{fig:pose_estimator_subsampled}). Typically, the selected positions are located along the edge that connects two adjacent vertices. The conversions between the Voronoi bitmap coordinates (expressed in pixels) and the simulated coordinates (in meters) are performed by the \textsf{Coordinates} class, coded inside the \textsf{utilities/graph.py} file of \textit{gibson-env-utilities} package.
+
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.49\linewidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/pose_estimator_skelethon_map.png}
+		\caption{}
+		\label{fig:pose_estimator_voronoi_graph}
+	\end{subfigure}
+	\hfil
+	\begin{subfigure}[b]{0.49\linewidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/pose_estimator_subsampled.png}
+		\caption{}
+		\label{fig:pose_estimator_subsampled}
+	\end{subfigure}
+	\caption{The sub-sampling of the Voronoi graph.}
+\end{figure}
 
