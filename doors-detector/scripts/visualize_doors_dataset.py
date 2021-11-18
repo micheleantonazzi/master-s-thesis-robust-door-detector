@@ -1,70 +1,24 @@
-import random
+from generic_dataset.dataset_folder_manager import DatasetFolderManager
+from generic_dataset.dataset_manager import DatasetManager
 
-import numpy as np
-import torch
-from matplotlib import pyplot as plt
-import torchvision.transforms as T
-from doors_detector.dataset.dataset_doors_final.datasets_creator_doors_final import DatasetsCreatorDoorsFinal
-from doors_detector.dataset.torch_dataset import DEEP_DOORS_2_LABELLED
-from doors_detector.models.detr import PostProcess
-from doors_detector.models.detr_door_detector import *
-from doors_detector.models.model_names import DETR_RESNET50
 from doors_detector.utilities.utils import seed_everything
-from scripts.dataset_configurator import *
-
+from scripts.dataset_configurator import deep_doors_2_labelled_dataset_path, final_doors_dataset_path
+from doors_detector.dataset.dataset_doors_final.door_sample import DoorSample
 params = {
     'seed': 0
 }
 
+#dataset_path = deep_doors_2_labelled_dataset_path
+dataset_path = final_doors_dataset_path
 
 if __name__ == '__main__':
 
     # Fix seeds
     seed_everything(params['seed'])
 
-    train, test, labels, COLORS = get_deep_doors_2_labelled_sets()
+    folder_manager = DatasetFolderManager(dataset_path=dataset_path, sample_class=DoorSample, folder_name='house1')
 
-    print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
+    for i in range(50):
+        sample = folder_manager.load_sample_using_relative_count(label=1, relative_count=i, use_thread=False)
+        sample.visualize()
 
-    model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels.keys()), pretrained=True, dataset_name=DEEP_DOORS_2_LABELLED, description=DEEP_DOORS_2_LABELLED_EXP)
-    model.eval()
-
-    for i in range(10, 50):
-        img, target, door_sample = test[i]
-        img = img.unsqueeze(0)
-        outputs = model(img)
-
-        """
-        # Print real boxes
-        outputs['pred_logits'] = torch.tensor([[[0, 1.0] for b in target['boxes']]], dtype=torch.float32)
-        outputs['pred_boxes'] = target['boxes'].unsqueeze(0)
-        """
-
-        post_processor = PostProcess()
-        img_size = list(img.size()[2:])
-        processed_data = post_processor(outputs=outputs, target_sizes=torch.tensor([img_size]))
-
-        for image_data in processed_data:
-            # keep only predictions with 0.7+ confidence
-
-            keep = image_data['scores'] > 0.2
-
-            # Show image with bboxes
-
-            # Denormalize image tensor and convert to PIL image
-            pil_image = img * torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1)
-            pil_image = pil_image + torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
-            plt.figure(figsize=(16, 10))
-
-            plt.imshow(T.ToPILImage()(pil_image[0]))
-            ax = plt.gca()
-
-            for label, score, (xmin, ymin, xmax, ymax) in zip(image_data['labels'][keep], image_data['scores'][keep], image_data['boxes'][keep]):
-                ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
-                                           fill=False, color=COLORS[label], linewidth=3))
-                text = f'{labels[int(label)]}: {score:0.2f}'
-                ax.text(xmin, ymin, text, fontsize=15,
-                        bbox=dict(facecolor='yellow', alpha=0.5))
-
-            plt.axis('off')
-            plt.show()
