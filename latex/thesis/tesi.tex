@@ -15,9 +15,11 @@
 % Importazione package
 %************************************************************** 
 
-%\usepackage{amsmath,amssymb,amsthm}    % matematica
-
-\usepackage[T1]{fontenc}                % codifica dei font:
+\usepackage{amsmath,amssymb,amsthm}    % matematica
+\newcommand{\R}{\mathbb{R}}
+\usepackage[T1]{fontenc}  
+\DeclareMathOperator{\sign}{sign} 
+\DeclareMathOperator*{\argmin}{argmin}              % codifica dei font:
                                         % NOTA BENE! richiede una distribuzione *completa* di LaTeX
 
 \usepackage[utf8]{inputenc}             % codifica di input; anche [latin1] va bene
@@ -58,7 +60,7 @@
 
 \usepackage[font=small]{quoting}        % citazioni
 
-\usepackage{subfig}                     % sottofigure, sottotabelle
+
 
 \usepackage[italian]{varioref}          % riferimenti completi della pagina
 
@@ -84,7 +86,7 @@
                                         % 1. compilare una prima volta tesi.tex;
                                         % 2. eseguire: biber tesi
                                         % 3. compilare ancora tesi.tex.
-\addbibresource{bibliografia.bib}
+%\addbibresource{bibliografia.bib}
 \input{tesi-config}                     % file con le impostazioni personali
 \usepackage{fancyhdr}
 
@@ -101,7 +103,14 @@
 \renewcommand{\labelitemi}{\textbullet}
 \renewcommand{\labelitemii}{\textendash}
 \renewcommand{\labelitemiii}{\textasteriskcentered}
-
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{amsthm}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{theorem}{Theorem}
+\setcounter{secnumdepth}{3}
+\usepackage{dsfont}
 \begin{document}
 %**************************************************************
 % Materiale iniziale
@@ -121,13 +130,14 @@
 % Materiale principale
 %**************************************************************
 \mainmatter
+\setcounter{chapter}{0}
 \input{capitoli/capitolo1}             % Introduzione
 \input{capitoli/capitolo2}             % Processi
 \input{capitoli/capitolo3}             % Kick-Off
 \input{capitoli/capitolo4}             % Concept Preview
-\input{capitoli/capitolo5}             % Product Prototype
-\input{capitoli/capitolo6}
-\input{capitoli/capitolo7}
+%\input{capitoli/capitolo5}             % Product Prototype
+%\input{capitoli/capitolo6}
+%\input{capitoli/capitolo7}
 
 \printbibliography
 %**************************************************************

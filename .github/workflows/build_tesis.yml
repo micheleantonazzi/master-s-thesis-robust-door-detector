@@ -1,0 +1,28 @@
+name: compile_deploy_latex
+on: [push]
+jobs:
+  thesis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Intall texlive
+        run: |
+          ls
+          sudo apt update
+          sudo apt-get install texlive-full
+      - name: Build
+        run: |
+          cd latex/thesis
+          pdflatex tesi.tex
+          bibtex tesi.aux
+          pdflatex tesi.tex
+          pdflatex tesi.tex
+      - name: Publish release
+        uses: actions/upload-artifact@v2
+        with:
+          name: thesis.pdf
+          path: latex/thesis/tesi.pdf
+
+
+

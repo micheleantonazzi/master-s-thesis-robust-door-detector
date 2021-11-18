@@ -61,7 +61,7 @@ Riporto il modello scelto per riconoscere le porte. Ne descrivo il funzionamento
 
 qui scrivo esattamente come si svolge la tecnica dell'incremental learning. Spiego inoltre in modo dettagliato come è implementata la nuova metrica delle immagini negative.
 
-## Capitolo 7: Results
+## Capitolo 5: Results
 
 ### Experimental setting
 
