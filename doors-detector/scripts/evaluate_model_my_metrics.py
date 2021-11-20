@@ -18,11 +18,11 @@ batch_size = 1
 if __name__ == '__main__':
     seed_everything(0)
 
-    train, test, labels, _ = get_final_doors_dataset(experiment=1, folder_name='house1', train_size=0.2, use_negatives=True)
+    train, test, labels, _ = get_final_doors_dataset(experiment=2, folder_name='house2', train_size=0.25, use_negatives=True)
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
 
-    model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels.keys()), pretrained=True, dataset_name=FINAL_DOORS_DATASET, description=EXP_1_HOUSE_1)
+    model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels.keys()), pretrained=True, dataset_name=FINAL_DOORS_DATASET, description=EXP_1_HOUSE_2)
 
     model.eval()
     model.to(device)
