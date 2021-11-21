@@ -1,25 +1,20 @@
-\chapter{Proposed Solution}
+\chapter{System Detail}
 
-In this chapter we define in detail the solutions proposed by this thesis. The main goal is performing doors detection by autonomous agent.
+In this chapter we define in detail the system we develop to solve to implement the method described Sec. \ref{sec:solution}. The system is composed by five main modules and each of them addresses a specific requirement imposed by our solution. We report the functionalities of each module, describing also the algorithms we implement and the technologies used for their construction.  These These modules are the following:
 
-\section{Work Overview}
-\label{sec:solution}
-In this thesis, we face the problem of doors detection in autonomous mobile robots. In the following paragraphs, we expose the proposed solutions about the three main problems this work addresses: how to build of the doors detector, how to improve the module's performance, and how to compose and evaluate a visual dataset in a Robotic Vision application.
-
-\paragraph{Build the Doors Detector Module} At first, we reduce to problem of finding doors in indoor environments to a well-known Computer Vision task: object detection in RGB images. After a literature review about this subject, we propose a module to detect doors based on DETR (DEtection TRanformer) \cite{detr}, a deep end-to-end architecture that performs object detection exploiting the Transformers' power \cite{transformer}. DETR views object detection as direct set prediction problem, removing the need for many hand-designed components (like a non-maximum suppression or anchor generation) that explicitly encode prior knowledge about the task. Thanks to the novel Transformer's architecture, DETR extract features from the image and then finds the pair-wire relations between them. In this way, it reasons about the entire image as context. The authors demonstrates that DETR accuracy and run-time performance are comparable the well-established and highly-optimized Faster R-CNN baseline \cite{fasterrcnn} on the challenging COCO object detection dataset \cite{coco}. Despite this, DETR is an enormous networks with tens of millions of parameters and it is extremely data hungry: the authors train DETR for 300 epoch with COCO's examples randomly modified with data augmentation procedures (e.g. resize, crop, scale, etc.). This thesis demonstrates the versatility of DETR with respect to other object detection task, even with smaller dataset than COCO.
-
-\paragraph{Increase the Detector's Performance} Another goal of this thesis is to improve the doors detector's accuracy. To address this problem, we do not focus on the deep module that performs object detection, but we reason about its context of use. We focus on an typical deployment scenario for indoor mobile robots (as described in Sec. \ref{sec:deploymentscenario}). We argue that, often, a robot is deployed in a single environment and works inside it for a log time. Furthermore, thanks to  the wayfinding principles described in Sec. \ref{sec:goals}, an indoor scenes presents the a coherent visual aspect. This is also true for doors: a single environment presents a few types of doors that are repeated in multiple locations. The method to increase the doors detector's accuracy exploits these intuitions. Our approach aims to specialize the model for working in a precise environment using the fine-tune technique. Fine-tuning on pre-trained ImageNet classification models \cite{verydeepimagenet, resnet} has achieved impressive results for tasks such as object detection \cite{fasterrcnn, yolo, yolov2} and is becoming the common way for solving computer vision problems. Fine-tuning is a simple and effective
-approach of transfer learning: it concerns on training a deep model with common large datasets (such as ImageNet \cite{imagenet} or Microsoft COCO \cite{coco}). Then, the pre-trained model is re-trained with a few new data to solve a more refined task. In this way, the network's weights are set using a source dataset with a large number of examples providing a better
-model initialization for a target task than random initialization. This is useful to speed up the training, overcome small dataset size, or prevent overfitting. We use the same principle to increase the performance of the proposed doors detector. Initially, DETR is trained with a general doors dataset that contains examples from multiple environments. After that, to emulate the ideal deployment scenario in which a robot operates in an unknown environment not included in the training phase, DETR is fine-tuned using a little set of new unseen data acquired directly form the new scene. In this way, the general door detector, built in the development phase, specializes itself using new examples for working in a precise environment, thus increasing its accuracy. We also investigates the quantity of new data necessary to obtain a significant performance improvement.
-
-\paragraph{Compose and Evaluate the Visual Dataset}
-This thesis address a Robotic Vision task that completely differs from Computer Vision application. As reported in \cite{surveydeeplimits}, perception is only one part of a more complex, embodied, active, and goal-driven system in robotics.
-In a simplified view, whereas Computer Vision takes images and translates them into information, Robotic Vision translates images into actions. Furthermore, an autonomous agents operates in open-set conditions. A module used by a robot can assign high-confidence scores to unknown objects or falsely recognize them as one of the known classes. In order to understand how the doors detector performs in different environments, this thesis proposes a method to acquire a dataset of RGB images trough simulation. We collect both positive images (that contains doors to detect) and negative frames (that do not depict objects of interest) from multiple scenes. We use Gibson \cite{gibson} to simulate an agent and its visual perception in environments taken from Matterport3D worlds dataset \cite{matterport}. A mobile robot navigates in an environment following an exploration strategy, avoiding going too close to walls, furniture, and obstacles in general. Furthermore, a robot percept the environment from different point of views, according to its position in the scene and the height of the camera. To take this fact into account, we propose an approach to select the different locations from which to acquire the data. This method, based on the work presented by \citeauthor{repeatabilityslamarxiv} \cite{repeatabilityslamarxiv, repeatabilityslam}, computes the Voronoi Graph of the occupancy grid maps of an environment. The locations form which acquire the RGB images are chosen by sub-sampling the Voronoi Graph with a distance value. Thank to this algorithm, the doors dataset is acquired simulating a possible exploration strategy, avoiding to acquire wrong or noise images that can degrade the model accuracy.
+\begin{enumerate}
+	\item \textbf{Doors Detector:} this module implements the main requirement of this thesis: the development of a doors detector for indoor autonomous robots. We approach the problem of finding doors as an object detection task, that we address using a deep learning technique. Doors detector is implemented through DETR \cite{DETR}, a deep end-to-end architecture to perform object detection. To better understand how DETR works, we provide an overview of the principal machine learning and deep learning principles. Finally, we described in detail the DETR's architecture. 
+	\item \textbf{Simulation Environment:} the second part of our system is the simulation environment used to collect the dataset. As described in Sec. \ref{sec:importanceofsimulation}, simulation is widely used in robotic applications and, as explained in Sec. \ref{sec:goals}, this thesis address lack of dataset suitable for robotic applications. We use simulation to collect the dataset for training the doors detector. We choose Gibson \cite{gibson} as virtualization framework and Matterport3D dataset \cite{matterport} as worlds dataset. In the dedicated section, we describe the main functionalities of Gibson and Matterport3D. Then, we report the issues of these technologies which prevent a correct and fast data collection. We finally explain the adopted solution to overcome these limitations: we developed a modified version of Gibson that implements a new simulation stage in which the robot can be placed freely in any location.
+	\item \textbf{Pose Estimator:} this module emulates a possible navigation strategy used by a real autonomous agent and extracts  the locations from which the data points are collected. Thanks to this module unified with the Simulation Environment we developed, we offer a method to easily acquire a suitable visual dataset for a robotic context. We report the underliyng algorithm implemented in this component, which is inspired by the works proposed by \citeauthor{repeatabilityslam} in \cite{repeatabilityslam, repeatabilityslamarxiv}.
+	\item \textbf{Dataset Manager:} another important aspect of the system provided by this thesis is the dataset. We report in detail by which data it si composed, describing also the labeling procedure. In addition, we mention the framework we developed for the dataset management.
+	\item  \textbf{Model Evaluator:} the last component of our system aims to evaluate the model's performance. As reported in Sec. \ref{sec:solution}, we propose a new metric that considers also the negative image images (examples with no objects of interest). For this module, we describe the metric we propose and the algorithm to produce its results.
+\end{enumerate}
 
 
 \section{Doors Detector}
+\label{sec:doors_detector}
 
-The main goal of this thesis is to propose a doors detector that is able both to find doors within RGB images and understand their status (open or closed). We reduce these problems to a precise Computer Vision's task: object detection. The doors detector we propose is built with DETR \cite{detr}, a novel end-to-end deep module based on Tranformers. Before talking about DETR and how it is used to detect doors, we review the most relevant aspects in the theory of Deep Learning.
+The main goal of this thesis is to propose a doors detector that is able both to find doors within RGB images and understand their status (open or closed). We reduce these problems to a precise Computer Vision's task: object detection. The doors detector we propose is built with DETR \cite{detr}, a novel end-to-end deep module based on Transformers. The module we develop is public available on Github, in the main repository\footnote{The main thesis's repository: \url{https://github.com/micheleantonazzi/master-thesis-robust-door-detector}.} of this thesis inside the \textsf{doors-detector} package. Before talking about DETR and how it is used to detect doors, we review the most relevant aspects in the theory of Deep Learning.
 
 \subsection{Deep Learning Review}
 
@@ -134,7 +129,7 @@ where $Z_t$ is the index of a random training example and $\eta$ is an hyper-par
 
 \subsection{DETR}
 
-The doors detector proposed by this thesis is based on DETR \cite{detr} (DEtection TRansformer), a novel deep approach to perform object detection. In DETR, object detection problem is modeled as a direct \textit{set prediction}, making the detection pipeline a simple end-to-end unified architecture. Modern detectors address this set prediction in an indirect way using hand crafted algorithms based on a large set of proposals \cite{yolo} or anchors \cite{focalloss}. Their performances are significantly influenced by these post-processing steps to collapse near-duplicate predictions, like non-maximum suppression or anchor generation. The first important aspect the architecture (explained in Sec. \ref{sec:detrarchitecture}). DETR uses a Transformer to finds complex relationships between features extracted in the same image. In this way, the model reasons about the whole image context without considering any form of prior knowledge about the task. The second important aspect to address the set prediction problem are the loss functions (described in \ref{sec:detrlosses}). DETR uses a set loss function which performs bipartite matching between predicted and ground-truth objects.
+The doors detector proposed by this thesis is based on DETR \cite{detr} (DEtection TRansformer), a novel deep approach to perform object detection.  In DETR, object detection problem is modeled as a direct \textit{set prediction}, making the detection pipeline a simple end-to-end unified architecture. Modern detectors address this set prediction in an indirect way using hand crafted algorithms based on a large set of proposals \cite{yolo} or anchors \cite{focalloss}. Their performances are significantly influenced by these post-processing steps to collapse near-duplicate predictions, like non-maximum suppression or anchor generation. The first important aspect the architecture (explained in Sec. \ref{sec:detrarchitecture}). DETR uses a Transformer to finds complex relationships between features extracted in the same image. In this way, the model reasons about the whole image context without considering any form of prior knowledge about the task. The second important aspect to address the set prediction problem are the loss functions (described in \ref{sec:detrlosses}). DETR uses a set loss function which performs bipartite matching between predicted and ground-truth objects.
 
 \subsubsection{DETR Architecture}
 \label{sec:detrarchitecture}
@@ -516,4 +511,246 @@ Finally, the last pruned and skeletonized Voronoi bitmap is re-parsed to build a
 	\end{subfigure}
 	\caption{The sub-sampling of the Voronoi graph.}
 \end{figure}
+
+\section{Dataset}
+
+This thesis proposes a module to detect doors in autonomous mobile robots. Our detector, as described in Sec. \ref{sec:doors_detector} is based on DETR, a deep end-to-end module based on Transformers \cite{transformer} that performs object detection in RGB images. In a deep learning application, the dataset plays a crucial role to determine the final results. 
+
+The virtualization environment used in this thesis (the modified version of Gibson described in Sec. \ref{sec:new_gibson_version}) offers three types of data during a simulation run: RGB images, depth data, and semantic information. The RGB images are tri-dimensional vectors $W \times H \times 3$, where $W = H$ and the last dimension contains the pixels colors (red, green and, blue). Depth data are encoded in bi-dimensional array with the same dimensions of the RGB images. In this way, a depth values is assigned to each pixel. Finally, semantic information are furnished in other RGB images, but the pixels are colored according to the object categories they belong to. Gibson provides 40 object categories (including doors), tagged with numeric code. In the semantic images, the numerical code of each categories is converted in a RGB color with the following procedure:
+
+\begin{equation}
+\label{eq:pareto mle2}
+\begin{aligned}
+B &= (\text{ID}) &\mod 256, \\
+G &= (\text{ID} \gg 8) &\mod 256, \\
+R &= (\text{ID} \gg 16) &\mod 256,
+\end{aligned}
+\end{equation}
+where ID is the object category code and $\gg$ represents the bitwise right shift operation. 
+
+In this section, we present the framework we develop to manage the vision dataset collected in this thesis. Then, we proceed describing the dataset labeling procedure, reporting the difficulties encountered during this phase and defining the final dataset's composition.
+
+\subsection{The Dataset Management Framework}
+
+In the initial phase of this thesis, we did not know how the final visual dataset was composed and what data characterized the collected examples. To overcome this uncertainty, we develop \textit{generic-dataset}\footnote{The generic-dataset repo: \url{https://github.com/micheleantonazzi/generic-dataset}.}, a configurable framework that generates automatically the code and the necessary classes to manage a dataset of any kind. This is possible using the \textit{meta-programming} paradigm offered by Python. Meta-programming is a technique in which computer programs have the ability to generate new code, create other programs, and modifies its internal structure while running. This allows programs greater flexibility to efficiently handle new situations without recompilation. 
+
+In Python, meta-programming paradigm is implemented using the \textit{decorators} and \textit{meta-classes}. A decorator allows programmers to modify the behavior of functions or classes. In other words, a decorator wraps another function in order to extend the behavior of the wrapped function or class, without permanently modifying it. The meta-classes, otherwise, represents a further implementation of meta-programming. In Python, everything is an object. Classes are objects as well. A class in Python must have a type and it is an instance of another super-type, called meta-class. In simple terms, a meta-class is the definition of a class. The  default meta-class which is responsible for making classes is called \textit{type}. Fig. \ref{fig:metaclass} visually explains the concept just reported: an object is an instance of a class and a class is an instance of a meta-class.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.9\textwidth]{images/metaclass-hierarchy.jpeg}
+	\caption{The hierarchy of objects, classes and meta-classes.}
+	\label{fig:metaclass}
+\end{figure}
+
+Thanks to meta-programming, the programmer can write its custom meta-classes to modify the way from which classes are generated by performing extra actions or injecting code. By exploiting this principle, the \textit{generic-dataset} framework offers an intuitive API to create a custom class to model a particular examples' type of a generic dataset. To do this, this API, implemented by the \textsf{SampleGenerator} entity, creates a meta-class according to the directions of the programmer which defines the final desired class to deal with precise dataset's examples. In the constructor of \textsf{SampleGenerator}, the user specifies the name of the generated sample class and the label set. In this way, both regression or classification problems can be modeled. In a regression problem, the labels are real numbers and the label space are typically infinite. In the first case, the label set passed to the constructor must be empty. Otherwise, in a classification problem, the label set must contains all the possible labels that an example can assume. Using dedicated methods, the programmer can add the data fields to the final generated class, specifying their name and type. In this case, the framework automatically generates useful methods to manipulate the custom fields (like getters and setters functions). Furthermore, the user can adds custom methods to the final class in order to manipulate the example's fields. Finally, with the \textsf{generate\_sample\_class} method, \textsf{SampleGenerator} returns the generated custom class (which is an instance of the configured meta-class) which models a specific type of example. The instances of the generated class, that deal directly with the examples, are thread safe. The generated class automatically implements this feature by assigning a lock to each data field. Then, each method is decorated with a function that acquires the locks of the fields used within each method before execution and then releases them. Also the custom methods can be synchronized by specifying the name of the used fields.
+
+Despite we did not know the exactly final composition of our dataset, surely we will deal with image manipulation. To address this requirement,  \textit{generic-dataset} offers a useful utility to manipulate RGB images, that in Python are commonly stored in NumPy arrays. This utility, implemented in \textsf{DataPipeline}, generate an elaboration pipeline to modify a NumPy array. A pipeline consists of a series of operations performed consecutively that can be executed in CPU or in GPU according to the programmer's needs without changing the code. This is possible using CuPy\footnote{The CuPy web page: \url{https://cupy.dev/}.}, an open-source array library for GPU-accelerated computing with Python. The CuPy's interface is highly compatible with NumPy, allowing to write agnostic programs which are executed in CPU or GPU by replacing the engine (NumPy or CuPy), without any code change. A pipeline can be customized by adding functions to modify the initial array, and then executed using the \textsf{run} method. If the \textsf{use\_gpu} flag is set as \textsf{False}, the pipeline is synchronously executed in CPU. Otherwise, if such flag is \textsf{True}, the operations are asynchronously performed by the GPU, so the user must synchronize the two elaboration units through the \textsf{get\_data} method. This mechanism is integrated in the class generated by \textsf{SampleGenerator}. It offers the possibility to automatically creates an elaboration pipeline for the fields of the generated sample class. In addition, pipelines are protected with a dedicated lock which prevents the data access and modification when during the execution of the correspondent pipeline.
+
+The \textit{generic\_dataset} framework provides a mechanism to manage the dataset's persistence. It automatically organizes the folder hierarchy to store and organize the dataset and offers the necessary methods to save and load the examples. The classes generated by \textsf{SampleGenerator} are sub-type of \textsf{GeenericSample} class, which provides utility method to manage an example instance class of any king. When the programmer adds a new field to the generated class, it must specifies if it belongs to the dataset and, if so, it must provide the necessary functions for saving and loading such data type to the disk. The dataset folder hierarchy is organized as follow. The main directory is divided in sub-folders, that could specify different data categories or different moments in which the data are collected. Then, for a classification problem, the samples are divided in another level of sub-directories according to their label. Otherwise, in a regression task, the samples are saved in the same directory and the labels are stored in a dedicated file. Finally, the examples' fields are saved in different folders and the files inside them are named to reconstruct the acquisition order. More precisely, the file name contains two counters: the relative count and the absolute count. The first indicates the example's number based in its label's folder while the latter is the absolute count of the sample over all dataset. For a regression problem, these two values are equal because all examples belong to the same directory. Fig. \ref{fig:structuredataset} visually explain the folder hierarchy of a classification (Fig. \ref{fig:structureclassification}) and a regression (Fig. \ref{fig:structureregression}) problem. The entire dataset can be managed by an instance of \textsf{DatasetManager} class, while each folder at the first nesting level is controlled by an instance of \textsf{DatasetFolderManager}.
+
+\begin{figure}
+	\centering
+	\begin{subfigure}[b]{0.5\textwidth}
+		\dirtree{%
+			.1 MAIN\_DATASET\_FOLDER.
+			.2 FOLDER\_1.
+			.3 0.
+			.4 FIELD\_1.
+			.5 field\_name\_rc\_ac.
+			.5 field\_name\_rc\_ac.
+			.5 \vdots.
+			.4 FIELD\_2.
+			.5 \vdots.
+			.3 1.
+			.4 FIELD\_1.
+			.5 \vdots.
+			.4 FIELD\_2.
+			.5 \vdots.
+			.2 FOLDER\_2.
+			.3 \vdots.
+			.2 \vdots.
+		}
+		\caption{}
+		\label{fig:structureclassification}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.4\textwidth}
+		\dirtree{%
+			.1 MAIN\_DATASET\_FOLDER.
+			.2 FOLDER\_1.
+			.3 LABEL.
+			.4 label\_rc\_ac.
+			.4 label\_rc\_ac.
+			.4 \vdots.
+			.3 FIELD\_1.
+			.4 field\_name\_rc\_ac.
+			.4 field\_name\_rc\_ac.
+			.4 \vdots.
+			.3 FIELD\_2.
+			.4 field\_name\_rc\_ac.
+			.4 field\_name\_rc\_ac.
+			.4 \vdots.
+			.2 FOLDER\_2.
+			.3 \vdots.
+			.2 \vdots.
+		}
+		\caption{}
+		\label{fig:structureregression}
+	\end{subfigure}
+	\caption{The structure of a binary classification dataset (a) and a regression dataset (b). The files' names are are lowercase, where \textsf{rc} indicates the relative count of an example inside its label's folder, and \textsf{ac} represents the example's absolute count. }
+	\label{fig:structuredataset}
+\end{figure}
+
+
+\subsection{Dataset Labeling and Composition}
+
+The labeling procedure in an object detection task consists of dividing the positive examples (that contain the object of interest) from the negative ones and identifying the bounding boxes around the objects' instances. A vision dataset is mainly composed of RGB images, but it must specifies the coordinates of the bounding boxes and their object categories in each image.
+
+In our first dataset definition, each example is composed by all the data provided by Gibson: an RGB image, the semantic data, and the relative semantic information. The bounding boxes coordinates are not stored in dedicated files, but they are automatically calculated using the the semantic data provided by Gibson. To do this, we developed a function through the OpenCV's methods. At first, a semantic image is binarized assigning a precise color to the pixels that belong to a door and suppressing the others. Then, this function founds the contours in the binary image using the OpenCV's \textsf{findContours} method. Finally, a bounding box is created (through the \textsf{boundingRect} method of OpenCV) for each detected contour which contains a door.
+
+Despite the usefulness of this method, we were forced to discard it after the a few experiments. The main problems regards the semantic annotations. At first,  the knowledge provided by the semantic data is are not enough informative to automatically label the dataset used in this thesis. This is because, semantic information do not specify the doors' status (open or closed) and do not include implicit doors, e.g. wall's openings as described in Sec. \ref{sec:door_definition}. Furthermore, the Matterport3D scenes are categorized in an inaccurate and noisy way. The tagging procedure is extremely error prone because the semantic information are provided by labeling the vertexes of the 3D environments' meshes. Specifically identifying objects in hundreds of thousands of vertices certainly leads to errors. Examining some collected examples, we argue that some doors end up on the wall (Fig. \ref{fig:wrong_box_1}) or are partially tagged. Furthermore, adjacent doors are difficult to distinguish and often are not clearly separated in the semantic image. Another wrong situation happens when the robot does not frame the upper door jamb. In this case, the two lateral sites are recognized as different doors because they do not share pixels in the semantic image (Fig. \ref{fig:wrong_box_2}). Due to these issues, automatically finding the bounding boxes through the semantic annotation is unfeasible. As shown in Fig. \ref{fig:wrong_box}, the labeling procedure using only the semantic data introduces noise that can degrade the doors detector's accuracy.
+
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{\linewidth}
+		\centering
+		\begin{subfigure}[b]{0.32\linewidth}
+			\includegraphics[width=\textwidth]{images/wrong_box_rgb_1.png}
+		\end{subfigure}
+		\hfil
+		\begin{subfigure}[b]{0.32\linewidth}
+			\includegraphics[width=\textwidth]{images/wrong_box_semantic_1.png}
+		\end{subfigure}
+		\hfil
+		\begin{subfigure}[b]{0.32\linewidth}
+			\includegraphics[width=\textwidth]{images/wrong_box_box_1.png}
+		\end{subfigure}
+		
+		\caption{}
+		\label{fig:wrong_box_1}
+	\end{subfigure}
+	\newline
+	\begin{subfigure}[b]{\linewidth}
+		\centering
+		\begin{subfigure}[b]{0.32\linewidth}
+			\includegraphics[width=\textwidth]{images/wrong_box_rgb_2.png}
+		\end{subfigure}
+		\hfil
+		\begin{subfigure}[b]{0.32\linewidth}
+			\includegraphics[width=\textwidth]{images/wrong_box_semantic_2.png}
+		\end{subfigure}
+		\hfil
+		\begin{subfigure}[b]{0.32\linewidth}
+			\includegraphics[width=\textwidth]{images/wrong_box_box_2.png}
+		\end{subfigure}
+		\caption{}
+		\label{fig:wrong_box_2}
+	\end{subfigure}
+
+	\caption{Examples with inaccurate semantic annotations. Each row report two examples of wrong bounding boxes obtained through semantic data. From left to right, the figure shows the RGB image, the relative semantic data, and the bounding boxes derived from semantic information for each example.}
+	\label{fig:wrong_box}
+\end{figure}
+
+The dataset acquisition has been performed using an hybrid method, which include automatized procedures and the intervention of a human operator. At first, we acquired the dataset saving all the data provided by Gibson (RGB and semantic images, and depth data). As mentioned in Sec. \ref{sec:solution}, a visual robotic dataset must contain also negative sample, so the first step concerns the discrimination between negative and positive data points. Despite the inaccuracy of the semantic data, we used them to separate the examples according to the door's presence: if the semantic image does not have pixel related to a door, the relative example is tagged as negative. Then, a human operator parses all the positive examples to define the bounding boxes and the related door's status (open or closed). For this purpose, we developed an intuitive visual tool inside \textsf{scripts/data\_annotator.py} file of the \textit{gibson-env-utilities} package. This program loads each positive example and displays the bounding boxes found using the semantic data. The user can fix them by deleting the wrong bounding boxes and creating new ones, specifying also the doors' status. Some positive example can not be used for training the doors detector module, e.g. if the robot is too close or too far to a door. In the first case, the RGB image depicts a uniform color not exposing the typical door's feature, likewise, in the second case, the doors appear as a small uniform rectangular. In particular, we discarded a door too close to the acquisition position considering the depth data: if the average distance is less that 0.30 m, the bounding box is not displayed. Otherwise, the a door too far with respect to the robot position is not considered if it covers less than the $2,5\%$ of the total semantic image. In such situations, the tool we developed do not displays the bounding boxes. In this way, the user understands which ports he should not be considered and the examples do not displays valid doors are discarded. The final doors dataset is composed by negative and positive examples. Each example is characterized by an RBG image, the depth data, and an array with contains the bounding boxes' coordinates and the related status. In the negative examples, the list of the bounding boxes is empty.
+
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{\linewidth}
+		\centering
+		\begin{subfigure}[b]{0.4\linewidth}
+			\includegraphics[width=\textwidth]{images/correct_box_rgb_1.png}
+		\end{subfigure}
+		\hfil
+		\begin{subfigure}[b]{0.4\linewidth}
+			\includegraphics[width=\textwidth]{images/correct_box_box_1.png}
+		\end{subfigure}
+		\caption{}
+		\label{fig:correct_box_1}
+	\end{subfigure}
+	\newline
+	\begin{subfigure}[b]{\linewidth}
+		\centering
+		\begin{subfigure}[b]{0.4\linewidth}
+			\includegraphics[width=\textwidth]{images/correct_box_rgb_2.png}
+		\end{subfigure}
+		\hfil
+		\begin{subfigure}[b]{0.4\linewidth}
+			\includegraphics[width=\textwidth]{images/correct_box_box_2.png}
+		\end{subfigure}
+	\caption{}	
+	\label{fig:correct_box_2}
+	\end{subfigure}
+
+	\caption{The fixed examples of Fig. \ref{fig:wrong_box}. These two data point belong to the final dataset labeled by a human operator.}
+	\label{fig:correct_box}
+\end{figure}
+
+\section{Model Evaluator}
+
+This module is responsible to evaluate the performance of the door's detector trained with the collected dataset. As mentioned in Sec. \ref{sec:goals}, we collect a dataset suitable for a robotic vision application, so it is composed by positive and negative examples (where the firsts contains open or closed doors while the latter do not contains any objects of interest). The metric we implement considers these two types of example to better evaluate the model if used by an autonomous agent. 
+
+The evaluation method proposed by this thesis is based on the metric of Pascal VOC challenge \cite{pascal}. This metric solve several issues related to the evaluation of models that performs object detection or segmentation. In an object detection task, images contain multiple object categories or multiple instance of the same object, so a standard approach to determine which one of the $m$ classes an image contains and where it is can not be used. Furthermore, the prior distribution over different classes is significantly nonuniform so a
+simple accuracy measure (percentage of correctly classified
+examples) is not appropriate. During the evaluation, it is also necessary
+to evaluate the trade-off between different types of classification error (e.g. false negative or false positive). The metric of the Pascal VOC challenge computes a separate ``score'' over each class to evaluate the model's performance in detecting each object category.  This metric calculates the interpolated Average Precision (AP), proposed by \citeauthor{averageprecision} in \cite{averageprecision}, over all classes in the positive images, that are closed and open door in the context of this thesis. AP is determined by the area under the precision/recall curve in the $[0, 1]$ interval. Precision and recall are two measures that differently relate the true positive (TP), false positive (FP) and false negative (FN). In an object detection task where the predictions are bounding boxes, TPs are objects correctly recognized, FNs are objects not detected, while FPs are bounding boxes that do not correspond to any object. Precision measures how accurate the predictions are, i.e. the percentage of the correct predictions over the total number of objects to detect.
+
+It requires as input the predicted bounding boxes with their confidence score.
+
+\begin{equation}
+\label{eq:precision}
+Precision = \frac{TP}{TP + FP},
+\end{equation}
+where $TP + FP$ represents the total number of object to detect. Otherwise, recall measures the goodness of detections performed by the model, relating the positive classifications with the total number of model's predictions.
+
+\begin{equation}
+\label{eq:recall}
+Recall = \frac{TP}{TP + FN},
+\end{equation}
+where $TP + FN$ are the total number of predictions performed by the model. 
+To discriminate true from false positive, detections (the predicted bounding boxes) are assigned to ground truth objects and judged to be true/false by measuring bounding box overlap. To be considered a correct detection, the area of overlap $a_0$ between the predicted bounding
+box $B_p$ and ground truth bounding box $B_{gt}$ must exceed a threshold, set as 0.5 in the Pascal VOC challenge. This is the intersection over union (IoU) value:
+
+\begin{equation}
+\label{eq:iou}
+a_0 = \frac{area(B_p \cap B_{gt})}{area(B_p \cup B_{gt})},
+\end{equation}
+where $B_p \cap B_{gt}$ denotes the intersection of the predicted and
+ground truth bounding boxes and $B_p \cup B_{gt}$ their union. The area under the precision/recall curve is computed by is defined as the mean precision at a set of eleven equally spaced recall levels $ L = \{0, 0.1,..., 1\}$:
+
+\begin{equation}
+\label{eq:11-point}
+	\text{AP} = \frac{1}{11} \sum_{r \in L} p_{interp}(r).
+\end{equation}
+The precision at each recall level $r$ is interpolated by taking
+the maximum precision measured for which the corresponding recall exceeds $r$:
+
+\begin{equation}
+p_{interp} (r) = \max_{\tilde{r} : \tilde{r} \geq r} (\tilde{r}),
+\end{equation}
+where $p(\tilde{r})$ is the measured precision at recall $\tilde{r}$. 
+
+The dataset of this thesis is composed by positive and negative images, that are treated in different manner by the evaluation method we propose. In the following paragraphs, we explain in detail how we evaluate the model's performance with the two different macro-categories of examples we collected (positive and negative). The evaluation procedure is implemented in a dedicated class, called \textsf{MyEvaluator}, contained in the main repository of this thesis. 
+
+\paragraph{Positive Images} The positive images are examples that contains doors to detect. As described in Sec. \ref{sec:door_definition}, we consider two possible status that a door can assume: open and closed. This means that the bounding boxes in the positive images belong to a set of two different object categories: $L = \{0, 1\}$. To discriminate the background bounding boxes, the doors detector we propose do not outputs a third label, but it assign always a label in $L$ with a low accuracy, near to zero. 
+
+The metric we use to evaluate the model's performance in the positive image is the same evaluation method used in Pascal VOC challenge \cite{pascal}. First of all, each image in the test set is classified by the model, and an instance of \textsf{MyEvaluator} stores the ground truth and the predicted bounding boxes. Then, the predicted bounding boxes are divided according to the object category the model assigns to them, in order to calculate an AP (average precision) score for each label (open and closed doors). The AP value is calculated as follow:
+
+\begin{enumerate}
+	\item the ground truth and the predicted bounding boxes are filtered according to their confidence value: if a detection has a confidence less than a threshold, called \textsf{confidence\_threshold}, it is discarded;
+	\item the remaining bounding boxes are then descending ordered according to their confidence value;
+	\item  following the order determined in the previous step, the module tries to match each predicted bounding box with a ground truth box. The matching procedure follows the next operations:
+	\begin{itemize}
+		\item each predicted bounding box is compared with the ground truth boxes of the same image, in order to find the one with the greater intersection under union (IoU) area (Eq. \ref{eq:iou});
+		\item if the greater IoU area is overcome a threshold, called \textsf{iou\_threshold}, the predicted bounding box is matched with the corresponded ground truth box (if it has not been previously matched);
+		\item the matching procedure determines the true positive (TP) and the false positive (FP) detections: each predicted bounding box matched with a ground truth box is considered a TP, while a detected bounding box with no match represents a FP;
+	\end{itemize}
+	\item when the matching procedure ends, the ground truth boxes not matched  are considered as false negative (FN);
+	\item the true and false positives founded during the matching operations are saved in order to compute the values of precision (Eq. \ref{eq:precision}) and recall (Eq. \ref{eq:recall}) at each matching step; 
+	\item the final AP score is the area under the precision/recall curve, calculated by interpolate such curve at every points (refining the 11-point interpolation performed in Pascal VOC metric expressed in Eq. \ref{eq:11-point}).
+\end{enumerate} 
+
+\paragraph{Negative Images} The negative images do not contains objects of interest, so they are evaluated in a different way. The procedure is inspired by the metric of Pascal VOC challenge \cite{pascal} with some refinements. First of all, the predicted bounding boxes in the negative images. The method we propose calculate a unique AP score for all  evaluation procedure of negative 
+
+
+
 
