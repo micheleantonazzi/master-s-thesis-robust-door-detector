@@ -143,7 +143,7 @@ The architecture of DETR (reported in Fig. \ref{fig:detrarchiecture}) consists o
 	\label{fig:detrarchiecture}
 \end{figure}
 
-\paragraph{CNN Backbone} The first element in DETR's architecture is a CNN backbone.  Ideally, any backbone can be used depending upon the complexity of the task to provide a low dimensional representation of the image extracting features from it. Starting from the initial image $x_{img} = \R^{3\times H_0\times W_0}$ (with 3 color channel and dimension $H_0$, $W_0$), a conventional CNN backbone generates a lower-resolution activation map $f \in \R^{C×H×W}$. Typical values used in this paper are $C = 2048$ and $H, W = \frac{H_0}{32}, \frac{W_0}{32}$. 
+\paragraph{CNN Backbone} The first element in DETR's architecture is a CNN backbone.  Ideally, any backbone can be used depending upon the complexity of the task to provide a low dimensional representation of the image extracting features from it. Starting from the initial image $x_{img} = \R^{3\times H_0\times W_0}$ (with 3 color channel and dimension $H_0$, $W_0$), a conventional CNN backbone generates a lower-resolution activation map $f \in \R^{C \in H \in W}$. Typical values used in this paper are $C = 2048$ and $H, W = \frac{H_0}{32}, \frac{W_0}{32}$. 
 
 The authors use a ResNet (residual network) \cite{resnet} as CNN backbone, a neural network that solves the issue of vanishing gradient. This problem makes a deeper neural network more difficult to train and optimize: when a network's depth increases, accuracy gets saturated and then degrades rapidly. This unwanted situation is called \textit{degradation} (of training accuracy). Unexpectedly, such degradation is not caused by overfitting, and adding
 more layers to a deep model leads to higher training error. The authors address the degradation problem by introducing a \textit{deep residual learning} framework, commonly called ResNet. The proposed method is based on the insight that a few overlapping layers can fit a residual mapping instead of directly fitting a desired underlying mapping. This principle is formalized as follows. Let $\mathcal{H}(x)$ be the desired underlying mapping fit by a few stacked layers (not necessarily the entire net), where $x$ denotes the inputs of the first layer. Since multiple non-linear layers can approximate non-linear functions, then  the same layers can approximate the residual functions $\mathcal{H}(x) - x$. The authors let these layers approximate a residual function
@@ -401,7 +401,7 @@ These operations are implemented in the \textsf{GibsonAssetsUtilities} class of 
 	\centering
 	\begin{subfigure}[b]{0.49\linewidth}
 		\centering
-		\includegraphics[width=\textwidth]{images/pose_estimator_3dmesh.png}
+		\includegraphics[width=\textwidth]{images/pose_estimator_3Dmesh.png}
 		\caption{}
 		\label{fig:pose_estimator_3dmesh}
 	\end{subfigure}
