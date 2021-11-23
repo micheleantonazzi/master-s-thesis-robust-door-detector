@@ -199,7 +199,10 @@ class MyEvaluator(ModelEvaluator):
                 'recall': recall,
                 'AP': ap,
             }
-            bboxes_information[label] = ret
+
+            # The result of labels not presents in the examples are discarded
+            if ret['total_positives'] > 0:
+                bboxes_information[label] = ret
 
         if plot_curves:
             plt.close()
