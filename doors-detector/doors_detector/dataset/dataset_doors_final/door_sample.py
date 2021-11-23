@@ -36,7 +36,7 @@ def visualize(self) -> NoReturn:
 # The bounding_boxes field is a numpy array of list [[label, x1, y1, width, height]],
 # where label is the bounding box label and (x1, y1) are the coordinates of the top left point and width height the bbox dimension
 
-DOOR_LABELS = {0: 'Closed door', 1: 'Opened door'}
+DOOR_LABELS = {0: 'Closed door', 1: 'Open door'}
 
 DoorSample = SampleGenerator(name='DoorSample', label_set={0, 1}) \
     .add_dataset_field(field_name='bgr_image', field_type=np.ndarray, save_function=save_cv2_image_bgr, load_function=load_cv2_image_bgr) \
