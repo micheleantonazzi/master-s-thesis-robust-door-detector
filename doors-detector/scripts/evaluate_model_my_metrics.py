@@ -2,7 +2,7 @@ from src.evaluators.pascal_voc_evaluator import plot_precision_recall_curve
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from doors_detector.dataset.torch_dataset import FINAL_DOORS_DATASET
+from doors_detector.dataset.torch_dataset import FINAL_DOORS_DATASET, DEEP_DOORS_2_LABELLED
 from doors_detector.evaluators.my_evaluator import MyEvaluator
 from doors_detector.evaluators.pascal_evaluator import PascalEvaluator
 from doors_detector.models.model_names import DETR_RESNET50
@@ -18,11 +18,12 @@ batch_size = 1
 if __name__ == '__main__':
     seed_everything(0)
 
-    train, test, labels, _ = get_final_doors_dataset(experiment=2, folder_name='house2', train_size=0.25, use_negatives=True)
+    #train, test, labels, COLORS = get_final_doors_dataset(experiment=2, folder_name='house2', train_size=0.25, use_negatives=True)
+    train, test, labels, COLORS = get_deep_doors_2_labelled_sets()
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
 
-    model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels.keys()), pretrained=True, dataset_name=FINAL_DOORS_DATASET, description=EXP_1_HOUSE_2)
+    model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels.keys()), pretrained=True, dataset_name=DEEP_DOORS_2_LABELLED, description=DEEP_DOORS_2_LABELLED_EXP)
 
     model.eval()
     model.to(device)
