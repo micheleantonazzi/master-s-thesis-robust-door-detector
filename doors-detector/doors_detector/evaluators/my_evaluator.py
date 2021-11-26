@@ -10,7 +10,7 @@ from doors_detector.evaluators.model_evaluator import ModelEvaluator
 
 class MyEvaluator(ModelEvaluator):
 
-    def get_metrics(self, iou_threshold: float = 0.5, confidence_threshold: float = 0.5, plot_curves: bool = False) -> Dict:
+    def get_metrics(self, iou_threshold: float = 0.5, confidence_threshold: float = 0.5, plot_curves: bool = False, colors = None) -> Dict:
         """
         This method calculates metrics to evaluate a object detection model.
         This metric is similar to the Pascal VOC metric but it is developed specifically for a robotic context.
@@ -206,16 +206,20 @@ class MyEvaluator(ModelEvaluator):
 
         if plot_curves:
             plt.close()
-            for label, values in bboxes_information.items():
+            for label, values in sorted(bboxes_information.items(), key=lambda v: v[0]):
                 precision = values['precision']
                 recall = values['recall']
-                plt.plot(recall, precision, label=f'{label}')
+                p = plt.plot(recall, precision, label=f'{label}')
+                if colors is not None:
+                    p[0].set_color(colors[int(label)])
 
-            plt.xlabel('recall')
-            plt.ylabel('precision')
+
+
+            plt.xlabel('Recall')
+            plt.ylabel('Precision')
             plt.xlim([-0.1, 1.1])
             plt.ylim([-0.1, 1.1])
-            plt.title('Precision x Recall curve')
+            plt.title('Precision/Recall Curve')
             plt.legend(shadow=True)
             plt.grid()
             plt.show()

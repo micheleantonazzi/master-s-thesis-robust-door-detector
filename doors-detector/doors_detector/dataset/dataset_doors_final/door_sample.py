@@ -8,7 +8,7 @@ from generic_dataset.sample_generator import SampleGenerator
 from generic_dataset.utilities.save_load_methods import save_cv2_image_bgr, load_cv2_image_bgr, \
     save_compressed_numpy_array, load_compressed_numpy_array, load_cv2_image_grayscale
 
-COLORS = [(0, 0, 255), (0, 255, 0)]
+COLORS = {0: (0, 0, 255), 1: (0, 255, 0)}
 
 pipeline_fix_gbr_image = DataPipeline().add_operation(lambda d, e: (d[..., [2, 1, 0]], e))
 

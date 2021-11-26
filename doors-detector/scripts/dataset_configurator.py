@@ -12,7 +12,7 @@ def get_deep_doors_2_labelled_sets():
     train, test = dataset_creator.creates_dataset(train_size=0.8, test_size=0.2)
     labels = dataset_creator.get_labels()
 
-    return train, test, labels, np.array([[1, 0, 0], [0, 0, 1], [0, 1, 0]], dtype=float)
+    return train, test, labels, {0: (1, 0, 0), 1: (0, 0, 1), 2: (0, 1, 0)}
 
 
 def get_final_doors_dataset(experiment: int, folder_name: str, train_size: float = 0.1, use_negatives: bool = False):
