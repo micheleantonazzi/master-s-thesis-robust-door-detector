@@ -1,6 +1,8 @@
 import numpy as np
 import torch
 from matplotlib import pyplot as plt
+from matplotlib.lines import Line2D
+from matplotlib.patches import Patch
 from matplotlib.pyplot import subplots, show
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
@@ -19,8 +21,9 @@ seed_everything(0)
 batch_size = 1
 values = {'transformer': [], 'max_scores': [], 'labels': []}
 
-train, test, labels, COLORS = get_final_doors_dataset(experiment=1, folder_name='house1', train_size=0.2, use_negatives=False)
-model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels.keys()), pretrained=True, dataset_name=FINAL_DOORS_DATASET, description=EXP_1_HOUSE_1)
+#train, test, labels, COLORS = get_final_doors_dataset(experiment=1, folder_name='house1', train_size=0.2, use_negatives=False)
+train, test, labels, COLORS = get_deep_doors_2_labelled_sets()
+model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels.keys()), pretrained=True, dataset_name=DEEP_DOORS_2_LABELLED, description=DEEP_DOORS_2_LABELLED_EXP)
 
 
 def extract_tranformer_weights(model, input, output):
@@ -36,7 +39,7 @@ model.model.transformer.register_forward_hook(
 model.to(device)
 model.eval()
 
-data_loader_training = DataLoader(train, batch_size=batch_size, collate_fn=collate_fn, shuffle=False, num_workers=6)
+data_loader_training = DataLoader(test, batch_size=batch_size, collate_fn=collate_fn, shuffle=False, num_workers=6)
 
 post_processor = PostProcess()
 
@@ -56,15 +59,23 @@ for i, training_data in tqdm(enumerate(data_loader_training), total=len(data_loa
 flatten_encoder = np.array([torch.squeeze(v)[m].flatten().tolist() for v, m in zip(values['transformer'], values['max_scores'])])
 flatten_encoder_pca = PCA(n_components=50, random_state=42).fit_transform(flatten_encoder)
 
-fig, axes = subplots(nrows=2, ncols=3, figsize=(10, 5))
+fig, axes = subplots(nrows=2, ncols=2, figsize=(5, 5))
+color_list = np.array([COLORS[k] for k in sorted(COLORS.keys())])
 
-for perplexity, axis in tqdm(zip([30, 40, 50, 100, 500, 5000], axes.flatten()), desc="Computing TSNEs", total=6):
-    axis.scatter(*TSNE(n_components=2, perplexity=perplexity).fit_transform(flatten_encoder_pca).T, s=1, color=COLORS[values['labels']])
+for perplexity, axis in tqdm(zip([30, 50, 100, 500], axes.flatten()), desc="Computing TSNEs", total=6):
+    axis.scatter(*TSNE(n_components=2, perplexity=perplexity).fit_transform(flatten_encoder_pca).T, s=1, c=color_list[values['labels']])
     axis.xaxis.set_visible(False)
     axis.yaxis.set_visible(False)
-    axis.set_title(f"TSNE decomposition - perplexity = {perplexity}", fontdict={'fontsize': 10,
+    axis.set_title(f"TSNE - perplexity = {perplexity}", fontdict={'fontsize': 10,
                                                                                 'fontweight': 10,
                                                                                 'verticalalignment': 'baseline',
                                                                                 'horizontalalignment': 'center'})
+
+legend_elements = [Line2D([0], [0], color='b', lw=4, label='Line'),
+                                     Line2D([0], [0], marker='o', color='w', label='Scatter',
+                                            markerfacecolor='g', markersize=15),
+                                     Patch(facecolor='orange', edgecolor='r',
+                                           label='Color Patch')]
+fig.legend(handles=legend_elements, loc='lower center', )
 fig.tight_layout()
 plt.show()
