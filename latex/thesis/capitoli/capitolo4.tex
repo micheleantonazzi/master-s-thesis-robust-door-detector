@@ -221,6 +221,7 @@ which performs one-to-one matching for direct set prediction without duplicates.
 The next step is to compute the loss function, called \textit{Hungarian loss}, for all pairs matched in the previous step. It is a linear combination of a negative log-likelihood for class prediction and a box loss defined later:
 
 \begin{equation}
+\label{eq:detr_loss}
 \mathcal{L}_{\text{Hungarian}}(y, \hat y) = \sum_{i = 1}^{N} \bigg [-\log \hat p_{\hat\sigma(i)}(c_i) + \mathds{1}_{\{c \neq \varnothing\}}\mathcal{L}_{box}(b_i, \hat b_{\hat\sigma(i)}) \bigg ]
 \end{equation}
 where $\hat \sigma$ is the optimal assignment computed in Eq. \ref{formula:bipartitematching}. In practice, the authors
