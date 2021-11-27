@@ -30,7 +30,7 @@ class DatasetCreatorDeepDoors2:
         self._dataframe.dropna(subset=['label'], inplace=True)
 
     def get_label(self):
-        return {0: 'Closed door', 1: 'Semi opened door', 2: 'Open door'}
+        return {0: 'Closed door', 1: 'Semi-open door', 2: 'Open door'}
 
     def creates_dataset(self, train_size: Union[float, int],
                         test_size: Union[float, int],

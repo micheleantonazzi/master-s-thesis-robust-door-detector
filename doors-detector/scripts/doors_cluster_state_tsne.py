@@ -59,10 +59,10 @@ for i, training_data in tqdm(enumerate(data_loader_training), total=len(data_loa
 flatten_encoder = np.array([torch.squeeze(v)[m].flatten().tolist() for v, m in zip(values['transformer'], values['max_scores'])])
 flatten_encoder_pca = PCA(n_components=50, random_state=42).fit_transform(flatten_encoder)
 
-fig, axes = subplots(nrows=2, ncols=2, figsize=(5, 5))
+fig, axes = subplots(nrows=1, ncols=2, figsize=(8, 4))
 color_list = np.array([COLORS[k] for k in sorted(COLORS.keys())])
 
-for perplexity, axis in tqdm(zip([30, 50, 100, 500], axes.flatten()), desc="Computing TSNEs", total=6):
+for perplexity, axis in tqdm(zip([30, 100], axes.flatten()), desc="Computing TSNEs", total=2):
     axis.scatter(*TSNE(n_components=2, perplexity=perplexity).fit_transform(flatten_encoder_pca).T, s=1, c=color_list[values['labels']])
     axis.xaxis.set_visible(False)
     axis.yaxis.set_visible(False)
@@ -71,11 +71,9 @@ for perplexity, axis in tqdm(zip([30, 50, 100, 500], axes.flatten()), desc="Comp
                                                                                 'verticalalignment': 'baseline',
                                                                                 'horizontalalignment': 'center'})
 
-legend_elements = [Line2D([0], [0], color='b', lw=4, label='Line'),
-                                     Line2D([0], [0], marker='o', color='w', label='Scatter',
-                                            markerfacecolor='g', markersize=15),
-                                     Patch(facecolor='orange', edgecolor='r',
-                                           label='Color Patch')]
-fig.legend(handles=legend_elements, loc='lower center', )
-fig.tight_layout()
+legend_elements = [Line2D([0], [0], marker='o', color='w', label=labels[l],
+                           markerfacecolor=COLORS[l], markersize=8) for l in sorted(labels.keys())]
+
+fig.legend(handles=legend_elements, loc='lower center', ncol=len(labels.keys()))
+
 plt.show()
