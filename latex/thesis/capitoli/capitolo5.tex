@@ -3,7 +3,7 @@
 \thispagestyle{empty}
 
 \section{Dataset Acquisition}
-
+\label{sec:dataset_acquisition}
 The visual dataset has been collected in simulated environments from Matterport3D dataset \cite{matterport} through the modified version of Gibson (described in Sec. \ref{sec:new_gibson_version}). The entire dataset is publicly available\footnote{The dataset is downloadable \href{https://drive.google.com/file/d/1BqjBpobjKTomFjDkzhWjmCryAXOEluO2/view?usp=sharing}{here}.}The positions from which the examples are acquired are extracted from the Pose Selector, described in Sec \ref{sec:pose_estimator}. We select a set $E$ of $10$ worlds of Matterport3D dataset, where $E = \{\text{house1}, \text{house2}, \text{house7}, \text{house9}, \text{house10}, \text{house13}, \text{house15}, \text{house20}, \\ \text{house21},  \text{house22}\}$. The dataset's acquisition procedure, previously described in Sec. \ref{sec:dataset_labeling}, is now formalized by reporting the various steps and specifying the hyper-parameters' values. The collection algorithm works as follows:
 
 \begin{enumerate}
@@ -105,7 +105,8 @@ FLOPs (number of floating point operations per second), FPS (frame per second), 
 	\label{tab:detr_models_flops}
 \end{table}
 
-\paragraph{DETR Initialization}
+\paragraph{DETR's Configuration}
+\label{sec:detr_configuration}
 We do not retrain the entire model but we load the pre-trained version of DETR furnished by the authors. This is because training DETR from scratch is unfeasible. First of all, as reported in \cite{surveytransformer}, the Transformers used in Computer Vision need wide training datasets. As a prove, DETR is trained for 300 epochs using the COCO 2017 dataset \cite{coco} which contains for about 118K of training images. This procedure takes 3 days on a cluster with 16 Tesla V100 GPUs and a batch size of 64 (4 images for each GPU). Since we have a small doors dataset (with for about 8K examples) and a limited computing power, we fine-tune DETR with a few data to resolve a more refined task (detecting doors). Fine-tuning a model pre-trained with a dataset like Imagenet \cite{imagenet} has become a common technique for solving computer vision tasks \cite{verydeepimagenet, resnet, fasterrcnn, yolo, yolov2}. We adopt the same strategy, with the difference that DETR is pre-trained using COCO dataset.
 
 \paragraph{DETR Hyper-Parameters}
@@ -219,9 +220,9 @@ We evaluate the trained version of DETR with the Pascal VOC metric \cite{pascal}
 		\toprule
 		\textbf{Label} & \textbf{AP} & \textbf{N. Positives} & \textbf{TP} & \textbf{FP} & \textbf{FN}\tabularnewline
 		\midrule
-		Closed door (0) & 0.90 & 234 & 214 & 45 & 20 \tabularnewline
-		Semi-open door (1) & 0.83 & 198 & 169 & 33 & 29 \tabularnewline
-		Open door (2) & 0.85 & 243 & 214 & 66 & 29 \tabularnewline
+		Closed door (0) & 90 & 234 & 214 & 45 & 20 \tabularnewline
+		Semi-open door (1) & 83 & 198 & 169 & 33 & 29 \tabularnewline
+		Open door (2) & 85 & 243 & 214 & 66 & 29 \tabularnewline
 		\bottomrule
 	\end{tabular}
 	\caption{The performance of DETR trained on the DeepDoors2 dataset.}
@@ -271,3 +272,74 @@ As previously anticipated, we plot the output embeddings of the Transformer with
 \end{figure}
  
 The Figures \ref{fig:tsne_deep_doors2_train} and \ref{fig:tsne_deep_doors2_test} show that DETR produce useful features encoding to separate the open, semi-open, and closed doors. Thanks to t-SNE, we argue that the objects queries classified by the Transformer are clearly separated in three distinct clusters examining both the training and the test sets (as expected looking the good results reported in Tab. \ref{tab:deep_doors2_results}). Since the AP scores are not equals to 1, there are some spurious detections in the t-SNE's plots that likely lead to false positives.
+
+\section{One-Shot Incremental Learning}
+
+As mentioned in Sec. \ref{sec:solution}, we not only offer a deep learning module for finding doors, but we also propose a technique for increasing the detector's performance exploiting a specific deployment scenario for a mobile robot as  explained in Sec. \ref{sec:deploymentscenario}. The idea we follow is that a machine learning model for finding doors used by an autonomous agent is initially trained on a general dataset to be suitable for any context of use. At best of our knowledge, the module's performance can be variable according to visual aspect of the scene in which the robot operates. To increase the detector's accuracy, we propose a method to specialize the generic model for the specific environment in which the robot is deployed. This technique, which we call \textbf{one-shot incremental learning}, consists on fine-tune a generic doors detector with a new dataset acquired from the new environment. This thesis also investigates the necessary amount of unseen examples to obtain a significant performance improvement.
+
+To successfully evaluate the \textbf{one-shot incremental learning} technique, the experimental phase of this thesis emulates the requirements for ideal deployment scenario for a mobile robot using the dataset of doors we collected. As reported in Sec. \ref{sec:dataset_acquisition}, the visual doors dataset has been acquired from set $E$ of 10 different environments from Matterport3D \cite{matterport} virtualized through the modified version of Gibson \cite{gibson} (described in Sec. \ref{sec:new_gibson_version}). The examples are both positive and negative and they are divided according the environment of belonging. For each environment $e \in E$, the entire dataset $D_{e}$ is split into 2 sub-sets $G_e$ and $S_e$, where $G_e$ contains all the examples that do not belong to the selected environment $e$, while $S_e$ is composed of the images collected from $e$. Then, $G_e$ is divided into 2 sub-sets $G^{P}_e$ and $G^{N}_e$: the first contains only the positive examples while the latter only the negative ones not acquired in the environment $e$. Likewise, $S_e$ is split in $S^{P}_e$ and $S^{N}_e$ that respectively contain the positive and the negative examples of the environment $e$. Finally, 4 sub-sets are extracted from $S^{P}_e$, which are $S^{P}_{e, 1}$, $S^{P}_{e, 2}$, $S^{P}_{e, 3}$, and $S^{P}_{e, 4} $. They are composed of the 25\% of the examples of $S^{P}_e$. We use this dataset division to perform a series of two experiments for each environment:
+
+
+
+\begin{itemize}
+	\item \textbf{Experiment 1:} at first, we train for 40 epochs a general doors detector with $G^{P}_e$, that contains the positive examples that do not belong to the environment $e$. We use the configuration of DETR reported in Sec. \ref{sec:detr_configuration}. Then, we evaluate this model using the metric explained in Sec. \ref{sec:model_evaluator}, with a test set composed by $S^{P}_{e, 4}$ and $S^{N}_e$, that respectively contains the 25\% of the positive all the negative examples from the examples collected in $E$.
+	
+	\item \textbf{Experiment 2:} then, we perform a series of 3 fine-tine operations on the module trained in the previous step. We re-train (using the parameters reported in Sec. \ref{sec:detr_configuration}) for 20 epochs  the pre-trained model producing 3 fine-tuned versions of the generic doors detector using three different training sets $T$. At first, we set $ T= \big\{S^{P}_{e, 1}\big\}$, then $T=\big\{S^{P}_{e, 1} \cup S^{P}_{e, 2}\big\}$, and finally $T=\big\{S^{P}_{e, 1} \cup S^{P}_{e, 2} \cup S^{P}_{e, 3}\big\}$, so we fine-tune the general model by employing the  25\%, 50\%, and the 75\% of the positive samples collected in $e$. As the previous experiment, each of the fine-tuned doors detector is evaluated through the metric described in Sec. \ref{sec:model_evaluator} using the remaining 25\% of the positive examples and all the negative images, contained in $S^{P}_{e, 4}$ and $S^{N}_e$ respectively.
+
+\end{itemize}
+
+For each environment $e \in E$, we report the AP score calculated over the bounding boxes of the positive and the negative images, specifying also the number of true and false positives. We set the \textsf{iou\_threshold} $= 0.90$ and the \textsf{confidence\_threshold} $= 0.75$. In addition,  
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{ccccccc}
+		
+		\toprule
+		\textbf{Env.} & \textbf{Exp.} & \textbf{Label} & \textbf{AP} & \textbf{N. Positives} & \textbf{TP} & \textbf{FP} \\
+		\midrule
+		\multicolumn{1}{c|}{\multirow{12}{*}{House 1}} & \multicolumn{1}{c|}{\multirow{3}{*}{1}} & Negative examples (-1) & 88 & 3630 & 3320 & 310  \tabularnewline 
+		\multicolumn{1}{c|}{}& \multicolumn{1}{c|}{} & Closed door (0) & 41 & 27 & 14 & 21  \\
+		\multicolumn{1}{c|}{}& \multicolumn{1}{c|}{}& Open door (1) & 38 & 101 & 61 & 88  \\  \cline{2-7}
+		\multicolumn{1}{c|}{}& \multicolumn{1}{c|}{\multirow{3}{*}{2a}} & Negative examples (-1) & 93 & 3630 & 3452 & 178  \tabularnewline [1pt]
+		\multicolumn{1}{c|}{}& \multicolumn{1}{c|}{} & Closed door (0) & 59 & 27 & 16 & 3  \\ 
+		\multicolumn{1}{c|}{}& \multicolumn{1}{c|}{} & Open door (1) & 56 & 101 & 72 & 62   \\ \cline{2-7}
+		\multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\multirow{3}{*}{2b}} & Negative examples (-1) & 94 & 3630 & 3455 & 175  \tabularnewline 
+		\multicolumn{1}{c|}{}& \multicolumn{1}{c|}{} & Closed door (0) & 66 & 27 & 18 & 3  \\
+		\multicolumn{1}{c|}{}& \multicolumn{1}{c|}{}& Open door (1) & 57 & 101 & 68 & 55  \\  \cline{2-7}
+		\multicolumn{1}{c|}{}& \multicolumn{1}{c|}{\multirow{3}{*}{2c}} & Negative examples (-1) & 93 & 3630 & 3428 & 202  \tabularnewline [1pt]
+		\multicolumn{1}{c|}{}& \multicolumn{1}{c|}{} & Closed door (0) & 65 & 27 & 18 & 6  \\ 
+		\multicolumn{1}{c|}{}& \multicolumn{1}{c|}{} & Open door (1) & 63 & 101 & 74 & 54   \\ 
+		\bottomrule
+	\end{tabular}
+	\caption{The evaluation of the proposed method on House1.}
+	\label{tab:house_1_results}
+\end{table}
+
+
+\begin{figure}[h!]
+	\begin{subfigure}[b]{0.49\linewidth}
+		\includegraphics[width=\linewidth]{images/house1_exp1.png}
+
+	\end{subfigure}
+	\hfil
+	\begin{subfigure}[b]{0.49\linewidth}
+		\includegraphics[width=\linewidth]{images/house1_exp1.png}
+
+	\end{subfigure}
+	\newline
+	\newline
+	\begin{subfigure}[b]{0.49\linewidth}
+		\includegraphics[width=\linewidth]{images/house1_exp1.png}
+
+	\end{subfigure}
+	\hfil
+	\begin{subfigure}[b]{0.49\linewidth}
+		\includegraphics[width=\linewidth]{images/house1_exp1.png}
+
+	\end{subfigure}
+	\caption{}
+	\label{}
+\end{figure}
+
+
+
