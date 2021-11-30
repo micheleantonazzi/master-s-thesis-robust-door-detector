@@ -282,13 +282,17 @@ To successfully evaluate the \textbf{one-shot incremental learning} technique, t
 
 
 \begin{itemize}
-	\item \textbf{Experiment 1:} at first, we train for 40 epochs a general doors detector with $G^{P}_e$, that contains the positive examples that do not belong to the environment $e$. We use the configuration of DETR reported in Sec. \ref{sec:detr_configuration}. Then, we evaluate this model using the metric explained in Sec. \ref{sec:model_evaluator}, with a test set composed by $S^{P}_{e, 4}$ and $S^{N}_e$, that respectively contains the 25\% of the positive all the negative examples from the examples collected in $E$. We formally call this experiment $GD$ (general doors detector). 
+	\item \textbf{Experiment 1:} at first, we train for 40 epochs a general doors detector with $G^{P}_e$, that contains the positive examples that do not belong to the environment $e$. We use the configuration of DETR reported in Sec. \ref{sec:detr_configuration}. Then, we evaluate this model using the metric explained in Sec. \ref{sec:model_evaluator}, with a test set composed by $S^{P}_{e, 4}$ and $S^{N}_e$, that respectively contains the 25\% of the positive all the negative examples from the examples collected in $E$. We formally call this experiment \textsf{GD} (general doors detector). 
 	
-	\item \textbf{Experiment 2:} then, we perform a series of 3 fine-tune operations on the module trained in the previous experiment. We re-train (using the parameters reported in Sec. \ref{sec:detr_configuration}) for 20 epochs  the pre-trained module producing 3 fine-tuned versions of the generic doors detector using three different training sets $T$. At first, we set $ T= \big\{S^{P}_{e, 1}\big\}$, then $T=\big\{S^{P}_{e, 1} \cup S^{P}_{e, 2}\big\}$, and finally $T=\big\{S^{P}_{e, 1} \cup S^{P}_{e, 2} \cup S^{P}_{e, 3}\big\}$, so we fine-tune the general model by employing the  25\%, 50\%, and the 75\% of the positive samples collected in $e$. As the previous experiment, each of the fine-tuned doors detector is evaluated through the metric described in Sec. \ref{sec:model_evaluator} using the remaining 25\% of the positive examples and all the negative images, contained in $S^{P}_{e, 4}$ and $S^{N}_e$ respectively.
+	\item \textbf{Experiment 2:} then, we perform a series of 3 fine-tune operations on the module trained in the previous experiment. We re-train (using the parameters reported in Sec. \ref{sec:detr_configuration}) for 20 epochs  the pre-trained module producing 3 fine-tuned versions of the generic doors detector using three different training sets $T$. At first, we set $ T= \big\{S^{P}_{e, 1}\big\}$, then $T=\big\{S^{P}_{e, 1} \cup S^{P}_{e, 2}\big\}$, and finally $T=\big\{S^{P}_{e, 1} \cup S^{P}_{e, 2} \cup S^{P}_{e, 3}\big\}$, so we fine-tune the general model by employing the  25\%, 50\%, and the 75\% of the positive samples collected in $e$. As the previous experiment, each of the fine-tuned doors detector is evaluated through the metric described in Sec. \ref{sec:model_evaluator} using the remaining 25\% of the positive examples and all the negative images, contained in $S^{P}_{e, 4}$ and $S^{N}_e$ respectively. We refer to these 3 fine-tune detectors as \textsf{FD\textsubscript{25}}, \textsf{FD\textsubscript{50}}, and \textsf{FD\textsubscript{75}}. 
 
 \end{itemize}
 
-For each environment $e \in E$, we report the AP score calculated over the bounding boxes of the positive and the negative images, specifying also the number of true and false positives. We set the \textsf{iou\_threshold} $= 0.90$ and the \textsf{confidence\_threshold} $= 0.75$. In addition,  
+In simple terms, we built 4 different doors detector for each environment in the collected dataset: the general doors detector (\textsf{GD}) trained without images acquired in the selected environment and other 3 detectors trained by fine-tuning the general model with the 25\% (\textsf{FD\textsubscript{25}}), 50\% (\textsf{FD\textsubscript{50}}), and 75\% (\textsf{FD\textsubscript{75}}) of the examples of the selected environment. All these model are tested with the remaining 25\% of the samples of the current environment ($S^{P}_{e,4}$) and all the negative images of the current environment ($S^{N}_{e}$).
+
+\paragraph{House13 Analysis}
+
+We report in detail the analysis of a single environment $e\in E$, house13. As previously mentioned,  First of all, we test the performance of the trained detectors using the metric explained in Sec. \ref{sec:model_evaluator}. Table \ref{tab:house13_results} shows the results obtained with house13, reporting the AP scores, the total number of ground-truth positive bounding boxes, the true positives detections, and the false positive detections predicted by the models. 
 
 \begin{table}[h!]
 	\centering
@@ -297,49 +301,50 @@ For each environment $e \in E$, we report the AP score calculated over the bound
 		\toprule
 		\textbf{Env.} & \textbf{Exp.} & \textbf{Label} & \textbf{AP} & \textbf{N. Positives} & \textbf{TP} & \textbf{FP} \\
 		\midrule
-		\multicolumn{1}{c|}{\multirow{12}{*}{House 1}} & \multicolumn{1}{c|}{\multirow{3}{*}{1}} & Negative examples (-1) & 88 & 3630 & 3320 & 310  \tabularnewline 
+		\multicolumn{1}{c|}{\multirow{12}{*}{House 13}} & \multicolumn{1}{c|}{\multirow{3}{*}{\textsf{GD}}} & Negative examples (-1) & 88 & 3630 & 3320 & 310  \tabularnewline 
 		\multicolumn{1}{c|}{}& \multicolumn{1}{c|}{} & Closed door (0) & 41 & 27 & 14 & 21  \\
 		\multicolumn{1}{c|}{}& \multicolumn{1}{c|}{}& Open door (1) & 38 & 101 & 61 & 88  \\  \cline{2-7}
-		\multicolumn{1}{c|}{}& \multicolumn{1}{c|}{\multirow{3}{*}{2a}} & Negative examples (-1) & 93 & 3630 & 3452 & 178  \tabularnewline [1pt]
+		\multicolumn{1}{c|}{}& \multicolumn{1}{c|}{\multirow{3}{*}{\textsf{FD\textsubscript{25}}}} & Negative examples (-1) & 93 & 3630 & 3452 & 178  \tabularnewline [1pt]
 		\multicolumn{1}{c|}{}& \multicolumn{1}{c|}{} & Closed door (0) & 59 & 27 & 16 & 3  \\ 
 		\multicolumn{1}{c|}{}& \multicolumn{1}{c|}{} & Open door (1) & 56 & 101 & 72 & 62   \\ \cline{2-7}
-		\multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\multirow{3}{*}{2b}} & Negative examples (-1) & 94 & 3630 & 3455 & 175  \tabularnewline 
+		\multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\multirow{3}{*}{\textsf{FD\textsubscript{50}}}} & Negative examples (-1) & 94 & 3630 & 3455 & 175  \tabularnewline 
 		\multicolumn{1}{c|}{}& \multicolumn{1}{c|}{} & Closed door (0) & 66 & 27 & 18 & 3  \\
 		\multicolumn{1}{c|}{}& \multicolumn{1}{c|}{}& Open door (1) & 57 & 101 & 68 & 55  \\  \cline{2-7}
-		\multicolumn{1}{c|}{}& \multicolumn{1}{c|}{\multirow{3}{*}{2c}} & Negative examples (-1) & 93 & 3630 & 3428 & 202  \tabularnewline [1pt]
+		\multicolumn{1}{c|}{}& \multicolumn{1}{c|}{\multirow{3}{*}{\textsf{FD\textsubscript{75}}}} & Negative examples (-1) & 93 & 3630 & 3428 & 202  \tabularnewline [1pt]
 		\multicolumn{1}{c|}{}& \multicolumn{1}{c|}{} & Closed door (0) & 65 & 27 & 18 & 6  \\ 
 		\multicolumn{1}{c|}{}& \multicolumn{1}{c|}{} & Open door (1) & 63 & 101 & 74 & 54   \\ 
 		\bottomrule
 	\end{tabular}
-	\caption{The evaluation of the proposed method on House1.}
-	\label{tab:house_1_results}
+	\caption{The evaluation of the \textbf{one-shot incremental learning} on house13.}
+	\label{tab:house13_results}
 \end{table}
 
+The, we report the plots of the loss function (Eq. \ref{eq:detr_loss}) during the training of the 4 doors detectors (Fig. \ref{fig:house13_losses}). The training loss is the average of the loss value computer with the training data during each epoch, while the test loss is calculated at the end of each epoch using all the positive examples ($S^{P}_e$) in the general detector and  $S^{P}_{e,4}$ for the 3 fine-tuned models.
 
 \begin{figure}[h!]
 	\begin{subfigure}[b]{0.49\linewidth}
-		\includegraphics[width=\linewidth]{images/house1_exp1.png}
+		\includegraphics[width=\linewidth]{images/house13_general_detector_loss.png}
 
 	\end{subfigure}
 	\hfil
 	\begin{subfigure}[b]{0.49\linewidth}
-		\includegraphics[width=\linewidth]{images/house1_exp1.png}
+		\includegraphics[width=\linewidth]{images/house13_finetune25_loss.png}
 
 	\end{subfigure}
 	\newline
 	\newline
 	\begin{subfigure}[b]{0.49\linewidth}
-		\includegraphics[width=\linewidth]{images/house1_exp1.png}
+		\includegraphics[width=\linewidth]{images/house13_finetune50_loss.png}
 
 	\end{subfigure}
 	\hfil
 	\begin{subfigure}[b]{0.49\linewidth}
-		\includegraphics[width=\linewidth]{images/house1_exp1.png}
+		\includegraphics[width=\linewidth]{images/house13_finetune75_loss.png}
 
 	\end{subfigure}
-	\caption{}
-	\label{}
+	\caption{The losses values of DETR during the training on house13. }
+	\label{fig:house13_losses}
 \end{figure}
 
 
-
+For each environment $e \in E$, we report the AP score calculated over the bounding boxes of the positive and the negative images, specifying also the number of true and false positives. We set the \textsf{iou\_threshold} $= 0.90$ and the \textsf{confidence\_threshold} $= 0.75$. In addition,  
