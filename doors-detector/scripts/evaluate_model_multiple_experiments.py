@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
     metrics_table = pd.DataFrame(data={
         'Env': [house for _ in range(12)],
-        'Exp':  ['1', '2a', '2b', '2c', '1', '2a', '2b', '2c', '1', '2a', '2b', '2c'],
+        'Exp':  ['1', '1', '1', '2a', '2a', '2a', '2b', '2b', '2b', '2c', '2c', '2c'],
         'Label': ['-1', '0', '1', '-1', '0', '1', '-1', '0', '1', '-1', '0', '1'],
         'AP': [0.0 for _ in range(12)],
         'Positives': [0 for _ in range(12)],
