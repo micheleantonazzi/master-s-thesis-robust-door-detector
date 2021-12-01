@@ -116,7 +116,11 @@
 \usepackage{url}
 \gappto{\UrlBreaks}{\UrlOrds}
 
+
 \usepackage{dirtree}
+\usepackage{multirow}
+\renewcommand{\arraystretch}{1.2}
+
 \begin{document}
 %**************************************************************
 % Materiale iniziale
@@ -127,8 +131,8 @@
 \newpage
 \input{inizio-fine/colophon}
 \input{inizio-fine/dedica}
-\input{inizio-fine/sommario}
 \input{inizio-fine/ringraziamenti}
+\input{inizio-fine/sommario}
 \input{inizio-fine/indici}
 \cleardoublepage
 
@@ -141,8 +145,8 @@
 \input{capitoli/capitolo2}             % Processi
 \input{capitoli/capitolo3}             % Kick-Off
 \input{capitoli/capitolo4}             % Concept Preview
-%\input{capitoli/capitolo5}             % Product Prototype
-%\input{capitoli/capitolo6}
+\input{capitoli/capitolo5}             % Product Prototype
+\input{capitoli/capitolo6}
 %\input{capitoli/capitolo7}
 
 \printbibliography
