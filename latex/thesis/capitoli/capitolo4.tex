@@ -5,7 +5,7 @@ In this chapter, we define in detail the system we develop to solve to implement
 \begin{enumerate}
 	\item \textbf{Doors Detector:} this module implements the main requirement of this thesis: the development of a doors detector for indoor autonomous robots. We approach the problem of finding doors as an object detection task, that we address using a deep learning technique. Doors detector is implemented through DETR \cite{detr}, a deep end-to-end architecture to perform object detection. To better understand how DETR works, we provide an overview of the principal machine learning and deep learning principles. Finally, we described in detail the DETR's architecture. 
 	\item \textbf{Simulation Environment:} the second part of our system is the simulation environment used to collect the dataset. As described in Sec. \ref{sec:importanceofsimulation}, simulation is widely used in robotic applications, so we employ this technique to collect the dataset for training the doors detector. The acquisition of the doors dataset solves the lack of suitable datasets for robotic applications, as explained in Sec. \ref{sec:goals}. We choose Gibson \cite{gibson} as the virtualization framework and Matterport3D \cite{matterport} as the worlds' dataset. In the dedicated section, we describe the main functionalities of Gibson and Matterport3D. Then, we report the issues of these technologies that prevent correct and fast data collection. We finally explain the adopted solution to overcome these limitations: we developed a modified version of Gibson that implements a new simulation stage in which the robot can be placed freely in any location.
-	\item \textbf{Pose Estimator:} this module emulates a possible navigation strategy used by a real autonomous agent and extracts  the locations from which the data points are collected. Thanks to this module unified with the new version of Gibson, we offer a method to easily acquire a suitable visual dataset for a robotic context. We report the underlying algorithms implemented in this component, which is inspired by the works proposed by \citeauthor{repeatabilityslam} in \cite{repeatabilityslam, repeatabilityslamarxiv}.
+	\item \textbf{Pose Estimator:} this module emulates a possible navigation strategy used by a real autonomous agent and extracts  the locations from which the data points are collected. Thanks to this module unified with the new version of Gibson, we offer a method to easily acquire a visual dataset which models the \textit{open-set} conditions in which an autonomous agent operates. In this section, we report the underlying algorithms implemented in this component.
 	\item \textbf{Dataset Manager:} another important aspect of the system provided by this thesis is the dataset. We report in detail by which data it is composed, describing also the labeling procedure. In addition, we mention the framework we developed for managing the dataset.
 	\item  \textbf{Model Evaluator:} the last component of our system aims to evaluate the model's performance. As reported in Sec. \ref{sec:solution}, we propose a new metric that considers also the negative images (examples with no objects of interest). For this module, we describe the metric we propose and the procedure to obtain its results.
 \end{enumerate}
@@ -14,123 +14,7 @@ In this chapter, we define in detail the system we develop to solve to implement
 \section{Doors Detector}
 \label{sec:doors_detector}
 
-The main goal of this thesis is to propose a doors detector that is able both to find doors within RGB images and understand their status (open or closed). We reduce these problems to a precise Computer Vision task: object detection. The doors detector we propose is built with DETR \cite{detr}. The module we develop is public available on Github, in the main repository\footnote{The main thesis's repository: \url{https://github.com/micheleantonazzi/master-thesis-robust-door-detector}.} of this thesis inside the \textsf{doors-detector} package. Before talking about DETR and how it is used to detect doors, we review some relevant aspects of the Deep Learning theory.
-
-\subsection{Machine Learning Review}
-\label{sec:machine_learning}
-Deep Learning is a sub-field of Machine Learning, which is the study of computer algorithms that can improve automatically through experience by the use of data.  It is a powerful technique suitable when it is not feasible to develop a standard algorithm to solve a difficult task. For example, in the context of this thesis, we use Machine Learning to detect doors in RGB images. A \textit{learning algorithm} uses sample pairs of training data to create a model, also called predictor, that is able to classify other unseen data. The first important aspect for a machine learning problem is the dataset. Typically, a dataset is composed of pairs of data taken from two different domains: the \textit{data space} and the \textit{label set}.
-
-\begin{definition}[Data domain]
-	The data domain, denoted as $\mathcal{X}$, is the set of all possible data points for a given learning problem. Each data point is defined by features. In some cases, the features are encoded as vectors of real numbers. Such a representation is called \textit{natural} because the data consist of homogeneous quantities, like pixels in an image or words' frequencies in a document. A data point is denoted as $x \in \mathcal{X}$ and it is defined as a vector of features $x = (x_1, ..., x_d)$.
-\end{definition}
-
-\begin{definition}[Label set]
-	 $\mathcal{Y}$ denotes the set of all possible labels that a data point can assume. For a classification problem, the label set is typically finite and small (such as $\mathcal{Y} = \{\text{sport}, \text{politics}, \text{business}\}$ for a categorization task on documents). Otherwise, for a regression task, the label set is typically equal to $\mathbb{Q}$, which is the rational numbers' set. In this case, the label set is infinite.
-\end{definition}
-
-In a \textit{supervised} learning problem, the data points are tagged with their respective ground-truth labels. In particular, the dataset's entries are pairs $p = (x, y)$, where $x \in \mathcal{X}$ is a data point and $y \in \mathcal{Y}$ is the label assigned to it. A \textit{supervised} learning algorithm is a technique that aims to build a model learned from a \textit{training set}. This paradigm is called \textit{learning by examples}. An example is a pair $p=(x, y)$, where $x$ is a data point represented by a vector of features and $y$ is its ground-truth label, while the training set is composed of a series of examples $S=\{(x_1, y_1), ..., (x_m, y_m)\}$. A \textit{supervised learning algorithm} for \textit{learning by examples} receives a training set and outputs a learned model.
-
-\begin{definition}[Model]
-	A model is a function $f:\mathcal{X} \to \mathcal{Y}$ that maps data points to labels. 
-\end{definition}
-
-The training examples come from some generally unknown probability distribution and the goal of a learning algorithm is to infer a function that approximates this distribution (or makes a generalization of it) to produce sufficiently accurate predictions in new cases. During the training procedure, the examples (that are pair $p = (x, y)$ where $x$ is the data point and $y$ is its ``true'' label) are fed into the model to be classified. At each step, the goodness of the model's predictions is measured through the loss function. Then, according to the loss function's value, the internal representation of the model is adjusted to produce more refined predictions.
-
-\begin{definition}[Loss function]
-	A loss function $\ell(y, \hat y)$ measures the discrepancy between the predicted label $\hat y$ and the ground-truth label $y$. In a correct prediction the loss function's values is $0$: $\ell (y, \hat y) = 0$.
-\end{definition}
-
-Informally speaking, a model represents a function $f$ that generate predictions $\hat y = f(x)$ minimizing the the loss function $\ell(y, \hat y)$ over the data points $x \in \mathcal{X}$. In practice, the function $f$ is determined by a certain configuration of parameters and/or the internal structure of a learning model.
-
-In order to estimate the predictive power of a model, we typically use a \textit{test set}. This is a set of examples $T=\{(x_1', y_1'), ..., (x_n', y_n')\}$ to which the learning algorithm does not have access during the training phase. During the test procedure, each pair in the \textit{test set} is fed into the model in order to measure the goodness of each prediction compared with the ground-truth label. This quantity is measured by the \textit{loss function}. 
-
-The test set allows to determine the predictive power of a learned model on unseen new data. To measure the goodness of a predictor, we can calculate the \textit{test error} over a test set $T$. Given a loss function $\ell$, the test error is
-\begin{equation}
-\frac{1}{n} \sum_{s=1}^{n}\ell(y_s', f(x_s'))
-\end{equation}
-where $n$ is the test set's cardinality ($n = |S|$), $y_s'$ is the ground-truth label of the s-th test example and $f(x_s')$ returns the label of the s-th data point produced by the predictor $f$. Since the test set is disjoint from the training set and emulates the unseen data, it cannot be used during the learning phase.
-
-A way to train a learning model is the Empirical Risk Minimization (ERM) approach. ERM offers a theory to design learning algorithms that generate predictors with a low test error considering only the training set. ERM assumes that the \textit{training error} (the error computed over a training set $T$) of a predictor is directly correlated to its test error. The training error is given by:
-
-\begin{equation}
-\hat \ell(f) = \frac{1}{m} \sum_{t=1}^{m}\ell\big{(}y_t, f(x_t)\big{)}
-\end{equation}
-where the $m$ is the training set's cardinality ($m = |T|$).
-
-\begin{definition}[Empirical risk minimization] 
-	Let $\mathcal{F}$ a set of predictors and $\ell$ a loss function. The empirical risk minimizer (ERM) is the learning algorithm that outputs some predictor $f \in \mathcal{F}$ minimizing the training error:
-	
-	\begin{equation}
-	\hat f \in \argmin_{f \in \mathcal{F}} \hat \ell(f),
-	\end{equation}
-	where $\in$ denotes there could be multiple $f \in \mathcal{F}$ that minimize the training error.
-\end{definition}
-
-The ERM algorithm fails when no predictors in $\mathcal{F}$ have a low test error, in particular when
-
-\begin{equation}
-	\min_{f \in \mathcal{F}} \frac{1}{n} \sum_{s = 1}^{n} \ell(y_s', f(x_s'))
-\end{equation} 
-is high. The two main ways of failing for a generic learning algorithm are:
-\begin{itemize}
-	\item \textbf{underfitting:} when a learning algorithm tends to outputs predictors whose both test and training errors are high and close to each other. This means that possible predictors are unable to correctly classify the samples in the training set as well as those in the test set. This situation could depend on the training test size: if it is too small it can not represent well the data points' distribution or $\mathcal{F}$ (the set of the possible predictors) are too large with respect to the training set dimensions. Another reason that causes underfitting is the cardinality of $\mathcal{F}$. If the set of the possible predictors is small, there could not be a subset of them with a small test error. This means that the learning algorithm is not complex enough to output good learned models. In other words, when a model underfits it is not able to represent well the problem, failing to classify examples from both training and test sets;
-	\item \textbf{overfitting:} when a learning algorithm tends to output predictors whose training error is low (or it tends to zero) while the test error is high. In this situation, the predictors produced by a learning algorithm learn too much from the training data and, as a result, are unable to produce good predictions on new data. This means that those predictors do not generalize the problem, but are specialized in dealing only with the data used during the training phase.
-\end{itemize}
-
-When $A$ is an ERM learning algorithm and the size $m$ of the training set is fixed, we should expect overfitting when $\log_2|\mathcal{F}| \gg m$, so the set of possible predictors is too large with respect to the training set's size. On the other hand, when $\log_2|\mathcal{F}| \ll m$ we should expect underfitting.
-
-\subsection{Deep Learning Review}
-Deep Learning is a sub-field of Machine Learning based on \textit{neural networks}. This learning algorithm is inspired by the information processing and the distributed communication of biological brains. Neural networks (NNs) are a large and complex class of predictors, based on artificial neurons.
-
-\begin{definition}[Neuron]
-	An artificial neuron is a mathematical function inspired by biological neurons, which represents the elementary units in an artificial NN. The mathematical function implemented by a neuron is $g(x) = \sigma(\omega^\intercal \cdot x)$, where $\sigma$ is the (non-linear) activation function, $\omega$ is the weight vector of the learnable parameters, and $x$ is the input vector of the neuron. This means that each input is separately weighted and the sum is passed through a non-linear function. The activation function usually has a sigmoid shape and often it is monotonically increasing, continuous, and bounded. A single neuron can approximate only linear functions.	
-\end{definition}
-
-Artificial neural networks are composed of a series of simple predictions made by neurons. The adjective ``deep'' in Deep Learning refers to the use of multiple layers in NNs. The most simple model of neural networks is called feed-forward. 
-
-\begin{definition}[Feed-forward neural network]
-A feed-forward neural network computes functions of the from $f : \R^d \to \R^n$. Its structure is a directed acyclic graph $G = (V, E)$, in which $V$ is the set of nodes (neurons) and $E$ is the set of edges that connects the neurons. The presence of multiple neurons allows the neural network to infer non-linear functions. The vertices in $V$ are divided into three subgroups: $V = V_{in} \cup V_{hid} \cup V_{out}$, where $V_{in}$ (with $|V_{in}| = d$:	 the feature space's dimension) are the input nodes which have no incoming edges, $V_{out}$ (with $|V_{out}| = n$, the number of labels) are the output nodes which have no outgoing edge, and $V_{hid}$ are the hidden nodes, which have both incoming and outgoing edges.
-\end{definition}
-
-The most simple form of the feed-forward neural network is the multi-layer perceptron (MLP), in which the nodes of $V$ is partitioned in a sequence of consecutive layers such that each node of a layer has incoming edges only from
-nodes in the previous layer and outgoing edges only to nodes of the next layer.  The layers containing the hidden nodes are called hidden layers. The learnable parameters are the weights assigned to the edges between neurons. 
-A parameter $\omega_{i,j} \in \R$ (called weight) is associated with every edge pair $(i, j) \in E$.  We use $W$ to denote the $|V | \times |V |$ weight matrix, where $(i, j) \notin E$ implies $\omega_{i,j} = 0$. The graph $G$, the weights matrix
-$W$, and the activation function $\sigma$ define the function $f = f_{G,W,\sigma}$ computed by the network.  Note that when $n = 1$ (one output node) and $|V_{hid}| = 0$ (no hidden nodes), then $F_{G,\sign}$ only contains linear classifiers of the form $f(x) = \sign(\omega^\intercal \cdot x)$. 
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.85\linewidth]{images/mlp.png}
-	\caption{An example of a multi-layer perceptron, with $d$ input nodes and $n$ output nodes. In this example, the connectivity between layers is complete (there are no missing edges).}
-\end{figure}
-
-\newpage
-
-The training of neural networks is not trivial. The most natural approach for training a model in $\mathcal{F}_{G,\sigma}$ is ERM, as mentioned in Sec. \ref{sec:machine_learning}.
-Unfortunately, this method could not be efficiently applied to neural networks. The following theorem confirms this statement.
-
-\begin{theorem}
-	For every integer $k \geq 3$, let $G$ be a network with $d$ input nodes, a single hidden layer containing $k + 1$ nodes (one of which has a constant value 1), and a single output node. Then the problem of minimizing the zero-one loss training error in $\mathcal{F}_{G,\sign}$ is NP-hard. 
-\end{theorem}
-
-The models considered by this theorem are simplified neural networks that solve \textit{binary classification} tasks using the zero-one loss (equation \ref{formula:zero-oneloss}) with a single hidden layer composed of four or more neurons. 
-
-\begin{equation}
-	\label{formula:zero-oneloss}
-	\ell(y, \hat y) = 
-	\begin{cases}
-	0 & \text{if $y = \hat y$} \\
-	1 & \text{if $y \neq \hat y$}
-	\end{cases}
-\end{equation}
-
-This theorem demonstrates the inefficiency of ERM for a simple NN. This means that this theorem is true even for more complex neural networks and different tasks. ERM remains NP-hard even when $\mathcal{F}_{G,\sign}$ contains only linear classifiers (i.e. $G$ has no hidden nodes). However, while the cause of NP-hardness in linear models was the non-convexity of the loss function (zero-one loss in this case), in multi-layered neural networks the problem is inherent to their structure. The key observation is that the presence of hidden nodes in NN makes the loss function $\ell_t$ over an example $(x_t, t_t)$ non-convex in the weights matrix $W$ even when $\ell(x, y)$ is convex for all $y$. In general, the problem of minimizing a non-convex function is computationally intractable.  
-
-This is because NNs are successfully trained even when using algorithms that reduce the training error without any mathematical guarantee on the solution's quality. The training procedure starts with a forward propagation of the training examples in the neural network. After that, the outputs are used to quantify how good the predictions are and the error are back-propagated in the network using a descent algorithm. The standard algorithm for optimizing NNs is stochastic gradient descent (SGD):
-
-\begin{equation}
-\omega_{i, j} \leftarrow \omega_{i, j} - \eta_t \frac{\partial\ell_{Z_t}(W)}{\partial\omega_{i, j}} \quad \quad (i, j) \in E,
-\end{equation}
-where $Z_t$ is the index of a random training example and $\eta$ is an hyper-parameter that controls the step size (also called learning rate). The main idea is to calculate the partial derivative of the loss function, calculated on a training data point $t$ and the current NN status (described by the weights matrix $W$), over all the learnable parameters to adjust their values. In order to speed up convergence, the training samples can be grouped in mini-batches. Because the training error is a non-convex function of $W$, the SGD algorithm essentially finds only a local minima of the training error. The procedure to perform gradient descent on feed-forward NNs is known as \textit{error back-propagation}. 
+The doors detector we propose is built with DETR \cite{detr}. The module we develop is public available on Github, in the main repository\footnote{The main thesis's repository: \url{https://github.com/micheleantonazzi/master-thesis-robust-door-detector}.} of this thesis inside the \textsf{doors-detector} package. In this section, we describe in detail the architecture and the loss functions of DETR.
 
 \subsection{DETR}
 \label{sec:detr}
