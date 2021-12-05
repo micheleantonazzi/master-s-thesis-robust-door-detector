@@ -2,21 +2,180 @@
 \label{sec:chapter2}
 \thispagestyle{empty}
 
- This chapter reports an overview of research works regarding the task of door finding performed by autonomous robots. At first, we report the most relevant doors detection approaches based on handcrafted features extracted from visual data. Due to the predominant role that deep learning methods have acquired in Computer Vision tasks (like image classification and segmentation, scene understanding, and object detection), we survey the evolution of end-to-end methods to perform object detection. Then, we present relevant approaches to detect doors by mobile robots that exploit the advantages of deep models. The next section of this chapter surveys the open problems and challenges of Deep Learning applied to robotic vision applications. Finally, we define the importance of simulations to acquire well-formed datasets for training and testing end-to-end models engaged in robotics contexts.  
+ This chapter reports an overview of research works regarding the task of door finding performed by autonomous robots. We start by discussing the usefulness of door detection for robotics applications, reporting some challenging tasks for autonomous agents, and how they can benefit from door detection. Then, we report the most relevant doors detection approaches based on handcrafted features extracted from visual data. Due to the predominant role that deep learning methods have acquired in Computer Vision tasks (like image classification and segmentation, scene understanding, and object detection), we survey the evolution of end-to-end methods to perform object detection, reporting also some preliminary concepts of Machine and Deep Learning that are of interest for this work. Then, we present relevant approaches to detect doors by mobile robots that exploit the advantages of deep models. The next section of this chapter surveys the open problems and challenges of Deep Learning applied to robotic vision applications. Finally, we define the importance of simulations to acquire well-formed datasets for training and testing end-to-end models engaged in robotics contexts.  
+ 
+ \section{The Utility of Doors Detection for Mobile Robots}
+ 
+ Doors are useful semantic features for an active agent. By collecting information about doors, a robot can improve significantly its knowledge about the environment in which it operates. Exploration and navigation, two of the main tasks performed by a mobile robot, can be strongly influenced by exploiting knowledge about doors, such as their location and status (e.g. closed or opened). 
+ 
+ Exploration is the task in which an autonomous agent incrementally discovers features of interest in an initially unknown environment. Typically, an autonomous agent builds a map of the environment to perform navigation.  Map acquisition enables autonomous agents to navigate inside a previously unknown environment. With this procedure, a robot builds a metric map of the indoor environment it is exploring. A metric map is represented by an occupancy grid: a two-dimensional matrix in which each cell represents a sub-portion of the environment and contains the probability that the portion is occupied by an obstacle or it is free. Occupancy grids were first proposed in \cite{cuupancygridfirst} and they have become widely used for mobile robot localization, exploration, and navigation \cite{gridmapnavigation, ariel, girdmapexploration}. A way to store and visualize occupancy grid maps is to encode them in an 8-bit gray-scale image, normalizing the probability values of the cells to the range between 0
+ and 255. A further simplification in the binary occupancy grids (Fig. \ref{fig:binary_grid_map}), where each cell has a boolean value representing the occupancy status. An occupied location is represented as \textit{True} (1) while free spaces are tagged with \textit{False} (0). Collecting data about doors can improve the mapping strategy followed by mobile robots. By detecting closed doors locations by mapping, an agent can guess what floor areas are temporarily unreachable, and can consequentially act to collect the entire environment map. For example, it can open the door through a robotic arm \cite{doorcabinet} or ask help to a human operator. Another solution concerns identifying the presence of unreachable locations by detecting closed door and making a map refinement in future stages (when closed doors are eventually opened).
+ 
+ Room segmentation divides grid maps into semantically meaningful regions making the pure spatial environment model, provided by grid maps, more informative. Fig. \ref{fig:room_segmentation_map} shows an occupancy grid map divided into rooms. \citeauthor{segmentationsurvey}, \cite{segmentationsurvey}, survey the literature regarding room segmentation and provide a comparison of the most relevant methods. In \cite{segmenationfornavigation}, the authors argue that room segmentation yields significant savings in computational efforts for obtaining navigation trajectories . Likewise, the work presented \cite{segmentationhumanrobot} demonstrates that human-robot communication greatly benefits from a high-level room's division. Furthermore, cleaning agents can exploit room maps to improve their navigation strategy by creating an efficient cleaning path throughout the floor plan, as explained in \cite{segmentationcleaning}. While spatial mapping has been extensively investigated and several automatized tools have been proposed, the research community is still investigating robust methods for obtaining accurate room-level segmentation of an indoor environment. The sensors' perception is inaccurate; noise and missing data introduce several errors in robot perception. Furthermore, indoor environments are highly cluttered with furniture and other objects. Separating clutter from permanent structures such as walls and doors is difficult as furniture can occlude crucial structural features. Robust doors detection can improve the grid maps segmentation providing useful information of connections between different rooms.
+ 
+ \begin{figure}[h!]
+ 	\centering
+ 	\begin{subfigure}[b]{0.45\linewidth}
+ 		\centering
+ 		\includegraphics[width=\textwidth]{images/occupancygrid.png}
+ 		\caption{Binary occupancy grid map.}
+ 		\label{fig:binary_grid_map}
+ 	\end{subfigure}
+ 	\hfill
+ 	\begin{subfigure}[b]{0.48\linewidth}
+ 		\centering
+ 		\includegraphics[width=\textwidth]{images/semanticmap.png}
+ 		\caption{Semantic map \cite{placecategorization}.}
+ 		\label{fig:semantic_map}
+ 	\end{subfigure}
+ 	\newline
+ 	\newline
+ 	\begin{subfigure}[b]{0.99\linewidth}
+ 		\centering
+ 		\includegraphics[width=\textwidth]{images/roomsegmentation.png}
+ 		\caption{Room segmentation map \cite{segmentation3d}.}
+ 		\label{fig:room_segmentation_map}
+ 	\end{subfigure}
+ 	\caption{Three different types of maps.}
+ 	
+ \end{figure}
+ 
+ The room level map obtained through room segmentation can be further improved by exploiting scene recognition or place categorization. This task consists of semantically labeling indoor scenes, such as an ``office'', a ``kitchen'', or a ``bedroom''. Through place categorization, an autonomous agent builds a semantic map (an example is shown by Fig. \ref{fig:semantic_map}), in which any environment location is tagged with a label. In literature, there are a lot of studies concerning place categorization by autonomous agents \cite{scenerecognitionaudio, scenerecognitiononjectdetection, placecategorization, placecategorizationlargescale}. These approaches collect useful information from the scenes (like audio signals or RGB images), then classify these data to divide the environment into rooms, and finally assign a semantic label to each place. One of the main problems is to correctly segment the environment into rooms. This is because data acquired in different rooms can be similar (in this case adjacent rooms can be considered as the same semantic place) or the same room can present different features which can result in an incorrect division of a single room. Identifying the rooms' connections and estimating their location allows mobile robots
+ to robustly identify different rooms. Furthermore, doors detection can help these methods to find the precise location in which a semantic place ends and another room begins, performing a more refined place segmentation and categorization.  
+ 
+ Another task that can get benefit from doors detection is Semantic SLAM (Simultaneous Localization and Mapping). Semantic SLAM aims to build a semantic map online during exploration without a complete and previously-acquired knowledge of the environment. Recent Semantic SLAM methods combine classical geometry-based estimation with Deep Learning-based object detection. The work presented in \cite{semanticslamsurvey} surveys and evaluates the most relevant approaches that perform Semantic SLAM. The authors argue that semantic segmentation is the largest source of error in the analyzed methods. Doors are useful semantic features of indoor environments and their detection can be added in Semantic SLAM approaches. Furthermore, doors detection can improve the segmentation accuracy performed in previous stages, because the robot can robustly group the data acquired in different rooms. 
+ 
+ Another task that can be improved by exploiting doors recognition is navigation. The authors of \cite{sonarandivisualdoordetection} propose a method to anticipate the door's crossing during navigation, in order to improve the door traversing task. A similar approach is presented in \cite{doorsandnavigation}, where \citeauthor{doorsandnavigation} describe a method for finding doors online during navigation, facilitating how a robot approaches doors. These works prove the usefulness of doors' data for navigation in autonomous agents.
  
  \section{Doors Detection using Handcrafted Features}
   In literature, there are a lot of different studies concerning doors detection. One of the firsts attempts, described in \cite{sonarandivisualdoordetection}, combines visual information and sonar sensors to safely traverse doors by a B21 robot. Doors present a challenging obstacle for this agent, so the goal consists of traversing opened doors using a certain angle to avoid collisions. This activity is divided into two sub-tasks: door detection and door crossing. The first one is of interest to this thesis. \citeauthor{sonarandivisualdoordetection}, \cite{sonarandivisualdoordetection}, consider an opened door as a squared noisy rectangular segment in an image. To detect it, this approach applies a vertical Sobel Filter to the grayscaled image. If it is detected a column wider than a certain threshold, it is considered a door. The sonar sensors are used to obtain the robot's distance from possible doors, to confirm the matches and avoid false positives (wrong recognition of doors).
   
   The method of \cite{humanoid} proposes a solution to detect both a door and its knob by a humanoid robot. This solution recognizes the door's features and works sufficiently fast to perform online. \citeauthor{humanoid} \cite{humanoid} argue that a door does not have very discriminative features, and the door's appearance can vary dramatically as viewpoint changes. To solve this issue, the proposed method at first extracts features points from input frames using an optimized version of the CenSurE filter, described in \cite{censure}. Then, the Randomized Tree algorithm classifies these features to determine if a frame contains a door (the approach is reported in \cite{treefeature}). The tree predictor is trained offline using the feature points extracted from \emph{base images} previously acquired in the real environment. If a door is detected, the robot walks toward the door and localizes its knob using a segmentation technique and some general constraints (size, ratio, and height bounds).
   
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/corner_door.png}
+	\caption{The geometric model of a door (a). The ideal model (b).   The model with occlusion (c) and perspective deformation (d). Image from \cite{cornerdetector}.}
+\end{figure}
+  
   Another method for recognizing doors in unfamiliar environments is described in \cite{edgeandcornerdoorsdetector}. In this work, doors are considered significant landmarks for navigation and self-localization not only for an autonomous agent but also for blind people. This method takes into account of a variety of conditions, including differences in illumination, scale changes, deformation caused by perspective and occlusion, and variance of doors’ color, texture, or appearance.  
    At first, images are converted in grayscale and smoothed by Gaussian lowpass filter. Then, edges and corners are extracted from the pre-processed frames, using respectively the Canny Edge Detector, \cite{canny}, and the method described in \cite{cornerdetector}. The authors then define a geometric shape model of doors, which is composed of two horizontal and two vertical lines between four corners. These features are then aggregated to find possible doors: only those groups that match the model are considered as true positives.  
    
-   \begin{figure}[h!]
-   	\centering
-   	\includegraphics[width=0.65\linewidth]{images/corner_door.png}
-   	\caption{The geometric model of a door (a). The ideal model (b).   The model with occlusion (c) and perspective deformation (d). Image from \cite{cornerdetector}.}
-   \end{figure}
+\section{Machine Learning Preliminaries}
+\label{sec:machine_learning}
+
+This thesis approaches the problem of detecting doors as well-known Computer Vision task: object detection. Today, Computer Vision strongly depends on the power of deep learning \cite{deeplearningoverview}.
+Deep Learning is a sub-field of Machine Learning, which is the study of computer algorithms that can improve automatically through experience by the use of data.  It is a powerful technique suitable when it is not feasible to develop a standard algorithm to solve a difficult task. For example, in the context of this thesis, we use Machine Learning to detect doors in RGB images. A \textit{learning algorithm} uses sample pairs of training data to create a model, also called predictor, that is able to classify other unseen data. The first important aspect for a machine learning problem is the dataset. Typically, a dataset is composed of pairs of data taken from two different domains: the \textit{data space} and the \textit{label set}.
+
+\begin{definition}[Data domain]
+	The data domain, denoted as $\mathcal{X}$, is the set of all possible data points for a given learning problem. Each data point is defined by features. In some cases, the features are encoded as vectors of real numbers. Such a representation is called \textit{natural} because the data consist of homogeneous quantities, like pixels in an image or words' frequencies in a document. A data point is denoted as $x \in \mathcal{X}$ and it is defined as a vector of features $x = (x_1, ..., x_d)$.
+\end{definition}
+
+\begin{definition}[Label set]
+	$\mathcal{Y}$ denotes the set of all possible labels that a data point can assume. For a classification problem, the label set is typically finite and small (such as $\mathcal{Y} = \{\text{sport}, \text{politics}, \text{business}\}$ for a categorization task on documents). Otherwise, for a regression task, the label set is typically equal to $\mathbb{Q}$, which is the rational numbers' set. In this case, the label set is infinite.
+\end{definition}
+
+In a \textit{supervised} learning problem, the data points are tagged with their respective ground-truth labels. In particular, the dataset's entries are pairs $p = (x, y)$, where $x \in \mathcal{X}$ is a data point and $y \in \mathcal{Y}$ is the label assigned to it. A \textit{supervised} learning algorithm is a technique that aims to build a model learned from a \textit{training set}. This paradigm is called \textit{learning by examples}. An example is a pair $p=(x, y)$, where $x$ is a data point represented by a vector of features and $y$ is its ground-truth label, while the training set is composed of a series of examples $S=\{(x_1, y_1), ..., (x_m, y_m)\}$. A \textit{supervised learning algorithm} for \textit{learning by examples} receives a training set and outputs a learned model.
+
+\begin{definition}[Model]
+	A model is a function $f:\mathcal{X} \to \mathcal{Y}$ that maps data points to labels. 
+\end{definition}
+
+The training examples come from some generally unknown probability distribution and the goal of a learning algorithm is to infer a function that approximates this distribution (or makes a generalization of it) to produce sufficiently accurate predictions in new cases. During the training procedure, the examples (that are pair $p = (x, y)$ where $x$ is the data point and $y$ is its ``true'' label) are fed into the model to be classified. At each step, the goodness of the model's predictions is measured through the loss function. Then, according to the loss function's value, the internal representation of the model is adjusted to produce more refined predictions.
+
+\begin{definition}[Loss function]
+	A loss function $\ell(y, \hat y)$ measures the discrepancy between the predicted label $\hat y$ and the ground-truth label $y$. In a correct prediction the loss function's values is $0$: $\ell (y, \hat y) = 0$.
+\end{definition}
+
+Informally speaking, a model represents a function $f$ that generate predictions $\hat y = f(x)$ minimizing the the loss function $\ell(y, \hat y)$ over the data points $x \in \mathcal{X}$. In practice, the function $f$ is determined by a certain configuration of parameters and/or the internal structure of a learning model.
+
+In order to estimate the predictive power of a model, we typically use a \textit{test set}. This is a set of examples $T=\{(x_1', y_1'), ..., (x_n', y_n')\}$ to which the learning algorithm does not have access during the training phase. During the test procedure, each pair in the \textit{test set} is fed into the model in order to measure the goodness of each prediction compared with the ground-truth label. This quantity is measured by the \textit{loss function}. 
+
+The test set allows to determine the predictive power of a learned model on unseen new data. To measure the goodness of a predictor, we can calculate the \textit{test error} over a test set $T$. Given a loss function $\ell$, the test error is
+\begin{equation}
+\frac{1}{n} \sum_{s=1}^{n}\ell(y_s', f(x_s'))
+\end{equation}
+where $n$ is the test set's cardinality ($n = |S|$), $y_s'$ is the ground-truth label of the s-th test example and $f(x_s')$ returns the label of the s-th data point produced by the predictor $f$. Since the test set is disjoint from the training set and emulates the unseen data, it cannot be used during the learning phase.
+
+A way to train a learning model is the Empirical Risk Minimization (ERM) approach. ERM offers a theory to design learning algorithms that generate predictors with a low test error considering only the training set. ERM assumes that the \textit{training error} (the error computed over a training set $T$) of a predictor is directly correlated to its test error. The training error is given by:
+
+\begin{equation}
+\hat \ell(f) = \frac{1}{m} \sum_{t=1}^{m}\ell\big{(}y_t, f(x_t)\big{)}
+\end{equation}
+where the $m$ is the training set's cardinality ($m = |T|$).
+
+\begin{definition}[Empirical risk minimization] 
+	Let $\mathcal{F}$ a set of predictors and $\ell$ a loss function. The empirical risk minimizer (ERM) is the learning algorithm that outputs some predictor $f \in \mathcal{F}$ minimizing the training error:
+	
+	\begin{equation}
+	\hat f \in \argmin_{f \in \mathcal{F}} \hat \ell(f),
+	\end{equation}
+	where $\in$ denotes there could be multiple $f \in \mathcal{F}$ that minimize the training error.
+\end{definition}
+
+The ERM algorithm fails when no predictors in $\mathcal{F}$ have a low test error, in particular when
+
+\begin{equation}
+\min_{f \in \mathcal{F}} \frac{1}{n} \sum_{s = 1}^{n} \ell(y_s', f(x_s'))
+\end{equation} 
+is high. The two main ways of failing for a generic learning algorithm are:
+\begin{itemize}
+	\item \textbf{underfitting:} when a learning algorithm tends to outputs predictors whose both test and training errors are high and close to each other. This means that possible predictors are unable to correctly classify the samples in the training set as well as those in the test set. This situation could depend on the training test size: if it is too small it can not represent well the data points' distribution or $\mathcal{F}$ (the set of the possible predictors) are too large with respect to the training set dimensions. Another reason that causes underfitting is the cardinality of $\mathcal{F}$. If the set of the possible predictors is small, there could not be a subset of them with a small test error. This means that the learning algorithm is not complex enough to output good learned models. In other words, when a model underfits it is not able to represent well the problem, failing to classify examples from both training and test sets;
+	\item \textbf{overfitting:} when a learning algorithm tends to output predictors whose training error is low (or it tends to zero) while the test error is high. In this situation, the predictors produced by a learning algorithm learn too much from the training data and, as a result, are unable to produce good predictions on new data. This means that those predictors do not generalize the problem, but are specialized in dealing only with the data used during the training phase.
+\end{itemize}
+
+When $A$ is an ERM learning algorithm and the size $m$ of the training set is fixed, we should expect overfitting when $\log_2|\mathcal{F}| \gg m$, so the set of possible predictors is too large with respect to the training set's size. On the other hand, when $\log_2|\mathcal{F}| \ll m$ we should expect underfitting.
+
+\section{Deep Learning Preliminaries}
+Deep Learning is a sub-field of Machine Learning based on \textit{neural networks}. This learning algorithm is inspired by the information processing and the distributed communication of biological brains. Neural networks (NNs) are a large and complex class of predictors, based on artificial neurons.
+
+\begin{definition}[Neuron]
+	An artificial neuron is a mathematical function inspired by biological neurons, which represents the elementary units in an artificial NN. The mathematical function implemented by a neuron is $g(x) = \sigma(\omega^\intercal \cdot x)$, where $\sigma$ is the (non-linear) activation function, $\omega$ is the weight vector of the learnable parameters, and $x$ is the input vector of the neuron. This means that each input is separately weighted and the sum is passed through a non-linear function. The activation function usually has a sigmoid shape and often it is monotonically increasing, continuous, and bounded. A single neuron can approximate only linear functions.	
+\end{definition}
+
+Artificial neural networks are composed of a series of simple predictions made by neurons. The adjective ``deep'' in Deep Learning refers to the use of multiple layers in NNs. The most simple model of neural networks is called feed-forward. 
+
+\begin{definition}[Feed-forward neural network]
+	A feed-forward neural network computes functions of the from $f : \R^d \to \R^n$. Its structure is a directed acyclic graph $G = (V, E)$, in which $V$ is the set of nodes (neurons) and $E$ is the set of edges that connects the neurons. The presence of multiple neurons allows the neural network to infer non-linear functions. The vertices in $V$ are divided into three subgroups: $V = V_{in} \cup V_{hid} \cup V_{out}$, where $V_{in}$ (with $|V_{in}| = d$:	 the feature space's dimension) are the input nodes which have no incoming edges, $V_{out}$ (with $|V_{out}| = n$, the number of labels) are the output nodes which have no outgoing edge, and $V_{hid}$ are the hidden nodes, which have both incoming and outgoing edges.
+\end{definition}
+
+The most simple form of the feed-forward neural network is the multi-layer perceptron (MLP), in which the nodes of $V$ is partitioned in a sequence of consecutive layers such that each node of a layer has incoming edges only from
+nodes in the previous layer and outgoing edges only to nodes of the next layer.  The layers containing the hidden nodes are called hidden layers. The learnable parameters are the weights assigned to the edges between neurons. 
+A parameter $\omega_{i,j} \in \R$ (called weight) is associated with every edge pair $(i, j) \in E$.  We use $W$ to denote the $|V | \times |V |$ weight matrix, where $(i, j) \notin E$ implies $\omega_{i,j} = 0$. The graph $G$, the weights matrix
+$W$, and the activation function $\sigma$ define the function $f = f_{G,W,\sigma}$ computed by the network.  Note that when $n = 1$ (one output node) and $|V_{hid}| = 0$ (no hidden nodes), then $F_{G,\sign}$ only contains linear classifiers of the form $f(x) = \sign(\omega^\intercal \cdot x)$. 
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.85\linewidth]{images/mlp.png}
+	\caption{An example of a multi-layer perceptron, with $d$ input nodes and $n$ output nodes. In this example, the connectivity between layers is complete (there are no missing edges).}
+\end{figure}
+
+The training of neural networks is not trivial. The most natural approach for training a model in $\mathcal{F}_{G,\sigma}$ is ERM, as mentioned in Sec. \ref{sec:machine_learning}.
+Unfortunately, this method could not be efficiently applied to neural networks. The following theorem confirms this statement.
+
+\begin{theorem}
+	For every integer $k \geq 3$, let $G$ be a network with $d$ input nodes, a single hidden layer containing $k + 1$ nodes (one of which has a constant value 1), and a single output node. Then the problem of minimizing the zero-one loss training error in $\mathcal{F}_{G,\sign}$ is NP-hard. 
+\end{theorem}
+
+The models considered by this theorem are simplified neural networks that solve \textit{binary classification} tasks using the zero-one loss (equation \ref{formula:zero-oneloss}) with a single hidden layer composed of four or more neurons. 
+
+\begin{equation}
+\label{formula:zero-oneloss}
+\ell(y, \hat y) = 
+\begin{cases}
+0 & \text{if $y = \hat y$} \\
+1 & \text{if $y \neq \hat y$}
+\end{cases}
+\end{equation}
+
+This theorem demonstrates the inefficiency of ERM for a simple NN. This means that this theorem is true even for more complex neural networks and different tasks. ERM remains NP-hard even when $\mathcal{F}_{G,\sign}$ contains only linear classifiers (i.e. $G$ has no hidden nodes). However, while the cause of NP-hardness in linear models was the non-convexity of the loss function (zero-one loss in this case), in multi-layered neural networks the problem is inherent to their structure. The key observation is that the presence of hidden nodes in NN makes the loss function $\ell_t$ over an example $(x_t, t_t)$ non-convex in the weights matrix $W$ even when $\ell(x, y)$ is convex for all $y$. In general, the problem of minimizing a non-convex function is computationally intractable.  
+
+This is because NNs are successfully trained even when using algorithms that reduce the training error without any mathematical guarantee on the solution's quality. The training procedure starts with a forward propagation of the training examples in the neural network. After that, the outputs are used to quantify how good the predictions are and the error are back-propagated in the network using a descent algorithm. The standard algorithm for optimizing NNs is stochastic gradient descent (SGD):
+
+\begin{equation}
+\omega_{i, j} \leftarrow \omega_{i, j} - \eta_t \frac{\partial\ell_{Z_t}(W)}{\partial\omega_{i, j}} \quad \quad (i, j) \in E,
+\end{equation}
+where $Z_t$ is the index of a random training example and $\eta$ is an hyper-parameter that controls the step size (also called learning rate). The main idea is to calculate the partial derivative of the loss function, calculated on a training data point $t$ and the current NN status (described by the weights matrix $W$), over all the learnable parameters to adjust their values. In order to speed up convergence, the training samples can be grouped in mini-batches. Because the training error is a non-convex function of $W$, the SGD algorithm essentially finds only a local minima of the training error. The procedure to perform gradient descent on feed-forward NNs is known as \textit{error back-propagation}.
  
  \section{Deep Learning in Object Detection}
  As the performance of hand-crafted features based detectors are unable to increase \cite{deeplearningoverview}, Computer Vision researchers started to use Deep Learning methods for object detection. Today object detection strongly depends on the power of Deep Learning. \citeauthor{computervisionsurvey} in \cite{computervisionsurvey} survey the history of the most relevant approaches to perform this challenging task. 
@@ -36,7 +195,7 @@
  
   \begin{figure}[h!]
  	\centering
- 	\includegraphics[width=0.8\linewidth]{images/yolo.png}
+ 	\includegraphics[width=\linewidth]{images/yolo.png}
  	\caption{The detection mechanism of YOLO, the first one-stage detector. YOLO models detection as a regression problem. It divides the image into an $S \times S$ grid and for each grid cell predicts $B$ bounding boxes, confidence for those boxes,
  	and $C$ class probabilities. These predictions are encoded as an
  	$S \times S \times (B * 5 + C)$ tensor. Image from \cite{yolo}.}
@@ -65,8 +224,8 @@
  
  \begin{figure}[h!]
  	\centering
- 	\includegraphics[width=0.6\linewidth]{images/rvchallenges.png}
- 	\caption{Current Challenges for Deep Learning in Robotic Vision. The authors categorize these challenges into three conceptually orthogonal axes:
+ 	\includegraphics[width=0.75\linewidth]{images/rvchallenges.png}
+ 	\caption{Current challenges for Deep Learning in Robotic Vision. The authors categorize these challenges into three conceptually orthogonal axes:
  		learning, embodiment, and reasoning. The learning axis is of interest for this thesis. Image from \cite{surveydeeplimits}.}
  \end{figure}
  
