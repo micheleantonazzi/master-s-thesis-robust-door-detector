@@ -6,7 +6,7 @@ In this chapter, we define in detail the system we develop to solve to implement
 	\item \textbf{Doors Detector:} this module implements the main requirement of this thesis: the development of a doors detector for indoor autonomous robots. We approach the problem of finding doors as an object detection task, that we address using a deep learning technique. Doors detector is implemented through DETR \cite{detr}, a deep end-to-end architecture to perform object detection. To better understand how DETR works, we provide an overview of the principal machine learning and deep learning principles. Finally, we described in detail the DETR's architecture. 
 	\item \textbf{Simulation Environment:} the second part of our system is the simulation environment used to collect the dataset. As described in Sec. \ref{sec:importanceofsimulation}, simulation is widely used in robotic applications, so we employ this technique to collect the dataset for training the doors detector. The acquisition of the doors dataset solves the lack of suitable datasets for robotic applications, as explained in Sec. \ref{sec:goals}. We choose Gibson \cite{gibson} as the virtualization framework and Matterport3D \cite{matterport} as the worlds' dataset. In the dedicated section, we describe the main functionalities of Gibson and Matterport3D. Then, we report the issues of these technologies that prevent correct and fast data collection. We finally explain the adopted solution to overcome these limitations: we developed a modified version of Gibson that implements a new simulation stage in which the robot can be placed freely in any location.
 	\item \textbf{Pose Estimator:} this module emulates a possible navigation strategy used by a real autonomous agent and extracts  the locations from which the data points are collected. Thanks to this module unified with the new version of Gibson, we offer a method to easily acquire a visual dataset which models the \textit{open-set} conditions in which an autonomous agent operates. In this section, we report the underlying algorithms implemented in this component.
-	\item \textbf{Dataset Manager:} another important aspect of the system provided by this thesis is the dataset. We report in detail by which data it is composed, describing also the labeling procedure. In addition, we mention the framework we developed for managing the dataset.
+	\item \textbf{Dataset Manager:} another important aspect of the system provided by this thesis is the dataset. We report in detail by which data it is composed, describing also the labeling procedure. In addition, we mention the framework we developed for managing the dataset (explained in detail in Appendix \ref{sec:generic_dataset}).
 	\item  \textbf{Model Evaluator:} the last component of our system aims to evaluate the model's performance. As reported in Sec. \ref{sec:solution}, we propose a new metric that considers also the negative images (examples with no objects of interest). For this module, we describe the metric we propose and the procedure to obtain its results.
 \end{enumerate}
 
@@ -423,78 +423,7 @@ R &= (\text{ID} \gg 16) &\mod 256,
 \end{equation}
 where ID is the object category code and $\gg$ represents the bitwise right shift operation. 
 
-In this section, we present the framework we develop to manage the vision dataset collected in this thesis. Then, we proceed by describing the dataset labeling procedure, reporting the difficulties encountered during this phase, and defining the final dataset's composition.
-
-\subsection{The Dataset Management Framework}
-\label{sec:generic_dataset}
-In the initial phase of this thesis, we did not know what data characterized the collected examples. To overcome this uncertainty, we develop \textit{generic-dataset}\footnote{The generic-dataset repo: \url{https://github.com/micheleantonazzi/generic-dataset}.}, a configurable framework that automatically generates the code and the necessary classes to manage a dataset of any kind. This is possible using the \textit{meta-programming} paradigm offered by Python. Meta-programming is a technique in which computer programs have the ability to generate new code, create other programs, and modify their internal structure while running. This allows programs greater flexibility to efficiently handle new situations without recompilation. 
-
-In Python, the meta-programming paradigm is implemented using \textit{decorators} and \textit{meta-classes}. A decorator allows programmers to modify the behavior of functions or classes. In other words, a decorator wraps an entity into a function in order to extend the behavior of the wrapped function or class, without permanently modifying it. The meta-classes, otherwise, represent a further implementation of meta-programming. In Python, everything is an object and classes are objects as well. A class in Python must have a type and it is an instance of another super-type, called meta-class. In simple terms, a meta-class is the definition of a class. The default meta-class which is responsible for making classes is called \textit{type}. Fig. \ref{fig:metaclass} visually explains the concept just reported: an object is an instance of a class and a class is an instance of a meta-class.
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=\textwidth]{images/metaclass-hierarchy.jpeg}
-	\caption{The hierarchy of objects, classes and meta-classes.}
-	\label{fig:metaclass}
-\end{figure}
-
-Thanks to meta-programming, the programmer can write his own custom meta-classes to modify the way from which classes are generated by performing extra actions or injecting code. By exploiting this principle, the \textit{generic-dataset} framework offers an intuitive API that creates a custom class to model a particular examples' type of a generic dataset. To do this, this API, implemented by a \textsf{SampleGenerator} object, creates a meta-class according to the directions of the programmer, that defines the final desired class to deal with precise dataset's examples. In the constructor of \textsf{SampleGenerator}, the user specifies the name of the generated sample class and the label set. In this way, both regression or classification problems can be modeled. In a regression problem, the labels are real numbers and the label space is typically infinite. In this first case, the label set passed to the constructor must be empty. Otherwise, in a classification problem, the label set must contain all the possible labels that an example can assume. The programmer can also add data fields to the final generated class, specifying their name and type. In this case, the framework automatically generates useful methods to manipulate the custom fields (like getters and setters functions). Furthermore, the user can add custom methods to the final class in order to manipulate the example's fields. Finally, using the \textsf{generate\_sample\_class} method, \textsf{SampleGenerator}, the user obtains the generated custom class (which is an instance of the configured meta-class) which models a specific type of example. The instances of the generated class, that deal directly with the examples, are thread-safe. The generated class automatically implements this feature by assigning a lock to each data field. Then, each method is decorated with a function that acquires the locks of the fields used within each method before execution and then releases them. Also, the custom methods can be synchronized by specifying the name of the used fields.
-
-Despite we did not know the exact final composition of our dataset, surely we will deal with image manipulation. To address this requirement,  \textit{generic-dataset} offers a useful utility to manipulate RGB images, that in Python are commonly stored in NumPy arrays. This utility, implemented by the \textsf{DataPipeline} class, generates an elaboration pipeline to modify a NumPy array. A pipeline consists of a series of operations performed consecutively that can be executed in CPU or in GPU according to the programmer's needs without changing the code. This is possible using CuPy\footnote{The CuPy web page: \url{https://cupy.dev/}.}, an open-source array library for GPU-accelerated computing with Python. The CuPy's interface is highly compatible with NumPy, allowing to write agnostic programs which can be executed in CPU or GPU by replacing the engine (NumPy or CuPy), without any code change. A pipeline can be customized by adding functions to modify the initial array and then executed using the \textsf{run} method. If the \textsf{use\_gpu} flag is set as \textsf{False}, the pipeline is synchronously executed in the CPU. Otherwise, if such flag is \textsf{True}, the operations are asynchronously performed by the GPU, so the user must synchronize the two elaboration units through the \textsf{get\_data} method. This mechanism is integrated into the class generated by \textsf{SampleGenerator}. It offers the possibility to automatically create an elaboration pipeline for the fields of the generated sample class. In addition, pipelines are protected with a dedicated lock which prevents data access and modification when during the execution of the correspondent pipeline.
-
-The \textit{generic\_dataset} framework provides a mechanism to manage the dataset's persistence. It automatically organizes the folder hierarchy to store and organize the dataset and offers the necessary methods to save and load the examples. The classes generated by \textsf{SampleGenerator} are sub-type of \textsf{GenericSample} class, which provides a utility method to manage an example instance class of any kind. When the programmer adds a new field to the generated class, it must specify if it belongs to the dataset and, if so, it must provide the necessary functions for saving and loading such data type to the disk. The dataset folder hierarchy is organized as follows. The main directory is divided into sub-folders, that could specify different data categories or different moments in which the data are collected. Then, for a classification problem, the samples are divided into another level of sub-directories according to their label. Otherwise, in a regression task, the samples are saved in the same directory and the labels are stored in a dedicated file. Finally, the examples' fields are saved in different folders and the files inside them are named to reconstruct the acquisition order. More precisely, the file name contains two counters: the relative count and the absolute count. The first indicates the example's number based in its label's folder while the latter is the absolute count of the sample over all dataset. For a regression problem, these two values are equal because all examples belong to the same directory. Fig. \ref{fig:structuredataset} visually explain the folder hierarchy of a classification (Fig. \ref{fig:structureclassification}) and a regression (Fig. \ref{fig:structureregression}) problem. The entire dataset can be managed by an instance of \textsf{DatasetManager} class, while each folder at the first nesting level is controlled by an instance of \textsf{DatasetFolderManager}.
-
-\begin{figure}[h!]
-	\centering
-	\begin{subfigure}[b]{0.5\textwidth}
-		\dirtree{%
-			.1 MAIN\_DATASET\_FOLDER.
-			.2 FOLDER\_1.
-			.3 0.
-			.4 FIELD\_1.
-			.5 field\_name\_rc\_ac.
-			.5 field\_name\_rc\_ac.
-			.5 \vdots.
-			.4 FIELD\_2.
-			.5 \vdots.
-			.3 1.
-			.4 FIELD\_1.
-			.5 \vdots.
-			.4 FIELD\_2.
-			.5 \vdots.
-			.2 FOLDER\_2.
-			.3 \vdots.
-			.2 \vdots.
-		}
-		\caption{}
-		\label{fig:structureclassification}
-	\end{subfigure}
-	\begin{subfigure}[b]{0.4\textwidth}
-		\dirtree{%
-			.1 MAIN\_DATASET\_FOLDER.
-			.2 FOLDER\_1.
-			.3 LABEL.
-			.4 label\_rc\_ac.
-			.4 label\_rc\_ac.
-			.4 \vdots.
-			.3 FIELD\_1.
-			.4 field\_name\_rc\_ac.
-			.4 field\_name\_rc\_ac.
-			.4 \vdots.
-			.3 FIELD\_2.
-			.4 field\_name\_rc\_ac.
-			.4 field\_name\_rc\_ac.
-			.4 \vdots.
-			.2 FOLDER\_2.
-			.3 \vdots.
-			.2 \vdots.
-		}
-		\caption{}
-		\label{fig:structureregression}
-	\end{subfigure}
-	\caption{The structure of a binary classification dataset (a) and a regression dataset (b). The files' names are are lowercase, where \textsf{rc} indicates the relative count of an example inside its label's folder, and \textsf{ac} represents the example's absolute count. }
-	\label{fig:structuredataset}
-\end{figure}
+In this section, we describe the dataset labeling procedure, reporting the difficulties encountered during this phase, and defining the final dataset's composition. In addition, we develop a framework, called \textit{generic-dataset}, to manage a dataset of any kind, which also implements a useful utility to elaborate images and long arrays in GPU. We report the technical details of \textit{generic-dataset} in Appendix \ref{sec:generic_dataset}.
 
 
 \subsection{Dataset Labeling and Composition}
@@ -641,7 +570,7 @@ The metric we use to evaluate the model's performance in the positive image is t
 	\end{itemize}
 	\item when the matching procedure ends, the  ground-truth boxes not matched  are considered as false negative (FN);
 	\item the true and false positives found during the matching operations are saved in order to compute the values of precision (Eq. \ref{eq:precision}) and recall (Eq. \ref{eq:recall}) at each matching step; 
-	\item the final AP score is the area under the precision/recall curve Differently from the 11-points interpolation performed by the Pascal VOC metric, we interpolate such a curve with a variable set $L$ of points, considering local maximum of the precision/recall curve. This interpolation produces a more refined result than the 11-points interpolation performed in Pascal VOC metric expressed in Eq. \ref{eq:11-point}).
+	\item the final AP score is the area under the precision/recall curve Differently from the 11-points interpolation performed by the Pascal VOC metric, we interpolate such a curve with a variable set $L$ of points, considering the local maximums of the precision/recall curve. This interpolation produces a more refined result than the 11-points interpolation performed in Pascal VOC metric expressed in Eq. \ref{eq:11-point}).
 \end{enumerate} 
 
 \begin{figure}[h!]
@@ -651,7 +580,7 @@ The metric we use to evaluate the model's performance in the positive image is t
 	\label{fig:interpolation}
 \end{figure}
 
-\paragraph{Negative Images} The negative images do not contain objects of interest, so they are evaluated in a different way. The procedure is inspired by the metric of Pascal VOC challenge \cite{pascal} with some refinements. As mentioned in Sec. \ref{sec:detr}, DETR outputs a fixed number of predictions for every image. The back bounding boxes do not have a dedicated label, but they are characterized by low accuracy. First of all, the predicted bounding boxes in the negative images lost the labels assigned by the model (\textsf{closed} or \textsf{open} doors). Then, the bounding boxes with a low confidence value are considered as TP (true positive) while those with a high confidence are FP (false positives). Finally, the metric we propose calculates the AP score on the average/precision curve. More in detail, the AP value in the negative images is computed as follow:
+\paragraph*{Negative Images} The negative images do not contain objects of interest, so they are evaluated in a different way. The procedure is inspired by the metric of Pascal VOC challenge \cite{pascal} with some refinements. As mentioned in Sec. \ref{sec:detr}, DETR outputs a fixed number of predictions for every image. The back bounding boxes do not have a dedicated label, but they are characterized by low accuracy. First of all, the predicted bounding boxes in the negative images lost the labels assigned by the model (\textsf{closed} or \textsf{open} doors). Then, the bounding boxes with a low confidence value are considered as TP (true positive) while those with a high confidence are FP (false positives). Finally, the metric we propose calculates the AP score on the average/precision curve. More in detail, the AP value in the negative images is computed as follow:
 
 \begin{enumerate}
 	\item the labels assigned by the model to the bounding boxes in the negative images are not considered. These bounding boxes take a unique label indicating all negative boxes (which we set to $ -1 $);

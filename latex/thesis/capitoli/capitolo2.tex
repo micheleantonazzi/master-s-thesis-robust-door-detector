@@ -2,7 +2,7 @@
 \label{sec:chapter2}
 \thispagestyle{empty}
 
- This chapter reports an overview of research works regarding the task of door finding performed by autonomous robots. We start by discussing the usefulness of door detection for robotics applications, reporting some challenging tasks for autonomous agents, and how they can benefit from door detection. Then, we report the most relevant door detection approaches based on handcrafted features extracted from visual data. Due to the predominant role that deep learning methods have acquired in Computer Vision tasks (like image classification and segmentation, scene understanding, and object detection), we survey the evolution of end-to-end methods to perform object detection, reporting also some preliminary concepts of Machine and Deep Learning that are of interest for this work. Then, we present relevant approaches to detect doors by mobile robots that exploit the advantages of deep models. The next section of this chapter surveys the open problems and challenges of Deep Learning applied to robotic vision applications. Finally, we define the importance of simulations to acquire well-formed datasets for training and testing end-to-end models engaged in robotics contexts.  
+ This chapter reports an overview of research works regarding the task of door finding performed by autonomous robots. We start by discussing the usefulness of door detection for robotics applications, reporting some challenging tasks for autonomous agents, and how they can benefit from door detection. Then, we report the most relevant door detection approaches based on handcrafted features extracted from visual data. Due to the predominant role that Deep Learning methods have acquired in Computer Vision tasks (like image classification and segmentation, scene understanding, and object detection), we survey the evolution of end-to-end methods to perform object detection, reporting also some preliminary concepts of Machine and Deep Learning that are of interest for this work. Then, we present relevant approaches to detect doors by mobile robots that exploit the advantages of deep models. The next section of this chapter surveys the open problems and challenges of Deep Learning applied to robotic vision applications. Finally, we define the importance of simulations to acquire well-formed datasets for training and testing end-to-end models engaged in robotics contexts.  
  
  \section{The Utility of Door Detection for Mobile Robots}
  
@@ -64,7 +64,7 @@
 \section{Machine Learning Preliminaries}
 \label{sec:machine_learning}
 
-This thesis approaches the problem of detecting doors as well-known Computer Vision task: object detection. Today, Computer Vision strongly depends on the power of deep learning \cite{deeplearningoverview}.
+This thesis approaches the problem of detecting doors as well-known Computer Vision task: object detection. Today, Computer Vision strongly depends on the power of Deep Learning \cite{deeplearningoverview}.
 Deep Learning is a sub-field of Machine Learning, which is the study of computer algorithms that can improve automatically through experience by the use of data.  It is a powerful technique suitable when it is not feasible to develop a standard algorithm to solve a difficult task. For example, in the context of this thesis, we use Machine Learning to detect doors in RGB images. A \textit{learning algorithm} uses sample pairs of training data to create a model, also called predictor, that is able to classify other unseen data. The first important aspect for a machine learning problem is the dataset. Typically, a dataset is composed of pairs of data taken from two different domains: the \textit{data space} and the \textit{label set}.
 
 \begin{definition}[Data domain]
@@ -87,7 +87,7 @@ The training examples come from some generally unknown probability distribution 
 	A loss function $\ell(y, \hat y)$ measures the discrepancy between the predicted label $\hat y$ and the ground-truth label $y$. In a correct prediction the loss function's values is $0$: $\ell (y, \hat y) = 0$.
 \end{definition}
 
-Informally speaking, a model represents a function $f$ that generate predictions $\hat y = f(x)$ minimizing the the loss function $\ell(y, \hat y)$ over the data points $x \in \mathcal{X}$. In practice, the function $f$ is determined by a certain configuration of parameters and/or the internal structure of a learning model.
+Informally speaking, a model represents a function $f$ that generate predictions $\hat y = f(x)$ minimizing the loss function $\ell(y, \hat y)$ over the data points $x \in \mathcal{X}$. In practice, the function $f$ is determined by a certain configuration of parameters and/or the internal structure of a learning model.
 
 In order to estimate the predictive power of a model, we typically use a \textit{test set}. This is a set of examples $T=\{(x_1', y_1'), ..., (x_n', y_n')\}$ to which the learning algorithm does not have access during the training phase. During the test procedure, each pair in the \textit{test set} is fed into the model in order to measure the goodness of each prediction compared with the ground-truth label. This quantity is measured by the \textit{loss function}. 
 
@@ -142,13 +142,7 @@ Artificial neural networks are composed of a series of simple predictions made b
 The most simple form of the feed-forward neural network is the multi-layer perceptron (MLP), in which the nodes of $V$ is partitioned in a sequence of consecutive layers such that each node of a layer has incoming edges only from
 nodes in the previous layer and outgoing edges only to nodes of the next layer.  The layers containing the hidden nodes are called hidden layers. The learnable parameters are the weights assigned to the edges between neurons. 
 A parameter $\omega_{i,j} \in \R$ (called weight) is associated with every edge pair $(i, j) \in E$.  We use $W$ to denote the $|V | \times |V |$ weight matrix, where $(i, j) \notin E$ implies $\omega_{i,j} = 0$. The graph $G$, the weights matrix
-$W$, and the activation function $\sigma$ define the function $f = f_{G,W,\sigma}$ computed by the network.  Note that when $n = 1$ (one output node) and $|V_{hid}| = 0$ (no hidden nodes), then $F_{G,\sign}$ only contains linear classifiers of the form $f(x) = \sign(\omega^\intercal \cdot x)$. 
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.85\linewidth]{images/mlp.png}
-	\caption{An example of a multi-layer perceptron, with $d$ input nodes and $n$ output nodes. In this example, the connectivity between layers is complete (there are no missing edges).}
-\end{figure}
+$W$, and the activation function $\sigma$ define the function $f = f_{G,W,\sigma}$ computed by the network.  Note that when $n = 1$ (one output node) and $|V_{hid}| = 0$ (no hidden nodes), then $\mathcal{F}_{G,\sign}$ only contains linear classifiers of the form $f(x) = \sign(\omega^\intercal \cdot x)$. 
 
 The training of neural networks is not trivial. The most natural approach for training a model in $\mathcal{F}_{G,\sigma}$ is ERM, as mentioned in Sec. \ref{sec:machine_learning}.
 Unfortunately, this method could not be efficiently applied to neural networks. The following theorem confirms this statement.
@@ -170,7 +164,7 @@ The models considered by this theorem are simplified neural networks that solve 
 
 This theorem demonstrates the inefficiency of ERM for a simple NN. This means that this theorem is true even for more complex neural networks and different tasks. ERM remains NP-hard even when $\mathcal{F}_{G,\sign}$ contains only linear classifiers (i.e. $G$ has no hidden nodes). However, while the cause of NP-hardness in linear models was the non-convexity of the loss function (zero-one loss in this case), in multi-layered neural networks the problem is inherent to their structure. The key observation is that the presence of hidden nodes in NN makes the loss function $\ell_t$ over an example $(x_t, t_t)$ non-convex in the weights matrix $W$ even when $\ell(x, y)$ is convex for all $y$. In general, the problem of minimizing a non-convex function is computationally intractable.  
 
-This is because NNs are successfully trained even when using algorithms that reduce the training error without any mathematical guarantee on the solution's quality. The training procedure starts with a forward propagation of the training examples in the neural network. After that, the outputs are used to quantify how good the predictions are and the error are back-propagated in the network using a descent algorithm. The standard algorithm for optimizing NNs is stochastic gradient descent (SGD):
+This is because NNs are successfully trained even using algorithms that reduce the training error without any mathematical guarantee on the solution's quality. The training procedure starts with a forward propagation of the training examples in the neural network. After that, the outputs are used to quantify how good the predictions are and the error are back-propagated in the network using a descent algorithm. The standard algorithm for optimizing NNs is stochastic gradient descent (SGD):
 
 \begin{equation}
 \omega_{i, j} \leftarrow \omega_{i, j} - \eta_t \frac{\partial\ell_{Z_t}(W)}{\partial\omega_{i, j}} \quad \quad (i, j) \in E,
@@ -180,7 +174,7 @@ where $Z_t$ is the index of a random training example and $\eta$ is an hyper-par
  \section{Deep Learning in Object Detection}
  As the performance of hand-crafted features based detectors are unable to increase \cite{deeplearningoverview}, Computer Vision researchers started to use Deep Learning methods for object detection. Today object detection strongly depends on the power of Deep Learning. \citeauthor{computervisionsurvey} in \cite{computervisionsurvey} survey the history of the most relevant approaches to perform this challenging task. 
  
- After the reborn of Convolutional Neural Networks (CNNs) in 2012, \citeauthor{rcnn} propose in \cite{rcnn} the first Deep Learning paradigm to detect objects, called RCNN (Region with CNN features). RCNNs, described in \cite{rcnn}, consists of three modules. The first generates category-independent region proposals, that are sub-portion of the same image. The second module is a large convolutional neural network (CNN) that extracts a fixed-length feature
+ After the reborn of Convolutional Neural Networks (CNNs) in 2012, \citeauthor{rcnn} propose in \cite{rcnn} the first Deep Learning paradigm to detect objects, called RCNN (Region with CNN features). A RCNN, described in \cite{rcnn}, consists of three modules. The first generates category-independent region proposals, that are sub-portion of the same image. The second module is a large convolutional neural network (CNN) that extracts a fixed-length feature
  vector from each region. The third module is a set of class-specific linear SVMs, that predict the presence of an object within each region proposal using the relative feature vectors. Despite the great progress brought by RCNN, its drawback is obvious: the detection speed is extremely slow (about 14s per
  image with GPU). This is caused by the redundant feature computation over a large number of overlapped region proposals (over 2000 per image).
  
@@ -220,7 +214,7 @@ where $Z_t$ is the index of a random training example and $\eta$ is an hyper-par
  
  \section{The Limits of Deep Learning for Robotics}
  
- Despite the advantages and the excellent results of deep learning techniques, their application in robotics leads to specific problems and challenges that are not addressed by Computer Vision researchers. This is because a robot is an active agent that interacts with the real world and often operates in uncontrolled or challenging conditions. Mistakes can lead to potentially catastrophic results and can even put human lives at risk, e.g., if the robot is an autonomous vehicle. In \cite{surveydeeplimits}, \citeauthor{surveydeeplimits} investigate the challenges of Deep Learning applied to robotics. They define the concept of Robotic Vision, which highly differs from Computer Vision. While the latter translates images into information, Robotic Vision translates images into actions, performed in the real world. For an autonomous agent, perception is only a small part of a more complicated and goal-driven system. 
+ Despite the advantages and the excellent results of Deep Learning techniques, their application in robotics leads to specific problems and challenges that are not addressed by Computer Vision researchers. This is because a robot is an active agent that interacts with the real world and often operates in uncontrolled or challenging conditions. Mistakes can lead to potentially catastrophic results and can even put human lives at risk, e.g., if the robot is an autonomous vehicle. In \cite{surveydeeplimits}, \citeauthor{surveydeeplimits} investigate the challenges of Deep Learning applied to robotics. They define the concept of Robotic Vision, which highly differs from Computer Vision. While the latter translates images into information, Robotic Vision translates images into actions, performed in the real world. For an autonomous agent, perception is only a small part of a more complicated and goal-driven system. 
  
  \begin{figure}[h!]
  	\centering
