@@ -27,18 +27,18 @@
 	year = {1993},
 	issn = {0098-3004},
 	doi = {https://doi.org/10.1016/0098-3004(93)90090-R},
-	url = {https://www.sciencedirect.com/science/article/pii/009830049390090R},
 	author = {Andrzej Maćkiewicz and Waldemar Ratajczak},
 	keywords = {Principal Components Analysis, Variance-covariance matrix, Coefficients of determination, Eigenvalues, Eigenvectors, Correlation matrix, Bartlett's statistics, FORTRAN 77}
 }
 
-@article{sne,
-	author = {Hinton, Geoffrey and Roweis, Sam},
-	year = {2003},
-	month = {06},
-	pages = {},
-	title = {Stochastic Neighbor Embedding},
-	volume = {15}
+@inproceedings{sne,
+	title={Stochastic neighbor embedding},
+	author={Hinton, Geoffrey and Roweis, Sam T},
+	booktitle={Annual conference on Neural Information Processing Systems - (NIPS)},
+	volume={15},
+	pages={833--840},
+	year={2002},
+	organization={Citeseer}
 }
 
 @article{tsne,
@@ -64,7 +64,7 @@
 
 @INPROCEEDINGS{deepdoors1,
 	author={Ramôa, João Gaspar and Alexandre, Luís A. and Mogo, S.},
-	booktitle={2020 IEEE International Conference on Autonomous Robot Systems and Competitions (ICARSC)}, 
+	booktitle={2020 IEEE International Conference on Autonomous Robot Systems and Competitions - (ICARSC)}, 
 	title={Real-Time 3D Door Detection and Classification on a Low-Power Device}, 
 	year={2020},
 	volume={},
@@ -80,14 +80,13 @@
 	year =         {2019}
 }
 
-@article{adamw,
+@misc{adamw,
 	author    = {Ilya Loshchilov and
 	Frank Hutter},
 	title     = {Fixing Weight Decay Regularization in Adam},
 	journal   = {CoRR},
 	volume    = {abs/1711.05101},
 	year      = {2017},
-	url       = {http://arxiv.org/abs/1711.05101},
 	eprinttype = {arXiv},
 	eprint    = {1711.05101},
 	timestamp = {Mon, 13 Aug 2018 16:48:18 +0200},
@@ -95,22 +94,12 @@
 	bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
-@article{fullyconvolutional,
-	author    = {Yi Li and
-	Haozhi Qi and
-	Jifeng Dai and
-	Xiangyang Ji and
-	Yichen Wei},
-	title     = {Fully Convolutional Instance-aware Semantic Segmentation},
-	journal   = {CoRR},
-	volume    = {abs/1611.07709},
-	year      = {2016},
-	url       = {http://arxiv.org/abs/1611.07709},
-	eprinttype = {arXiv},
-	eprint    = {1611.07709},
-	timestamp = {Tue, 15 Sep 2020 14:17:39 +0200},
-	biburl    = {https://dblp.org/rec/journals/corr/LiQDJW16.bib},
-	bibsource = {dblp computer science bibliography, https://dblp.org}
+@inproceedings{fullyconvolutional,
+	title={Fully convolutional instance-aware semantic segmentation},
+	author={Li, Yi and Qi, Haozhi and Dai, Jifeng and Ji, Xiangyang and Wei, Yichen},
+	booktitle={Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition - (CVPR)},
+	pages={2359--2367},
+	year={2017}
 }
 
 @book{averageprecision,
@@ -122,18 +111,13 @@
 	address = {USA}
 }
 
-@article{delaunayproof,
-	author    = {Ahmad Biniaz},
-	title     = {A Short Proof of the Toughness of Delaunay Triangulations},
-	journal   = {CoRR},
-	volume    = {abs/1907.01617},
-	year      = {2019},
-	url       = {http://arxiv.org/abs/1907.01617},
-	eprinttype = {arXiv},
-	eprint    = {1907.01617},
-	timestamp = {Mon, 08 Jul 2019 14:12:33 +0200},
-	biburl    = {https://dblp.org/rec/journals/corr/abs-1907-01617.bib},
-	bibsource = {dblp computer science bibliography, https://dblp.org}
+@inproceedings{delaunayproof,
+	title={A short proof of the toughness of Delaunay triangulations},
+	author={Biniaz, Ahmad},
+	booktitle={Symposium on Simplicity in Algorithms},
+	pages={43--46},
+	year={2020},
+	organization={SIAM}
 }
 
 @misc{repeatabilityslamarxiv,
@@ -145,15 +129,14 @@
 	primaryClass={cs.RO}
 }
 
-@INPROCEEDINGS{repeatabilityslam,
+@inproceedings{repeatabilityslam,
+	title={Improving repeatability of experiments by automatic evaluation of slam algorithms},
 	author={Amigoni, Francesco and Castelli, Valerio and Luperto, Matteo},
-	booktitle={2018 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)}, 
-	title={Improving Repeatability of Experiments by Automatic Evaluation of SLAM Algorithms}, 
+	booktitle={2018 IEEE/RSJ International Conference on Intelligent Robots and Systems - (IROS)},
+	pages={7237--7243},
 	year={2018},
-	volume={},
-	number={},
-	pages={7237-7243},
-	doi={10.1109/IROS.2018.8594189}}
+	organization={IEEE}
+}
 
 @INPROCEEDINGS{frontierexploration,
 	author={Yamauchi, B.},
@@ -186,23 +169,12 @@
 	urldate = {2021-11-11}
 }
 
-@article{scannet,
-	author    = {Angela Dai and
-	Angel X. Chang and
-	Manolis Savva and
-	Maciej Halber and
-	Thomas A. Funkhouser and
-	Matthias Nie{\ss}ner},
-	title     = {ScanNet: Richly-annotated 3D Reconstructions of Indoor Scenes},
-	journal   = {CoRR},
-	volume    = {abs/1702.04405},
-	year      = {2017},
-	url       = {http://arxiv.org/abs/1702.04405},
-	eprinttype = {arXiv},
-	eprint    = {1702.04405},
-	timestamp = {Mon, 13 Aug 2018 16:47:34 +0200},
-	biburl    = {https://dblp.org/rec/journals/corr/DaiCSHFN17.bib},
-	bibsource = {dblp computer science bibliography, https://dblp.org}
+@inproceedings{scannet,
+	title={Scannet: Richly-annotated 3d reconstructions of indoor scenes},
+	author={Dai, Angela and Chang, Angel X and Savva, Manolis and Halber, Maciej and Funkhouser, Thomas and Nie{\ss}ner, Matthias},
+	booktitle={Proceedings of the IEEE Conference on Computer Cision and Pattern Recognition -(CVPR)},
+	pages={5828--5839},
+	year={2017}
 }
 
 @inproceedings{topologyurban,
@@ -215,14 +187,17 @@
 	publisher = {Springer}
 }
 
-@misc{surveydeeplimits,
-      title={The Limits and Potentials of Deep Learning for Robotics}, 
-      author={Niko Sünderhauf and Oliver Brock and Walter Scheirer and Raia Hadsell and Dieter Fox and Jürgen Leitner and Ben Upcroft and Pieter Abbeel and Wolfram Burgard and Michael Milford and Peter Corke},
-      year={2018},
-      eprint={1804.06557},
-      archivePrefix={arXiv},
-      primaryClass={cs.RO}
+@article{surveydeeplimits,
+	title={The limits and potentials of deep learning for robotics},
+	author={S{\"u}nderhauf, Niko and Brock, Oliver and Scheirer, Walter and Hadsell, Raia and Fox, Dieter and Leitner, J{\"u}rgen and Upcroft, Ben and Abbeel, Pieter and Burgard, Wolfram and Milford, Michael and others},
+	journal={The International Journal of Robotics Research},
+	volume={37},
+	number={4-5},
+	pages={405--420},
+	year={2018},
+	publisher={SAGE Publications Sage UK: London, England}
 }
+
 @article{sonarandivisualdoordetection,
 	title = {Learning to traverse doors using visual information},
 	journal = {Mathematics and Computers in Simulation},
@@ -233,7 +208,6 @@
 	note = {Intelligent Forecasting, Fault Diagnosis, Scheduling, and Control},
 	issn = {0378-4754},
 	doi = {https://doi.org/10.1016/S0378-4754(02)00027-7},
-	url = {https://www.sciencedirect.com/science/article/pii/S0378475402000277},
 	author = {Iñaki Monasterio and Elena Lazkano and Iñaki Rañó and Basilo Sierra},
 	keywords = {Door traversing behavior, Mobile robots, Neural networks, Visual door detection},
 	abstract = {Mobile robots need to navigate in their environment in order to perform useful tasks. Doors appear in almost every office-like indoor environment and they have to be crossed often during the navigation process. We present in this paper a new approach that uses visual information to anticipate that a door has to be crossed. Combining then visual information with ultrasonic sensors, the robot approaches the door until an adequate distance is reached. Door traversing is then performed using sonar sensors. This paper describes the control architecture and the behaviors that have been implemented to obtain the door traversing behavior. Results and performance issues are explained. The experiments have been carried out with a B21 mobile robot.}
@@ -241,7 +215,7 @@
 
 @INPROCEEDINGS{edgeandcornerdoorsdetector,
 	author={Yang, Xiaodong and Tian, Yingli},
-	booktitle={2010 IEEE Computer Society Conference on Computer Vision and Pattern Recognition - Workshops}, 
+	booktitle={2010 IEEE CVPR - Workshops}, 
 	title={Robust door detection in unfamiliar environments by combining edge and corner features}, 
 	year={2010},
 	volume={},
@@ -270,10 +244,9 @@
 	keywords = {corner detection, adaptive threshold, region of support, curvature, contour, round corner, obtuse corner, Sensors, Corner detection, Detection and tracking algorithms, Optical engineering, Edge detection, Quantization, Sensor performance, Feature extraction, Image segmentation, Roads},
 	year = {2008},
 	doi = {10.1117/1.2931681},
-	URL = {https://doi.org/10.1117/1.2931681}
 }
 
-@article{computervisionsurvey,
+@misc{computervisionsurvey,
 	author    = {Zhengxia Zou and
 	Zhenwei Shi and
 	Yuhong Guo and
@@ -282,7 +255,6 @@
 	journal   = {CoRR},
 	volume    = {abs/1905.05055},
 	year      = {2019},
-	url       = {http://arxiv.org/abs/1905.05055},
 	eprinttype = {arXiv},
 	eprint    = {1905.05055},
 	timestamp = {Tue, 28 May 2019 12:48:08 +0200},
@@ -300,7 +272,7 @@
 
 @ARTICLE{fasterrcnn,
 	author={Ren, Shaoqing and He, Kaiming and Girshick, Ross and Sun, Jian},
-	journal={IEEE Transactions on Pattern Analysis and Machine Intelligence}, 
+	journal={IEEE Transactions on Pattern Analysis and Machine Intelligence - (TPAMI)}, 
 	title={Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks}, 
 	year={2017},
 	volume={39},
@@ -318,40 +290,37 @@
 	pages={1904-1916},
 	doi={10.1109/TPAMI.2015.2389824}}
 
-@article{fastrcnn,
-	author    = {Ross B. Girshick},
-	title     = {Fast {R-CNN}},
-	journal   = {CoRR},
-	volume    = {abs/1504.08083},
-	year      = {2015},
-	url       = {http://arxiv.org/abs/1504.08083},
-	eprinttype = {arXiv},
-	eprint    = {1504.08083},
-	timestamp = {Mon, 13 Aug 2018 16:49:11 +0200},
-	biburl    = {https://dblp.org/rec/journals/corr/Girshick15.bib},
-	bibsource = {dblp computer science bibliography, https://dblp.org}
+@inproceedings{fastrcnn,
+	title={Fast R-CNN},
+	author={Girshick, Ross},
+	booktitle={Proceedings of the IEEE International Conference on Computer Vision - (ICCV)},
+	pages={1440--1448},
+	year={2015}
 }
 
 @InProceedings{yolo,
 	author = {Redmon, Joseph and Divvala, Santosh and Girshick, Ross and Farhadi, Ali},
 	title = {You Only Look Once: Unified, Real-Time Object Detection},
-	booktitle = {Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+	booktitle = {Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition - (CVPR)},
 	month = {June},
 	year = {2016}
 }
 
-@article{yolov2,
-	title={YOLO9000: Better, Faster, Stronger},
-	author={Redmon, Joseph and Farhadi, Ali},
-	journal={arXiv preprint arXiv:1612.08242},
-	year={2016}
+@InProceedings{yolov2,
+	author = {Redmon, Joseph and Farhadi, Ali},
+	title = {YOLO9000: Better, Faster, Stronger},
+	booktitle = {Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition - (CVPR)},
+	month = {July},
+	year = {2017}
 }
 
-@article{yolov3,
-	title={YOLOv3: An Incremental Improvement},
-	author={Redmon, Joseph and Farhadi, Ali},
-	journal = {arXiv},
-	year={2018}
+@inproceedings{yolov3,
+	title={Yolov3: An incremental improvement},
+	author={Farhadi, Ali and Redmon, Joseph},
+	booktitle={Computer Vision and Pattern Recognition - (CVPR)},
+	pages={1804--2767},
+	year={2018},
+	organization={Springer Berlin/Heidelberg, Germany}
 }
 
 @InProceedings{ssd,
@@ -367,55 +336,32 @@
 	and Sebe, Nicu
 	and Welling, Max",
 	title="SSD: Single Shot MultiBox Detector",
-	booktitle="Computer Vision -- ECCV 2016",
+	booktitle="European Conference on Computer Vision -- (ECCV) 2016",
 	year="2016",
 	publisher="Springer International Publishing",
 	address="Cham",
 	pages="21--37",
-	abstract="We present a method for detecting objects in images using a single deep neural network. Our approach, named SSD, discretizes the output space of bounding boxes into a set of default boxes over different aspect ratios and scales per feature map location. At prediction time, the network generates scores for the presence of each object category in each default box and produces adjustments to the box to better match the object shape. Additionally, the network combines predictions from multiple feature maps with different resolutions to naturally handle objects of various sizes. SSD is simple relative to methods that require object proposals because it completely eliminates proposal generation and subsequent pixel or feature resampling stages and encapsulates all computation in a single network. This makes SSD easy to train and straightforward to integrate into systems that require a detection component. Experimental results on the PASCAL VOC, COCO, and ILSVRC datasets confirm that SSD has competitive accuracy to methods that utilize an additional object proposal step and is much faster, while providing a unified framework for both training and inference. For {\$}{\$}300 {\backslash}times 300{\$}{\$}300{\texttimes}300input, SSD achieves 74.3 {\%} mAP on VOC2007 test at 59 FPS on a Nvidia Titan X and for {\$}{\$}512 {\backslash}times 512{\$}{\$}512{\texttimes}512input, SSD achieves 76.9 {\%} mAP, outperforming a comparable state of the art Faster R-CNN model. Compared to other single stage methods, SSD has much better accuracy even with a smaller input image size. Code is available at https://github.com/weiliu89/caffe/tree/ssd.",
+	abstract="We present a method for detecting objects in images using a single deep neural network. Our approach, named SSD, discretizes the output space of bounding boxes into a set of default boxes over different aspect ratios and scales per feature map location. At prediction time, the network generates scores for the presence of each object category in each default box and produces adjustments to the box to better match the object shape. Additionally, the network combines predictions from multiple feature maps with different resolutions to naturally handle objects of various sizes. SSD is simple relative to methods that require object proposals because it completely eliminates proposal generation and subsequent pixel or feature resampling stages and encapsulates all computation in a single network. This makes SSD easy to train and straightforward to integrate into systems that require a detection component. Experimental results on the PASCAL VOC, COCO, and ILSVRC datasets confirm that SSD has competitive accuracy to methods that utilize an additional object proposal step and is much faster, while providing a unified framework for both training and inference. For {\$}{\$}300 {\backslash}times 300{\$}{\$}300{\texttimes}300input, SSD achieves 74.3 {\%} mAP on VOC2007 test at 59 FPS on a Nvidia Titan X and for {\$}{\$}512 {\backslash}times 512{\$}{\$}512{\texttimes}512input, SSD achieves 76.9 {\%} mAP, outperforming a comparable state of the art R-CNN model. Compared to other single stage methods, SSD has much better accuracy even with a smaller input image size. Code is available at https://github.com/weiliu89/caffe/tree/ssd.",
 	isbn="978-3-319-46448-0"
 }
 
-@article{focalloss,
-	author    = {Tsung{-}Yi Lin and
-	Priya Goyal and
-	Ross B. Girshick and
-	Kaiming He and
-	Piotr Doll{\'{a}}r},
-	title     = {Focal Loss for Dense Object Detection},
-	journal   = {CoRR},
-	volume    = {abs/1708.02002},
-	year      = {2017},
-	url       = {http://arxiv.org/abs/1708.02002},
-	eprinttype = {arXiv},
-	eprint    = {1708.02002},
-	timestamp = {Mon, 13 Aug 2018 16:46:12 +0200},
-	biburl    = {https://dblp.org/rec/journals/corr/abs-1708-02002.bib},
-	bibsource = {dblp computer science bibliography, https://dblp.org}
+@inproceedings{focalloss,
+	title={Focal loss for dense object detection},
+	author={Lin, Tsung-Yi and Goyal, Priya and Girshick, Ross and He, Kaiming and Doll{\'a}r, Piotr},
+	booktitle={Proceedings of the IEEE international conference on computer vision},
+	pages={2980--2988},
+	year={2017}
 }
 
-@article{transformer,
-	author    = {Ashish Vaswani and
-	Noam Shazeer and
-	Niki Parmar and
-	Jakob Uszkoreit and
-	Llion Jones and
-	Aidan N. Gomez and
-	Lukasz Kaiser and
-	Illia Polosukhin},
-	title     = {Attention Is All You Need},
-	journal   = {CoRR},
-	volume    = {abs/1706.03762},
-	year      = {2017},
-	url       = {http://arxiv.org/abs/1706.03762},
-	eprinttype = {arXiv},
-	eprint    = {1706.03762},
-	timestamp = {Sat, 23 Jan 2021 01:20:40 +0100},
-	biburl    = {https://dblp.org/rec/journals/corr/VaswaniSPUJGKP17.bib},
-	bibsource = {dblp computer science bibliography, https://dblp.org}
+@inproceedings{transformer,
+	title={Attention is all you need},
+	author={Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N and Kaiser, {\L}ukasz and Polosukhin, Illia},
+	booktitle={Advances in neural information processing systems},
+	pages={5998--6008},
+	year={2017}
 }
 
-@article{surveytransformer,
+@misc{surveytransformer,
 	author    = {Salman H. Khan and
 	Muzammal Naseer and
 	Munawar Hayat and
@@ -426,7 +372,6 @@
 	journal   = {CoRR},
 	volume    = {abs/2101.01169},
 	year      = {2021},
-	url       = {https://arxiv.org/abs/2101.01169},
 	eprinttype = {arXiv},
 	eprint    = {2101.01169},
 	timestamp = {Thu, 17 Jun 2021 18:15:55 +0200},
@@ -434,23 +379,25 @@
 	bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
-@article{detr,
-	author    = {Nicolas Carion and
-	Francisco Massa and
-	Gabriel Synnaeve and
-	Nicolas Usunier and
-	Alexander Kirillov and
-	Sergey Zagoruyko},
-	title     = {End-to-End Object Detection with Transformers},
-	journal   = {CoRR},
-	volume    = {abs/2005.12872},
-	year      = {2020},
-	url       = {https://arxiv.org/abs/2005.12872},
-	eprinttype = {arXiv},
-	eprint    = {2005.12872},
-	timestamp = {Thu, 28 May 2020 17:38:09 +0200},
-	biburl    = {https://dblp.org/rec/journals/corr/abs-2005-12872.bib},
-	bibsource = {dblp computer science bibliography, https://dblp.org}
+@InProceedings{detr,
+	author="Carion, Nicolas
+	and Massa, Francisco
+	and Synnaeve, Gabriel
+	and Usunier, Nicolas
+	and Kirillov, Alexander
+	and Zagoruyko, Sergey",
+	editor="Vedaldi, Andrea
+	and Bischof, Horst
+	and Brox, Thomas
+	and Frahm, Jan-Michael",
+	title="End-to-End Object Detection with Transformers",
+	booktitle="European Conference on Computer Vision -- (ECCV) 2020",
+	year="2020",
+	publisher="Springer International Publishing",
+	address="Cham",
+	pages="213--229",
+	abstract="We present a new method that views object detection as a direct set prediction problem. Our approach streamlines the detection pipeline, effectively removing the need for many hand-designed components like a non-maximum suppression procedure or anchor generation that explicitly encode our prior knowledge about the task. The main ingredients of the new framework, called DEtection TRansformer or DETR, are a set-based global loss that forces unique predictions via bipartite matching, and a transformer encoder-decoder architecture. Given a fixed small set of learned object queries, DETR reasons about the relations of the objects and the global image context to directly output the final set of predictions in parallel. The new model is conceptually simple and does not require a specialized library, unlike many other modern detectors. DETR demonstrates accuracy and run-time performance on par with the well-established and highly-optimized Faster R-CNN baseline on the challenging COCO object detection dataset. Moreover, DETR can be easily generalized to produce panoptic segmentation in a unified manner. We show that it significantly outperforms competitive baselines. Training code and pretrained models are available at https://github.com/facebookresearch/detr.",
+	isbn="978-3-030-58452-8"
 }
 
 @article{detectdoorsfeature,
@@ -463,18 +410,11 @@
 	year  = {2003},
 	publisher = {Taylor \& Francis},
 	doi = {10.1080/0952813021000039430},
-	
-	URL = { 
-	https://doi.org/10.1080/0952813021000039430
-	},
-	eprint = { 
-	https://doi.org/10.1080/0952813021000039430
-	}
 }
 
 @INPROCEEDINGS{doorcabinet,
 	author={Llopart, Adrian and Ravn, Ole and Andersen, Nils. A.},
-	booktitle={2017 3rd International Conference on Control, Automation and Robotics (ICCAR)}, 
+	booktitle={2017 3rd International Conference on Control, Automation and Robotics - (ICCAR)}, 
 	title={Door and cabinet recognition using Convolutional Neural Nets and real-time method fusion for handle detection and grasping}, 
 	year={2017},
 	volume={},
@@ -484,7 +424,7 @@
 
 @INPROCEEDINGS{doorsandnavigation,
 	author={Chen, Wei and Qu, Ting and Zhou, Yimin and Weng, Kaijian and Wang, Gang and Fu, Guoqiang},
-	booktitle={2014 IEEE International Conference on Robotics and Biomimetics (ROBIO 2014)}, 
+	booktitle={2014 IEEE International Conference on Robotics and Biomimetics - (ROBIO 2014)}, 
 	title={Door recognition and deep learning algorithm for visual based robot navigation}, 
 	year={2014},
 	volume={},
@@ -492,27 +432,27 @@
 	pages={1793-1798},
 	doi={10.1109/ROBIO.2014.7090595}}
 
-@article{coco,
-	author    = {Tsung{-}Yi Lin and
-	Michael Maire and
-	Serge J. Belongie and
-	Lubomir D. Bourdev and
-	Ross B. Girshick and
-	James Hays and
-	Pietro Perona and
-	Deva Ramanan and
-	Piotr Doll{\'{a}}r and
-	C. Lawrence Zitnick},
-	title     = {Microsoft {COCO:} Common Objects in Context},
-	journal   = {CoRR},
-	volume    = {abs/1405.0312},
-	year      = {2014},
-	url       = {http://arxiv.org/abs/1405.0312},
-	eprinttype = {arXiv},
-	eprint    = {1405.0312},
-	timestamp = {Mon, 13 Aug 2018 16:48:13 +0200},
-	biburl    = {https://dblp.org/rec/journals/corr/LinMBHPRDZ14.bib},
-	bibsource = {dblp computer science bibliography, https://dblp.org}
+@InProceedings{coco,
+	author="Lin, Tsung-Yi
+	and Maire, Michael
+	and Belongie, Serge
+	and Hays, James
+	and Perona, Pietro
+	and Ramanan, Deva
+	and Doll{\'a}r, Piotr
+	and Zitnick, C. Lawrence",
+	editor="Fleet, David
+	and Pajdla, Tomas
+	and Schiele, Bernt
+	and Tuytelaars, Tinne",
+	title="Microsoft COCO: Common Objects in Context",
+	booktitle="European Conference on Computer Vision -- (ECCV) 2014",
+	year="2014",
+	publisher="Springer International Publishing",
+	address="Cham",
+	pages="740--755",
+	abstract="We present a new dataset with the goal of advancing the state-of-the-art in object recognition by placing the question of object recognition in the context of the broader question of scene understanding. This is achieved by gathering images of complex everyday scenes containing common objects in their natural context. Objects are labeled using per-instance segmentations to aid in precise object localization. Our dataset contains photos of 91 objects types that would be easily recognizable by a 4 year old. With a total of 2.5 million labeled instances in 328k images, the creation of our dataset drew upon extensive crowd worker involvement via novel user interfaces for category detection, instance spotting and instance segmentation. We present a detailed statistical analysis of the dataset in comparison to PASCAL, ImageNet, and SUN. Finally, we provide baseline performance analysis for bounding box and segmentation detection results using a Deformable Parts Model.",
+	isbn="978-3-319-10602-1"
 }
 
 @article{pascal,
@@ -526,7 +466,7 @@
 
 @INPROCEEDINGS{humanoid,
 	author={Kwak, Nosan and Arisumi, Hitoshi and Yokoi, Kazuhito},
-	booktitle={2011 IEEE International Conference on Robotics and Automation}, 
+	booktitle={2011 IEEE International Conference on Robotics and Automation - (ICRA)}, 
 	title={Visual recognition of a door and its knob for a humanoid robot}, 
 	year={2011},
 	volume={},
@@ -534,26 +474,16 @@
 	pages={2079-2084},
 	doi={10.1109/ICRA.2011.5979608}}
 
-@article{gibson,
-	author    = {Fei Xia and
-	Amir Roshan Zamir and
-	Zhi{-}Yang He and
-	Alexander Sax and
-	Jitendra Malik and
-	Silvio Savarese},
-	title     = {Gibson Env: Real-World Perception for Embodied Agents},
-	journal   = {CoRR},
-	volume    = {abs/1808.10654},
-	year      = {2018},
-	url       = {http://arxiv.org/abs/1808.10654},
-	eprinttype = {arXiv},
-	eprint    = {1808.10654},
-	timestamp = {Mon, 03 Sep 2018 13:36:40 +0200},
-	biburl    = {https://dblp.org/rec/journals/corr/abs-1808-10654.bib},
-	bibsource = {dblp computer science bibliography, https://dblp.org}
+@inproceedings{gibson,
+	title={Gibson env: Real-world perception for embodied agents},
+	author={Xia, Fei and Zamir, Amir R and He, Zhiyang and Sax, Alexander and Malik, Jitendra and Savarese, Silvio},
+	booktitle={Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition - (CVPR)},
+	pages={9068--9079},
+	year={2018}
 }
 
-@article{igibson,
+
+@misc{igibson,
 	author    = {Bokui Shen and
 	Fei Xia and
 	Chengshu Li and
@@ -573,7 +503,6 @@
 	journal   = {CoRR},
 	volume    = {abs/2012.02924},
 	year      = {2020},
-	url       = {https://arxiv.org/abs/2012.02924},
 	eprinttype = {arXiv},
 	eprint    = {2012.02924},
 	timestamp = {Wed, 09 Dec 2020 15:29:05 +0100},
@@ -581,32 +510,15 @@
 	bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
-@article{habitat,
-	author    = {Manolis Savva and
-	Abhishek Kadian and
-	Oleksandr Maksymets and
-	Yili Zhao and
-	Erik Wijmans and
-	Bhavana Jain and
-	Julian Straub and
-	Jia Liu and
-	Vladlen Koltun and
-	Jitendra Malik and
-	Devi Parikh and
-	Dhruv Batra},
-	title     = {Habitat: {A} Platform for Embodied {AI} Research},
-	journal   = {CoRR},
-	volume    = {abs/1904.01201},
-	year      = {2019},
-	url       = {http://arxiv.org/abs/1904.01201},
-	eprinttype = {arXiv},
-	eprint    = {1904.01201},
-	timestamp = {Wed, 24 Apr 2019 12:21:25 +0200},
-	biburl    = {https://dblp.org/rec/journals/corr/abs-1904-01201.bib},
-	bibsource = {dblp computer science bibliography, https://dblp.org}
+@inproceedings{habitat,
+	title={Habitat: A platform for embodied ai research},
+	author={Savva, Manolis and Kadian, Abhishek and Maksymets, Oleksandr and Zhao, Yili and Wijmans, Erik and Jain, Bhavana and Straub, Julian and Liu, Jia and Koltun, Vladlen and Malik, Jitendra and others},
+	booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision - (ICCV)},
+	pages={9339--9347},
+	year={2019}
 }
 
-@article{stanford2d3d,
+@misc{stanford2d3d,
 	author    = {Iro Armeni and
 	Sasha Sax and
 	Amir Roshan Zamir and
@@ -615,7 +527,6 @@
 	journal   = {CoRR},
 	volume    = {abs/1702.01105},
 	year      = {2017},
-	url       = {http://arxiv.org/abs/1702.01105},
 	eprinttype = {arXiv},
 	eprint    = {1702.01105},
 	timestamp = {Mon, 13 Aug 2018 16:46:32 +0200},
@@ -623,7 +534,7 @@
 	bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
-@article{matterport,
+@misc{matterport,
 	author    = {Angel X. Chang and
 	Angela Dai and
 	Thomas A. Funkhouser and
@@ -637,7 +548,6 @@
 	journal   = {CoRR},
 	volume    = {abs/1709.06158},
 	year      = {2017},
-	url       = {http://arxiv.org/abs/1709.06158},
 	eprinttype = {arXiv},
 	eprint    = {1709.06158},
 	timestamp = {Thu, 19 Aug 2021 19:45:39 +0200},
@@ -645,46 +555,21 @@
 	bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
-@misc{cubicasa,
-	title={CubiCasa5K: A Dataset and an Improved Multi-Task Model for Floorplan Image Analysis}, 
-	author={Ahti Kalervo and Juha Ylioinas and Markus Häikiö and Antti Karhu and Juho Kannala},
+@inproceedings{cubicasa,
+	title={Cubicasa5k: A dataset and an improved multi-task model for floorplan image analysis},
+	author={Kalervo, Ahti and Ylioinas, Juha and H{\"a}iki{\"o}, Markus and Karhu, Antti and Kannala, Juho},
+	booktitle={Scandinavian Conference on Image Analysis - (SCIA)},
+	pages={28--40},
 	year={2019},
-	eprint={1904.01920},
-	archivePrefix={arXiv},
-	primaryClass={cs.CV}
+	organization={Springer}
 }
 
-@article{3dfront,
-	author    = {Huan Fu and
-	Bowen Cai and
-	Lin Gao and
-	Lingxiao Zhang and
-	Cao Li and
-	Zengqi Xun and
-	Chengyue Sun and
-	Yiyun Fei and
-	Yu Zheng and
-	Ying Li and
-	Yi Liu and
-	Peng Liu and
-	Lin Ma and
-	Le Weng and
-	Xiaohang Hu and
-	Xin Ma and
-	Qian Qian and
-	Rongfei Jia and
-	Binqiang Zhao and
-	Hao Zhang},
-	title     = {3D-FRONT: 3D Furnished Rooms with layOuts and semaNTics},
-	journal   = {CoRR},
-	volume    = {abs/2011.09127},
-	year      = {2020},
-	url       = {https://arxiv.org/abs/2011.09127},
-	eprinttype = {arXiv},
-	eprint    = {2011.09127},
-	timestamp = {Tue, 05 Jan 2021 07:48:21 +0100},
-	biburl    = {https://dblp.org/rec/journals/corr/abs-2011-09127.bib},
-	bibsource = {dblp computer science bibliography, https://dblp.org}
+@inproceedings{3dfront,
+	title={3d-front: 3d furnished rooms with layouts and semantics},
+	author={Fu, Huan and Cai, Bowen and Gao, Lin and Zhang, Ling-Xiao and Wang, Jiaming and Li, Cao and Zeng, Qixun and Sun, Chengyue and Jia, Rongfei and Zhao, Binqiang and others},
+	booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision - (ICCV)},
+	pages={10933--10942},
+	year={2021}
 }
 
 @book{imageofcity,
@@ -727,32 +612,13 @@
 	doi = {10.1007/978-3-540-88682-2_6}
 }
 
-
 @article{deeplearningoverview,
-	author = {Voulodimos, Athanasios and Doulamis, Nikolaos and Doulamis, Anastasios and Protopapadakis, Eftychios and Andina, Diego},
-	title = {Deep Learning for Computer Vision: A Brief Review},
-	year = {2018},
-	issue_date = {2018},
-	publisher = {Hindawi Limited},
-	address = {London, GBR},
-	volume = {2018},
-	issn = {1687-5265},
-	url = {https://doi.org/10.1155/2018/7068349},
-	doi = {10.1155/2018/7068349},
-	abstract = {Over the last years deep learning methods have been shown to outperform previous state-of-the-art
-	machine learning techniques in several fields, with computer vision being one of the
-	most prominent cases. This review paper provides a brief overview of some of the most
-	significant deep learning schemes used in computer vision problems, that is, Convolutional
-	Neural Networks, Deep Boltzmann Machines and Deep Belief Networks, and Stacked Denoising
-	Autoencoders. A brief account of their history, structure, advantages, and limitations
-	is given, followed by a description of their applications in various computer vision
-	tasks, such as object detection, face recognition, action and activity recognition,
-	and human pose estimation. Finally, a brief overview is given of future directions
-	in designing deep learning schemes for computer vision problems and the challenges
-	involved therein.},
-	journal = {Intell. Neuroscience},
-	month = jan,
-	numpages = {13}
+	title={Deep learning for computer vision: A brief review},
+	author={Voulodimos, Athanasios and Doulamis, Nikolaos and Doulamis, Anastasios and Protopapadakis, Eftychios},
+	journal={Computational intelligence and neuroscience},
+	volume={2018},
+	year={2018},
+	publisher={Hindawi}
 }
 
 @ARTICLE{gridmapnavigation,
@@ -767,7 +633,7 @@
 
 @INPROCEEDINGS{cuupancygridfirst,
 	author={Moravec, H. and Elfes, A.},
-	booktitle={Proceedings. 1985 IEEE International Conference on Robotics and Automation}, 
+	booktitle={Proceedings. 1985 IEEE International Conference on Robotics and Automation - (ICRA)}, 
 	title={High resolution maps from wide angle sonar}, 
 	year={1985},
 	volume={2},
@@ -777,7 +643,7 @@
 
 @INPROCEEDINGS{ariel,
 	author={Yamauchi, B. and Schultz, A. and Adams, W.},
-	booktitle={Proceedings. 1998 IEEE International Conference on Robotics and Automation (Cat. No.98CH36146)}, 
+	booktitle={Proceedings. 1998 IEEE International Conference on Robotics and Automation - (ICRA)}, 
 	title={Mobile robot exploration and map-building with continuous localization}, 
 	year={1998},
 	volume={4},
@@ -797,7 +663,7 @@
 
 @INPROCEEDINGS{segmentationsurvey,
 	author={Bormann, Richard and Jordan, Florian and Li, Wenzhe and Hampp, Joshua and Hägele, Martin},
-	booktitle={2016 IEEE International Conference on Robotics and Automation (ICRA)}, 
+	booktitle={2016 IEEE International Conference on Robotics and Automation - (ICRA)}, 
 	title={Room segmentation: Survey, implementation, and analysis}, 
 	year={2016},
 	volume={},
@@ -814,7 +680,6 @@
 	year = {1998},
 	issn = {0004-3702},
 	doi = {https://doi.org/10.1016/S0004-3702(97)00078-7},
-	url = {https://www.sciencedirect.com/science/article/pii/S0004370297000787},
 	author = {Sebastian Thrun},
 	keywords = {Autonomous robots, Exploration, Mobile robots, Neural networks, Occupancy grids, Path planning, Planning, Robot mapping, Topological maps},
 	abstract = {Autonomous robots must be able to learn and maintain models of their environments. Research on mobile robot navigation has produced two major paradigms for mapping indoor environments: grid-based and topological. While grid-based methods produce accurate metric maps, their complexity often prohibits efficient planning and problem solving in large-scale indoor environments. Topological maps, on the other hand, can be used much more efficiently, yet accurate and consistent topological maps are often difficult to learn and maintain in large-scale environments, particularly if momentary sensor data is highly ambiguous. This paper describes an approach that integrates both paradigms: grid-based and topological. Grid-based maps are learned using artificial neural networks and naive Bayesian integration. Topological maps are generated on top of the grid-based maps, by partitioning the latter into coherent regions. By combining both paradigms, the approach presented here gains advantages from both worlds: accuracy/consistency and efficiency. The paper gives results for autonomous exploration, mapping and operation of a mobile robot in populated multi-room environments.}
@@ -822,7 +687,7 @@
 
 @INPROCEEDINGS{segmentationhumanrobot,
 	author={Bormann, Richard and Jordan, Florian and Li, Wenzhe and Hampp, Joshua and Hägele, Martin},
-	booktitle={2016 IEEE International Conference on Robotics and Automation (ICRA)}, 
+	booktitle={2016 IEEE International Conference on Robotics and Automation - (ICRA)}, 
 	title={Room segmentation: Survey, implementation, and analysis}, 
 	year={2016},
 	volume={},
@@ -833,14 +698,14 @@
 @article{segmentationcleaning,
 	title={New brooms sweep clean - an autonomous robotic cleaning assistant for professional office cleaning},
 	author={Richard Bormann and Joshua Hampp and Martin H{\"a}gele},
-	journal={2015 IEEE International Conference on Robotics and Automation (ICRA)},
+	journal={2015 IEEE International Conference on Robotics and Automation - (ICRA)},
 	year={2015},
 	pages={4470-4477}
 }
 
 @INPROCEEDINGS{scenerecognitionaudio,
 	author={Espinace, P. and Kollar, T. and Soto, A. and Roy, N.},
-	booktitle={2010 IEEE International Conference on Robotics and Automation}, 
+	booktitle={2010 IEEE International Conference on Robotics and Automation - (ICRA)}, 
 	title={Indoor scene recognition through object detection}, 
 	year={2010},
 	volume={},
@@ -850,7 +715,7 @@
 
 @INPROCEEDINGS{scenerecognitiononjectdetection,
 	author={Espinace, P. and Kollar, T. and Soto, A. and Roy, N.},
-	booktitle={2010 IEEE International Conference on Robotics and Automation}, 
+	booktitle={2010 IEEE International Conference on Robotics and Automation - (ICRA)}, 
 	title={Indoor scene recognition through object detection}, 
 	year={2010},
 	volume={},
@@ -858,31 +723,19 @@
 	pages={1406-1413},
 	doi={10.1109/ROBOT.2010.5509682}}
 
-@article{placecategorization,
-	author    = {Niko S{\"{u}}nderhauf and
-	Feras Dayoub and
-	Sean McMahon and
-	Ben Talbot and
-	Ruth Schulz and
-	Peter I. Corke and
-	Gordon F. Wyeth and
-	Ben Upcroft and
-	Michael Milford},
-	title     = {Place Categorization and Semantic Mapping on a Mobile Robot},
-	journal   = {CoRR},
-	volume    = {abs/1507.02428},
-	year      = {2015},
-	url       = {http://arxiv.org/abs/1507.02428},
-	eprinttype = {arXiv},
-	eprint    = {1507.02428},
-	timestamp = {Mon, 23 Nov 2020 12:33:03 +0100},
-	biburl    = {https://dblp.org/rec/journals/corr/SunderhaufDMTSC15.bib},
-	bibsource = {dblp computer science bibliography, https://dblp.org}
-}
+@INPROCEEDINGS{placecategorization,
+	author={Sünderhauf, Niko and Dayoub, Feras and McMahon, Sean and Talbot, Ben and Schulz, Ruth and Corke, Peter and Wyeth, Gordon and Upcroft, Ben and Milford, Michael},
+	booktitle={2016 IEEE International Conference on Robotics and Automation - (ICRA)}, 
+	title={Place categorization and semantic mapping on a mobile robot}, 
+	year={2016},
+	volume={},
+	number={},
+	pages={5729-5736},
+	doi={10.1109/ICRA.2016.7487796}}
 
 @INPROCEEDINGS{placecategorizationlargescale,
 	author={Pronobis, Andrzej and Jensfelt, Patric},
-	booktitle={2012 IEEE International Conference on Robotics and Automation}, 
+	booktitle={2012 IEEE International Conference on Robotics and Automation - (ICRA)}, 
 	title={Large-scale semantic mapping and reasoning with heterogeneous modalities}, 
 	year={2012},
 	volume={},
@@ -892,7 +745,7 @@
 
 @ARTICLE{segmentation3d,
 	author={Ambruş, Rareş and Claici, Sebastian and Wendt, Axel},
-	journal={IEEE Robotics and Automation Letters}, 
+	journal={IEEE Robotics and Automation Letters - (RA-L)}, 
 	title={Automatic Room Segmentation From Unstructured 3-D Data of Indoor Environments}, 
 	year={2017},
 	volume={2},
@@ -909,61 +762,33 @@
 	primaryClass={cs.RO}
 }
 
-@article{resnet,
-	author    = {Kaiming He and
-	Xiangyu Zhang and
-	Shaoqing Ren and
-	Jian Sun},
-	title     = {Deep Residual Learning for Image Recognition},
-	journal   = {CoRR},
-	volume    = {abs/1512.03385},
-	year      = {2015},
-	url       = {http://arxiv.org/abs/1512.03385},
-	eprinttype = {arXiv},
-	eprint    = {1512.03385},
-	timestamp = {Wed, 17 Apr 2019 17:23:45 +0200},
-	biburl    = {https://dblp.org/rec/journals/corr/HeZRS15.bib},
-	bibsource = {dblp computer science bibliography, https://dblp.org}
+@InProceedings{resnet,
+	author = {He, Kaiming and Zhang, Xiangyu and Ren, Shaoqing and Sun, Jian},
+	title = {Deep Residual Learning for Image Recognition},
+	booktitle = {Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition - (CVPR)},
+	month = {June},
+	year = {2016}
 }
 
-@article{hungarian,
-	author    = {Russell Stewart and
-	Mykhaylo Andriluka},
-	title     = {End-to-end people detection in crowded scenes},
-	journal   = {CoRR},
-	volume    = {abs/1506.04878},
-	year      = {2015},
-	url       = {http://arxiv.org/abs/1506.04878},
-	eprinttype = {arXiv},
-	eprint    = {1506.04878},
-	timestamp = {Mon, 13 Aug 2018 16:48:43 +0200},
-	biburl    = {https://dblp.org/rec/journals/corr/StewartA15.bib},
-	bibsource = {dblp computer science bibliography, https://dblp.org}
+@InProceedings{hungarian,
+	author = {Stewart, Russell and Andriluka, Mykhaylo and Ng, Andrew Y.},
+	title = {End-To-End People Detection in Crowded Scenes},
+	booktitle = {Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition - (CVPR)},
+	month = {June},
+	year = {2016}
 }
 
-@article{generalizediou,
-	author    = {Seyed Hamid Rezatofighi and
-	Nathan Tsoi and
-	JunYoung Gwak and
-	Amir Sadeghian and
-	Ian D. Reid and
-	Silvio Savarese},
-	title     = {Generalized Intersection over Union: {A} Metric and {A} Loss for Bounding
-	Box Regression},
-	journal   = {CoRR},
-	volume    = {abs/1902.09630},
-	year      = {2019},
-	url       = {http://arxiv.org/abs/1902.09630},
-	eprinttype = {arXiv},
-	eprint    = {1902.09630},
-	timestamp = {Tue, 21 May 2019 18:03:36 +0200},
-	biburl    = {https://dblp.org/rec/journals/corr/abs-1902-09630.bib},
-	bibsource = {dblp computer science bibliography, https://dblp.org}
+@InProceedings{generalizediou,
+	author = {Rezatofighi, Hamid and Tsoi, Nathan and Gwak, JunYoung and Sadeghian, Amir and Reid, Ian and Savarese, Silvio},
+	title = {Generalized Intersection Over Union: A Metric and a Loss for Bounding Box Regression},
+	booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition - (CVPR)},
+	month = {June},
+	year = {2019}
 }
 
 @INPROCEEDINGS{imagenet,
 	author={Deng, Jia and Dong, Wei and Socher, Richard and Li, Li-Jia and Kai Li and Li Fei-Fei},
-	booktitle={2009 IEEE Conference on Computer Vision and Pattern Recognition}, 
+	booktitle={2009 IEEE Conference on Computer Vision and Pattern Recognition - (CVPR)}, 
 	title={ImageNet: A large-scale hierarchical image database}, 
 	year={2009},
 	volume={},
@@ -971,11 +796,11 @@
 	pages={248-255},
 	doi={10.1109/CVPR.2009.5206848}}
 
-@article{verydeepimagenet,
-	author = {Simonyan, Karen and Zisserman, Andrew},
-	year = {2014},
-	month = {09},
-	pages = {},
-	title = {Very Deep Convolutional Networks for Large-Scale Image Recognition},
-	journal = {arXiv 1409.1556}
+@misc{verydeepimagenet,
+	title={Very Deep Convolutional Networks for Large-Scale Image Recognition}, 
+	author={Karen Simonyan and Andrew Zisserman},
+	year={2015},
+	eprint={1409.1556},
+	archivePrefix={arXiv},
+	primaryClass={cs.CV}
 }
