@@ -4,7 +4,7 @@
 
   [download dataset](https://drive.google.com/file/d/1BqjBpobjKTomFjDkzhWjmCryAXOEluO2/view?usp=sharing)
 
-  [download models parameters](https://mega.nz/folder/4xpgADJT#CjuJjwZEggIIQo16aFY9Og)
+  [download models parameters](https://mega.nz/folder/8kZXDC4D#XyT1IEwQQLAizo_gXNaiyQ)
 
   ## Data collection
 
