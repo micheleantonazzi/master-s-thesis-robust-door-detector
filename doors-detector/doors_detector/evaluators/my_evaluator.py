@@ -10,7 +10,13 @@ from doors_detector.evaluators.model_evaluator import ModelEvaluator
 
 class MyEvaluator(ModelEvaluator):
 
-    def get_metrics(self, iou_threshold: float = 0.5, confidence_threshold: float = 0.5, plot_curves: bool = False, colors = None) -> Dict:
+    def get_metrics(self,
+                    iou_threshold: float = 0.5,
+                    confidence_threshold: float = 0.5,
+                    door_no_door_task: bool = False,
+                    plot_curves: bool = False,
+                    colors = None
+        ) -> Dict:
         """
         This method calculates metrics to evaluate a object detection model.
         This metric is similar to the Pascal VOC metric but it is developed specifically for a robotic context.
@@ -52,6 +58,7 @@ class MyEvaluator(ModelEvaluator):
             - a FN is a positive image with no matches (no doors are found)
         :param iou_threshold:
         :param confidence_threshold:
+        :param door_no_door_task:
         :param plot_curves:
         :return:
         """
@@ -77,6 +84,11 @@ class MyEvaluator(ModelEvaluator):
 
         # Add ground truth bboxes to each image
         for box in gt_bboxes:
+
+            # If door_no_door_task is true, change all bbox labels in 0
+            if door_no_door_task:
+                box.set_class_id('0')
+
             img = bboxes_images[box.get_image_name()]
             img['is_positive'] = True
 
@@ -89,6 +101,10 @@ class MyEvaluator(ModelEvaluator):
         # Divide predicted bounding boxes for the image's type (positive or negative) they belong to.
         # For positive images, bounding boxes with confidence < confidence_threshold are discarded.
         for box in predicted_bboxes:
+
+            if door_no_door_task:
+                box.set_class_id('0')
+
             img = bboxes_images[box.get_image_name()]
 
             if img['is_positive'] and box.get_confidence() >= confidence_threshold:
