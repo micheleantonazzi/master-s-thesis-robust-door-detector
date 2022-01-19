@@ -18,12 +18,12 @@ batch_size = 1
 if __name__ == '__main__':
     seed_everything(0)
 
-    #train, test, labels, COLORS = get_final_doors_dataset(experiment=2, folder_name='house2', train_size=0.25, use_negatives=True)
-    train, test, labels, COLORS = get_deep_doors_2_labelled_sets()
+    train, test, labels, COLORS = get_final_doors_dataset(experiment=2, folder_name='house1', train_size=0.25, use_negatives=True)
+    #train, test, labels, COLORS = get_deep_doors_2_labelled_sets()
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
 
-    model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels.keys()), pretrained=True, dataset_name=DEEP_DOORS_2_LABELLED, description=DEEP_DOORS_2_LABELLED_EXP)
+    model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels.keys()), pretrained=True, dataset_name=FINAL_DOORS_DATASET, description=EXP_1_HOUSE_1)
 
     model.eval()
     model.to(device)
@@ -36,7 +36,7 @@ if __name__ == '__main__':
         outputs = model(images)
         evaluator.add_predictions(targets=targets, predictions=outputs)
 
-    metrics = evaluator.get_metrics(iou_threshold=0.90, confidence_threshold=0.5, plot_curves=True, colors=COLORS)
+    metrics = evaluator.get_metrics(iou_threshold=0.75, confidence_threshold=0.5, door_no_door_task=False, plot_curves=True, colors=COLORS)
     mAP = 0
     print('Results per bounding box:')
     for label, values in sorted(metrics['per_bbox'].items(), key=lambda v: v[0]):

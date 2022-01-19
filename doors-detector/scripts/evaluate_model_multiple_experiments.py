@@ -30,7 +30,7 @@ if __name__ == '__main__':
         'house21': [EXP_1_HOUSE_21, EXP_2_HOUSE_21_25, EXP_2_HOUSE_21_50, EXP_2_HOUSE_21_75],
         'house22': [EXP_1_HOUSE_22, EXP_2_HOUSE_22_25, EXP_2_HOUSE_22_50, EXP_2_HOUSE_22_75],
     }
-    house = 'house9'
+    house = 'house1'
     train, test, labels, COLORS = get_final_doors_dataset(experiment=2, folder_name=house, train_size=0.25, use_negatives=True)
     #train, test, labels, COLORS = get_deep_doors_2_labelled_sets()
 

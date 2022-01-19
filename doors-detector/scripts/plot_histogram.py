@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-labels = ['Negative bbox (-1)', 'Closed door (0)', 'Open door (1)']
+labels = ['No door (-1)', 'Closed door (0)', 'Open door (1)']
 
 AP_MINUS1 = [68, 74, 76, 79]
 AP_0 = [66, 74, 84, 83]
