@@ -2,8 +2,8 @@ import numpy as np
 from doors_detector.dataset.dataset_deep_doors_2_labelled.datasets_creator_deep_doors_2_labelled import DatasetsCreatorDeepDoors2Labelled
 from doors_detector.dataset.dataset_doors_final.datasets_creator_doors_final import DatasetsCreatorDoorsFinal
 
-deep_doors_2_labelled_dataset_path = '/home/antonazzi/myfiles/deep_doors_2_labelled'
-final_doors_dataset_path = '/home/antonazzi/myfiles/final_doors_dataset'
+deep_doors_2_labelled_dataset_path = '/home/michele/myfiles/deep_doors_2_labelled'
+final_doors_dataset_path = '/home/michele/myfiles/final_doors_dataset'
 
 
 def get_deep_doors_2_labelled_sets():
