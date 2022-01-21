@@ -45,6 +45,6 @@ class DatasetsCreatorDoorsNoDoorTask:
             print(m)
             print_information(d)
 
-        return (DatasetDoorsFinal(self._dataset_path, train_dataframe, TRAIN_SET, std_size=256, max_size=800, scales=[256 + i * 32 for i in range(11)]),
+        return (DatasetDoorsFinal(self._dataset_path, train_dataframe, TEST_SET, std_size=256, max_size=800, scales=[256 + i * 32 for i in range(11)]),
                 DatasetDoorsFinal(self._dataset_path, test_dataframe, TEST_SET, std_size=256, max_size=800, scales=[256 + i * 32 for i in range(11)]))
 
