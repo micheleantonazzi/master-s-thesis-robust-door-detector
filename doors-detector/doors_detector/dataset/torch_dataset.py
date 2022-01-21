@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Type, List
+from typing import Type, List, Tuple
 from PIL import Image
 import numpy as np
 import torch
@@ -51,11 +51,11 @@ class TorchDataset(Dataset):
         return len(self._dataframe.index)
 
     @abstractmethod
-    def load_sample(self, idx) -> DoorSample:
+    def load_sample(self, idx) -> Tuple[DoorSample, str, int]:
         pass
 
     def __getitem__(self, idx):
-        door_sample = self.load_sample(idx)
+        door_sample, folder_name, absolute_count = self.load_sample(idx)
 
         target = {}
         (h, w, _) = door_sample.get_bgr_image().shape
@@ -70,6 +70,8 @@ class TorchDataset(Dataset):
 
         target['boxes'] = torch.tensor(boxes, dtype=torch.float)
         target['labels'] = torch.tensor([label for label, *box in door_sample.get_bounding_boxes()], dtype=torch.long)
+        target['folder_name'] = folder_name
+        target['absolute_count'] = absolute_count
 
         # The BGR image is convert in RGB
         img, target = self._transform(Image.fromarray(door_sample.get_bgr_image()[..., [2, 1, 0]]), target)

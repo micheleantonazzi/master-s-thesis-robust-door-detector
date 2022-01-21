@@ -1,6 +1,8 @@
 import numpy as np
 from doors_detector.dataset.dataset_deep_doors_2_labelled.datasets_creator_deep_doors_2_labelled import DatasetsCreatorDeepDoors2Labelled
 from doors_detector.dataset.dataset_doors_final.datasets_creator_doors_final import DatasetsCreatorDoorsFinal
+from doors_detector.dataset.dataset_doors_final.datasets_creator_doors_no_door_task import \
+    DatasetsCreatorDoorsNoDoorTask
 
 deep_doors_2_labelled_dataset_path = '/home/michele/myfiles/deep_doors_2_labelled'
 final_doors_dataset_path = '/home/michele/myfiles/final_doors_dataset'
@@ -20,6 +22,14 @@ def get_final_doors_dataset(experiment: int, folder_name: str, train_size: float
     dataset_creator.set_experiment_number(experiment=experiment, folder_name=folder_name)
     dataset_creator.use_negatives(use_negatives=use_negatives)
     train, test = dataset_creator.create_datasets(train_size=train_size)
+    labels = dataset_creator.get_labels()
+
+    return train, test, labels, np.array([[1, 0, 0], [0, 1, 0]], dtype=float)
+
+
+def get_final_doors_dataset_door_no_door_task(folder_name: str, train_size: float = 0.25, test_size: float = 0.25):
+    dataset_creator = DatasetsCreatorDoorsNoDoorTask(dataset_path=final_doors_dataset_path, folder_name=folder_name)
+    train, test = dataset_creator.create_datasets(train_size=train_size, test_size=test_size)
     labels = dataset_creator.get_labels()
 
     return train, test, labels, np.array([[1, 0, 0], [0, 1, 0]], dtype=float)
