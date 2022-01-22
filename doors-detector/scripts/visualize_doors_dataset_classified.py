@@ -60,6 +60,7 @@ if __name__ == '__main__':
             ax = plt.gca()
 
             for label, score, (xmin, ymin, xmax, ymax) in zip(image_data['labels'][keep], image_data['scores'][keep], image_data['boxes'][keep]):
+                label = label.item()
                 ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
                                            fill=False, color=COLORS[label], linewidth=3))
                 text = f'{labels[int(label)]}: {score:0.2f}'
