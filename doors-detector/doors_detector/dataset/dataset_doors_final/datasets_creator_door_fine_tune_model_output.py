@@ -69,7 +69,7 @@ class DatasetCreatorFineTuneModelOutput:
             'folder_name': [self._folder_name for _ in range(len(self._absolute_counts))],
             'folder_absolute_count': self._absolute_counts
         })
-        return (TorchDatasetModelOutput(dataset_path=self._dataset_path, dataframe=dataframe_train, targets=self._targets, set_type=TEST_SET, std_size=256, max_size=800, scales=[256 + i * 32 for i in range(11)]),
+        return (TorchDatasetModelOutput(dataset_path=self._dataset_path, dataframe=dataframe_train, targets=self._targets, set_type=TRAIN_SET, std_size=256, max_size=800, scales=[256 + i * 32 for i in range(11)]),
                 self._test_dataset)
 
 
