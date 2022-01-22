@@ -94,7 +94,7 @@ if __name__ == '__main__':
 
     # Create a Pandas Excel writer using XlsxWriter as the engine.
     final = '_door_no_door.xlsx' if door_no_door_task else '.xlsx'
-    with pd.ExcelWriter('./../results/'+house + '_door_no_door.xlsx') as writer:
+    with pd.ExcelWriter('./../results/'+house + final) as writer:
         if not metrics_table.index.name:
             metrics_table.index.name = 'Index'
         metrics_table.to_excel(writer, sheet_name='s')
