@@ -24,7 +24,7 @@ class TorchDataset(Dataset):
         self._dataframe = dataframe
         self._set_type = set_type
 
-        if set == TEST_SET:
+        if set_type == TEST_SET:
             self._transform = T.Compose([
                 #T.RandomResize([std_size], max_size=max_size),
                 T.ToTensor(),
@@ -66,6 +66,7 @@ class TorchDataset(Dataset):
         # All values must be normalized in [0, 1], relative to the image's size
         boxes = door_sample.get_bounding_boxes()
         boxes = np.array([(x, y, x + w, y + h) for label, x, y, w, h in boxes])
+
         #bboxes = boxes / [(w, h, w, h) for _ in range(len(boxes))]
 
         target['boxes'] = torch.tensor(boxes, dtype=torch.float)
