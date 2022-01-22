@@ -2,8 +2,7 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-houses = pd.read_csv('./../results/risultati_tesi_antonazzi - Foglio1.csv')
-houses['AP'] = houses['AP'].apply(lambda x: x.replace(',', '.'))
+houses = pd.read_csv('./../results/risultati_tesi_antonazzi.csv')
 houses['AP'] = houses['AP'].astype(np.float64)
 
 print(houses.dtypes)

@@ -57,7 +57,7 @@ for i in range(4):
 
 ax.set_ylabel('AP')
 ax.set_ylim([0, 110])
-ax.set_title('AP results over all houses - doors (0)')
+ax.set_title('AP results over all houses - doors (1)')
 ax.set_xticks([i*2 for i in range(10)])
 ax.set_xticklabels(houses_list)
 ax.legend()
