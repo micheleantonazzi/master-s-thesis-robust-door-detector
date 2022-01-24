@@ -36,17 +36,15 @@ class TorchDatasetModelOutput(DatasetDoorsFinal):
         door_sample, folder_name, absolute_count = super().load_sample(idx)
         target = {}
         (h, w, _) = door_sample.get_bgr_image().shape
-        print('DIM', h, w)
         target['size'] = torch.tensor([int(h), int(w)], dtype=torch.int)
         bboxes = np.array([(x - w / 2, y - h / 2, x + w / 2, y + h / 2) for (x, y, w, h) in self._targets[idx]['bboxes']])
-        target['boxes'] = torch.tensor(bboxes * [w, h, w, h])
+        target['boxes'] = torch.tensor(bboxes * [w, h, w, h], dtype=torch.float)
         target['labels'] = torch.tensor(self._targets[idx]['labels'], dtype=torch.long)
         target['folder_name'] = folder_name
         target['absolute_count'] = absolute_count
 
         # The BGR image is convert in RGB
         img, target = self._transform(Image.fromarray(door_sample.get_bgr_image()[..., [2, 1, 0]]), target)
-        print(np.array(self._targets[idx]['bboxes']) * [w, h, w, h])
 
         return img, target, door_sample
 

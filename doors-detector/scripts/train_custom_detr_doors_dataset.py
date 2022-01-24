@@ -38,7 +38,7 @@ params = {
     'set_cost_giou': 2,
 }
 
-reload_model = False
+reload_model = True
 restart_checkpoint = False
 
 if __name__ == '__main__':
@@ -47,12 +47,12 @@ if __name__ == '__main__':
     seed_everything(params['seed'])
 
     #train, test, labels, _ = get_deep_doors_2_labelled_sets()
-    train, test, labels, _ = get_final_doors_dataset(experiment=2, folder_name='house1', train_size=0.2, use_negatives=False)
+    train, test, labels, _ = get_final_doors_dataset(experiment=2, folder_name='house1', train_size=0.25, use_negatives=False)
 
     print(f'Train set size: {len(train)}', f'Test set size: {len(test)}')
 
     model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels.keys()), pretrained=reload_model, dataset_name=FINAL_DOORS_DATASET, description=EXP_1_HOUSE_1)
-    model.set_description(description=EXP_2_HOUSE_1_20)
+    model.set_description(description=EXP_2_HOUSE_1_25)
     #model.set_dataset_name(dataset_name=GIBSON_DATASET_SMALL)
     model.to(device)
 
@@ -73,6 +73,8 @@ if __name__ == '__main__':
         if p.requires_grad:
             print(n)
 
+    for p in [p for n, p in model.named_parameters() if "backbone" in n]:
+        p.requires_grad = False
 
     param_dicts = [
         {"params": [p for n, p in model.named_parameters() if "backbone" not in n and p.requires_grad]},
@@ -82,7 +84,8 @@ if __name__ == '__main__':
         },
     ]
 
-    #print(param_dicts)
+
+    print(param_dicts)
 
     optimizer = torch.optim.AdamW(param_dicts, lr=params['lr'], weight_decay=params['weight_decay'])
 
@@ -129,7 +132,7 @@ if __name__ == '__main__':
             images = images.to(device)
 
             # Move targets to device
-            targets = [{k: v.to(device) for k, v in target.items()} for target in targets]
+            targets = [{k: v.to(device) for k, v in target.items() if k != 'folder_name' and k != 'absolute_count'} for target in targets]
 
             outputs = model(images)
 
