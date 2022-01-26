@@ -37,6 +37,7 @@ params = {
 
 folder_name = 'house1'
 threshold = 0.9
+percentage = 0.25
 # Fix seeds
 seed_everything(params['seed'])
 
@@ -65,7 +66,7 @@ else:
     })
 
 # Collect the model output for fine-tune
-train, test, labels_set, COLORS = get_final_doors_dataset_door_no_door_task(folder_name=folder_name, train_size=0.25, test_size=0.25)
+train, test, labels_set, COLORS = get_final_doors_dataset_door_no_door_task(folder_name=folder_name, train_size=percentage, test_size=0.25)
 
 model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels_set.keys()), pretrained=True, dataset_name=FINAL_DOORS_DATASET, description=EXP_1_HOUSE_1)
 model.eval()
@@ -275,7 +276,7 @@ for i, (label, values) in enumerate(sorted(metrics['per_bbox'].items(), key=lamb
     metrics_table['FP'][m + i] = values['FP']
 print(f'\tmAP = {mAP / len(metrics["per_bbox"].keys())}')
 
-final = '_model_output'
+final = '_train_size_' + str(percentage) + '_confidence_' + str(threshold) + '_model_output'
 final += '_door_no_door.xlsx' if door_no_door_task else '.xlsx'
 with pd.ExcelWriter('./../results/'+folder_name + final) as writer:
     if not metrics_table.index.name:
