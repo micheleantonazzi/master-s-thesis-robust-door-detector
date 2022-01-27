@@ -82,11 +82,14 @@ dataset_model_output = DatasetCreatorFineTuneModelOutput(
 logs = {
     'predicted': {
         'positive_images': 0,
-        'negative_images': 0
+        'negative_images': 0,
+        'positive_bboxes': 0,
+        'negative_bboxes': 0
     },
     'gt': {
         'positive_images': 0,
-        'negative_images': 0
+        'negative_images': 0,
+        'bboxes': 0
     }
 }
 
@@ -106,6 +109,7 @@ for i, (images, targets) in tqdm(enumerate(data_loader_classify), total=len(data
             is_positive = False
         else:
             logs['gt']['positive_images'] += 1
+            logs['gt']['bboxes'] += len(targets[i]['labels'])
 
 
         keep = scores > threshold
@@ -113,8 +117,10 @@ for i, (images, targets) in tqdm(enumerate(data_loader_classify), total=len(data
         if torch.count_nonzero(keep).item() > 0:
             if is_positive:
                 logs['predicted']['positive_images'] += 1
+                logs['predicted']['positive_bboxes'] += torch.count_nonzero(keep).item()
             else:
                 logs['predicted']['negative_images'] += 1
+                logs['predicted']['negative_bboxes'] += torch.count_nonzero(keep).item()
 
             scores = scores[keep]
             labels = labels[keep]
@@ -148,10 +154,13 @@ for i, (images, targets) in tqdm(enumerate(data_loader_classify), total=len(data
 
 print(f'GT -> Tot = {logs["gt"]["positive_images"] + logs["gt"]["negative_images"]} - '
       f'Positives = {logs["gt"]["positive_images"]} - '
-      f'Negatives = {logs["gt"]["negative_images"]}')
+      f'Negatives = {logs["gt"]["negative_images"]} - '
+      f'Tot. bboxes = {logs["gt"]["bboxes"]}')
 print(f'PREDICTED -> Tot = {logs["predicted"]["positive_images"] + logs["predicted"]["negative_images"]} - '
       f'Positives = {logs["predicted"]["positive_images"]} - '
-      f'Negatives = {logs["predicted"]["negative_images"]}')
+      f'Negatives = {logs["predicted"]["negative_images"]} - '
+      f'Positive bboxes = {logs["predicted"]["positive_bboxes"]} - '
+      f'Negative bboxes = {logs["predicted"]["negative_bboxes"]}')
 
 # Evaluate test set
 data_loader_test = DataLoader(test, batch_size=params['batch_size'], collate_fn=collate_fn, shuffle=False, num_workers=4)
