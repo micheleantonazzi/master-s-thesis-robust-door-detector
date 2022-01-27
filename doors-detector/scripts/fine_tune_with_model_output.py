@@ -79,7 +79,16 @@ dataset_model_output = DatasetCreatorFineTuneModelOutput(
     test_dataset=test
 )
 
-targets_saved = []
+logs = {
+    'predicted': {
+        'positive_images': 0,
+        'negative_images': 0
+    },
+    'gt': {
+        'positive_images': 0,
+        'negative_images': 0
+    }
+}
 
 print('Collect model output')
 for i, (images, targets) in tqdm(enumerate(data_loader_classify), total=len(data_loader_classify), desc='Collect model output'):
@@ -91,9 +100,22 @@ for i, (images, targets) in tqdm(enumerate(data_loader_classify), total=len(data
     scores_images, labels_images = prob[..., :-1].max(-1)
 
     for i, (scores, labels, bboxes) in enumerate(zip(scores_images, labels_images, pred_boxes_images)):
+        is_positive = True
+        if len(targets[i]['labels']) == 0:
+            logs['gt']['negative_images'] += 1
+            is_positive = False
+        else:
+            logs['gt']['positive_images'] += 1
+
+
         keep = scores > threshold
 
         if torch.count_nonzero(keep).item() > 0:
+            if is_positive:
+                logs['predicted']['positive_images'] += 1
+            else:
+                logs['predicted']['negative_images'] += 1
+
             scores = scores[keep]
             labels = labels[keep]
             bboxes = bboxes[keep]
@@ -123,6 +145,13 @@ for i, (images, targets) in tqdm(enumerate(data_loader_classify), total=len(data
             plt.axis('off')
             plt.show()"""
 
+
+print(f'GT -> Tot = {logs["gt"]["positive_images"] + logs["gt"]["negative_images"]} - '
+      f'Positives = {logs["gt"]["positive_images"]} - '
+      f'Negatives = {logs["gt"]["negative_images"]}')
+print(f'PREDICTED -> Tot = {logs["predicted"]["positive_images"] + logs["predicted"]["negative_images"]} - '
+      f'Positives = {logs["predicted"]["positive_images"]} - '
+      f'Negatives = {logs["predicted"]["negative_images"]}')
 
 # Evaluate test set
 data_loader_test = DataLoader(test, batch_size=params['batch_size'], collate_fn=collate_fn, shuffle=False, num_workers=4)
