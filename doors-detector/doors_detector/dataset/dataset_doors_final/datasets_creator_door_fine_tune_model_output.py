@@ -1,5 +1,5 @@
 import random
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 import numpy as np
 import pandas as pd
@@ -16,7 +16,7 @@ from doors_detector.dataset.torch_dataset import TorchDataset, TRAIN_SET, SET, T
 class TorchDatasetModelOutput(DatasetDoorsFinal):
     def __init__(self, dataset_path: str,
                  dataframe: pd.DataFrame,
-                 targets: List,
+                 targets: Dict,
                  set_type: SET,
                  std_size: int,
                  max_size: int,
@@ -34,19 +34,17 @@ class TorchDatasetModelOutput(DatasetDoorsFinal):
 
 
     def __getitem__(self, idx):
-        method = self.get_dataframe().method[idx]
+        method = self.get_dataframe().method.iloc[idx]
 
         if method == 0:
-            print(method, 'ehhh no')
             return super().__getitem__(idx)
 
-        print(method, 'SONO IL PRIMOOOOOO')
         door_sample, folder_name, absolute_count = super().load_sample(idx)
         target = {}
         (h, w, _) = door_sample.get_bgr_image().shape
         target['size'] = torch.tensor([int(h), int(w)], dtype=torch.int)
-        target['boxes'] = torch.tensor(self._targets[idx]['bboxes'], dtype=torch.float)
-        target['labels'] = torch.tensor(self._targets[idx]['labels'], dtype=torch.long)
+        target['boxes'] = torch.tensor(self._targets[absolute_count]['bboxes'], dtype=torch.float)
+        target['labels'] = torch.tensor(self._targets[absolute_count]['labels'], dtype=torch.long)
         target['folder_name'] = folder_name
         target['absolute_count'] = absolute_count
 
@@ -62,11 +60,11 @@ class DatasetCreatorFineTuneModelOutput:
         self._folder_name = folder_name
         self._test_dataset = test_dataset
         self._absolute_counts: list = []
-        self._targets = []
+        self._targets = {}
 
-    def add_train_sample(self, absolute_counts: int, targets):
-        self._absolute_counts.append(absolute_counts)
-        self._targets.append(targets)
+    def add_train_sample(self, absolute_count: int, targets):
+        self._absolute_counts.append(absolute_count)
+        self._targets[absolute_count] = targets
 
     def create_datasets(self, random_state: int = 42):
         complete_dataframe = DatasetManager(dataset_path=self._dataset_path, sample_class=DoorSample).get_dataframe()

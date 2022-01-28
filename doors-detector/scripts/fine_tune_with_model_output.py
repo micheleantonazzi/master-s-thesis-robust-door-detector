@@ -129,7 +129,7 @@ for i, (images, targets) in tqdm(enumerate(data_loader_classify), total=len(data
 
             # Convert bbox coordinates
             [h, w] = targets[i]['size'].tolist()
-            bboxes = np.array([(x - w / 2, y - h / 2, x + w / 2, y + h / 2) for (x, y, w, h) in bboxes.detach().numpy()]) * [w, h, w, h]
+            bboxes = np.array([(x - w / 2, y - h / 2, x + w / 2, y + h / 2) for (x, y, w, h) in bboxes.tolist()]) * [w, h, w, h]
 
             dataset_model_output.add_train_sample(targets[i]['absolute_count'], targets={'bboxes': bboxes.tolist(), 'labels': labels.tolist()})
             """pil_image = images[i] * torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1)
