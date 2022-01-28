@@ -55,10 +55,10 @@ class TorchDatasetModelOutput(DatasetDoorsFinal):
 
 
 class DatasetCreatorFineTuneModelOutput:
-    def __init__(self, dataset_path: str, folder_name: str, test_dataset: DatasetDoorsFinal):
+    def __init__(self, dataset_path: str, folder_name: str, test_dataframe: pd.DataFrame):
         self._dataset_path = dataset_path
         self._folder_name = folder_name
-        self._test_dataset = test_dataset
+        self._test_dataframe = test_dataframe
         self._absolute_counts: list = []
         self._targets = {}
 
@@ -80,7 +80,8 @@ class DatasetCreatorFineTuneModelOutput:
             'method': [1 for _ in range(len(self._absolute_counts))] + [0 for _ in range(len(complete_dataframe.index))]
         })
         dataframe_train = shuffle(dataframe_train, random_state=random_state)
+        dataframe_test = self._test_dataframe[self._test_dataframe.label == 1]
         return (TorchDatasetModelOutput(dataset_path=self._dataset_path, dataframe=dataframe_train, targets=self._targets, set_type=TRAIN_SET, std_size=256, max_size=800, scales=[256 + i * 32 for i in range(11)]),
-                self._test_dataset)
+                DatasetDoorsFinal(self._dataset_path, dataframe_test, TEST_SET, std_size=256, max_size=800, scales=[256 + i * 32 for i in range(11)]))
 
 

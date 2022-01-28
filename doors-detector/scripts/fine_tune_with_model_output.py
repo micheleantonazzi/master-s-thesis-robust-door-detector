@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
@@ -12,6 +14,7 @@ from doors_detector.dataset.torch_dataset import FINAL_DOORS_DATASET
 from doors_detector.evaluators.my_evaluator import MyEvaluator
 from doors_detector.models.detr_door_detector import *
 from doors_detector.models.model_names import DETR_RESNET50
+from doors_detector.utilities.plot import plot_losses
 from doors_detector.utilities.utils import seed_everything, collate_fn
 from scripts.dataset_configurator import get_final_doors_dataset_door_no_door_task
 import torch.nn.functional as F
@@ -77,7 +80,7 @@ data_loader_classify = DataLoader(train, batch_size=params['batch_size'], collat
 dataset_model_output = DatasetCreatorFineTuneModelOutput(
     dataset_path='/home/michele/myfiles/final_doors_dataset',
     folder_name=folder_name,
-    test_dataset=test
+    test_dataframe=test.get_dataframe()
 )
 
 logs = {
@@ -188,7 +191,7 @@ print(f'\tmAP = {mAP / len(metrics["per_bbox"].keys())}')
 train, test = dataset_model_output.create_datasets()
 
 data_loader_train = DataLoader(train, batch_size=params['batch_size'], collate_fn=collate_fn, shuffle=False, num_workers=4)
-data_loader_test = DataLoader(test, batch_size=params['batch_size'], collate_fn=collate_fn, shuffle=False, num_workers=4)
+data_loader_test_model = DataLoader(test, batch_size=params['batch_size'], collate_fn=collate_fn, shuffle=False, num_workers=4)
 """
 for i, (imgs, targets) in enumerate(data_loader_train):
     for img, target in zip(imgs, targets):
@@ -234,6 +237,8 @@ device = 'cuda'
 model.to(device)
 criterion.to(device)
 print_logs_every = 10
+start_time = time.time()
+
 for epoch in range(params['epochs']):
 
     temp_logs = {'train': [], 'test': []}
@@ -287,6 +292,50 @@ for epoch in range(params['epochs']):
 
     print(f'----> EPOCH SUMMARY TRAIN [{epoch}] -> [{i}/{len(data_loader_train)}]: ' + ', '.join([f'{k}: {v}' for k, v in logs['train'][epoch].items()]))
 
+    with torch.no_grad():
+        model.eval()
+        criterion.eval()
+
+        accumulate_losses = {}
+        for i, test_data in enumerate(data_loader_test_model):
+            images, targets = test_data
+            images = images.to(device)
+
+            # Move targets to device
+            targets = [{k: v.to(device) for k, v in target.items() if k != 'folder_name' and k != 'absolute_count'} for target in targets]
+
+            outputs = model(images)
+
+            # Compute losses
+            losses_dict = criterion(outputs, targets)
+            weight_dict = criterion.weight_dict
+
+            # Losses are weighted using parameters contained in a dictionary
+            losses = sum(losses_dict[k] * weight_dict[k] for k in losses_dict.keys() if k in weight_dict)
+
+            scaled_losses_dict = {k: v * weight_dict[k] for k, v in losses_dict.items() if k in weight_dict}
+            scaled_losses_dict['loss'] = sum(scaled_losses_dict.values())
+            accumulate_losses = {k: scaled_losses_dict[k] if k not in accumulate_losses else sum([accumulate_losses[k], scaled_losses_dict[k]]) for k, _ in scaled_losses_dict.items()}
+
+            if i % print_logs_every == print_logs_every - 1:
+                accumulate_losses = {k: v.item() / print_logs_every for k, v in accumulate_losses.items()}
+                print(f'Test epoch [{epoch}] -> [{i}/{len(data_loader_test)}]: ' + ', '.join([f'{k}: {v}' for k, v in accumulate_losses.items()]))
+                temp_logs['test'].append(accumulate_losses)
+                accumulate_losses = {}
+
+    epoch_total = {}
+    for d in temp_logs['test']:
+        for k in d:
+            epoch_total[k] = epoch_total.get(k, 0) + d[k]
+
+    logs['test'].append({k: v / len(temp_logs['test']) for k, v in epoch_total.items()})
+    logs['time'].append(time.time() - start_time)
+
+    print(f'----> EPOCH SUMMARY TEST [{epoch}] -> [{i}/{len(data_loader_test)}]: ' + ', '.join([f'{k}: {v}' for k, v in logs['test'][epoch].items()]))
+
+    #lr_scheduler.step()
+
+    plot_losses(logs)
 # Evaluate fine-tined model
 
 model.to('cpu')
