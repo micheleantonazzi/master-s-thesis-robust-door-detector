@@ -27,6 +27,7 @@ class DatasetsCreatorDoorsNoDoorTask:
         train_indexes, test_indexes = train_test_split(self._dataframe.index.tolist(), train_size=train_size, test_size=test_size,random_state=random_state)
 
         train_dataframe, test_dataframe = self._dataframe.loc[train_indexes], self._dataframe.loc[test_indexes]
+        train_dataframe = train_dataframe[train_dataframe.label == 1]
 
         def print_information(dataframe):
             print(f'    - total samples = {len(dataframe.index)}\n'

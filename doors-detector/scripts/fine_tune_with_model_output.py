@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 from models.detr import SetCriterion
@@ -36,8 +37,8 @@ params = {
 }
 
 folder_name = 'house1'
-threshold = 0.9
-percentage = 0.25
+threshold = 0.95
+percentage = 0.1
 # Fix seeds
 seed_everything(params['seed'])
 
@@ -126,13 +127,10 @@ for i, (images, targets) in tqdm(enumerate(data_loader_classify), total=len(data
             labels = labels[keep]
             bboxes = bboxes[keep]
 
-            #targets_saved.append({
-               # 'folder_name': targets[i]['folder_name'],
-               # 'absolute_count': targets[i]['absolute_count'],
-                #'bboxes': bboxes.tolist(),
-                #'labels': labels.tolist()
-            #})
-            #print(targets[i]['absolute_count'], bboxes.tolist())
+            # Convert bbox coordinates
+            [h, w] = targets[i]['size'].tolist()
+            bboxes = np.array([(x - w / 2, y - h / 2, x + w / 2, y + h / 2) for (x, y, w, h) in bboxes.detach().numpy()]) * [w, h, w, h]
+
             dataset_model_output.add_train_sample(targets[i]['absolute_count'], targets={'bboxes': bboxes.tolist(), 'labels': labels.tolist()})
             """pil_image = images[i] * torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1)
             pil_image = pil_image + torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
