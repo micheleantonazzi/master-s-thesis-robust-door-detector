@@ -41,11 +41,12 @@ params = {
 
 folder_name = 'house1'
 threshold = 0.95
-percentage = 0.1
+percentage = 0.75
+iou_threshold = 0.75
 # Fix seeds
 seed_everything(params['seed'])
 
-door_no_door_task = False
+door_no_door_task = True
 
 # Prepare evaluation
 if door_no_door_task:
@@ -72,7 +73,8 @@ else:
 # Collect the model output for fine-tune
 train, test, labels_set, COLORS = get_final_doors_dataset_door_no_door_task(folder_name=folder_name, train_size=percentage, test_size=0.25)
 
-model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels_set.keys()), pretrained=True, dataset_name=FINAL_DOORS_DATASET, description=EXP_1_HOUSE_1)
+model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels_set.keys()), pretrained=True,
+                         dataset_name=FINAL_DOORS_DATASET, description=EXP_1_HOUSE_1)
 model.eval()
 
 data_loader_classify = DataLoader(train, batch_size=params['batch_size'], collate_fn=collate_fn, shuffle=False, num_workers=4)
@@ -171,7 +173,7 @@ for images, targets in tqdm(data_loader_test, total=len(data_loader_test), desc=
     outputs = model(images)
     evaluator.add_predictions(targets=targets, predictions=outputs)
 
-metrics = evaluator.get_metrics(iou_threshold=0.75, confidence_threshold=0.5, door_no_door_task=door_no_door_task, plot_curves=True, colors=COLORS)
+metrics = evaluator.get_metrics(iou_threshold=iou_threshold, confidence_threshold=0.5, door_no_door_task=door_no_door_task, plot_curves=True, colors=COLORS)
 mAP = 0
 print('Results per bounding box:')
 for i, (label, values) in enumerate(sorted(metrics['per_bbox'].items(), key=lambda v: v[0])):
@@ -347,7 +349,7 @@ for images, targets in tqdm(data_loader_test, total=len(data_loader_test), desc=
     outputs = model(images)
     evaluator.add_predictions(targets=targets, predictions=outputs)
 
-metrics = evaluator.get_metrics(iou_threshold=0.75, confidence_threshold=0.5, door_no_door_task=door_no_door_task, plot_curves=True, colors=COLORS)
+metrics = evaluator.get_metrics(iou_threshold=iou_threshold, confidence_threshold=0.5, door_no_door_task=door_no_door_task, plot_curves=True, colors=COLORS)
 mAP = 0
 print('Results per bounding box:')
 for i, (label, values) in enumerate(sorted(metrics['per_bbox'].items(), key=lambda v: v[0])):
