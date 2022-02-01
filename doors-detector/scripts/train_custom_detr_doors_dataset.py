@@ -178,7 +178,7 @@ if __name__ == '__main__':
                 images = images.to(device)
 
                 # Move targets to device
-                targets = [{k: v.to(device) for k, v in target.items()} for target in targets]
+                targets = [{k: v.to(device) for k, v in target.items() if k != 'folder_name' and k != 'absolute_count'} for target in targets]
 
                 outputs = model(images)
 

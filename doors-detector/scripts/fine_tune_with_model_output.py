@@ -73,7 +73,8 @@ else:
 # Collect the model output for fine-tune
 train, test, labels_set, COLORS = get_final_doors_dataset_door_no_door_task(folder_name=folder_name, train_size=percentage, test_size=0.25)
 
-model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels_set.keys()), pretrained=True, dataset_name=FINAL_DOORS_DATASET, description=EXP_1_HOUSE_1)
+model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels_set.keys()), pretrained=True,
+                         dataset_name=FINAL_DOORS_DATASET, description=EXP_1_HOUSE_1)
 model.eval()
 
 data_loader_classify = DataLoader(train, batch_size=params['batch_size'], collate_fn=collate_fn, shuffle=False, num_workers=4)
@@ -133,13 +134,6 @@ for i, (images, targets) in tqdm(enumerate(data_loader_classify), total=len(data
             scores = scores[keep]
             labels = labels[keep]
             bboxes = bboxes[keep]
-            evaluator = MyEvaluator()
-            evaluator.add_predictions(targets=(targets[i],), predictions={
-                'pred_logits': torch.unsqueeze(outputs['pred_logits'][i], dim=0),
-                'pred_boxes': torch.unsqueeze(outputs['pred_boxes'][i], dim=0)
-            })
-
-            metrics = evaluator.get_metrics(iou_threshold=0.95, confidence_threshold=threshold, door_no_door_task=door_no_door_task)
 
             # Check if all doors are found without false positive detections
             check = True
