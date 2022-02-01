@@ -25,7 +25,7 @@ import torchvision.transforms as T
 params = {
     'seed': 0,
     'batch_size': 1,
-    'epochs': 10,
+    'epochs': 5,
     'lr': 1e-5,
     'weight_decay': 1e-4,
     'lr_drop': 20,
@@ -41,12 +41,12 @@ params = {
 }
 
 folder_name = 'house1'
-threshold = 0.70
+threshold = 0.7
 percentage = 0.75
 # Fix seeds
 seed_everything(params['seed'])
 
-door_no_door_task = True
+door_no_door_task = False
 
 # Prepare evaluation
 if door_no_door_task:
@@ -133,7 +133,7 @@ for i, (images, targets) in tqdm(enumerate(data_loader_classify), total=len(data
                 'pred_logits': torch.unsqueeze(outputs['pred_logits'][i], 0),
                 'pred_boxes': torch.unsqueeze(outputs['pred_boxes'][i], 0)
             })
-            metrics = evaluator.get_metrics(iou_threshold=0.90 , confidence_threshold=threshold, door_no_door_task=False)
+            metrics = evaluator.get_metrics(iou_threshold=0.90, confidence_threshold=threshold, door_no_door_task=False)
 
             # Check if all doors are found without false positive detections
             check = True
@@ -154,9 +154,9 @@ for i, (images, targets) in tqdm(enumerate(data_loader_classify), total=len(data
                     logs['predicted']['negative_bboxes'] += torch.count_nonzero(keep).item()
                 # Convert bbox coordinates
                 [h, w] = targets[i]['size'].tolist()
-                bboxes = np.array([(x - w / 2, y - h / 2, x + w / 2, y + h / 2) for (x, y, w, h) in targets[i]['boxes'].tolist()]) * [w, h, w, h]
+                bboxes = np.array([(x - w / 2, y - h / 2, x + w / 2, y + h / 2) for (x, y, w, h) in bboxes.tolist()]) * [w, h, w, h]
 
-                dataset_model_output.add_train_sample(targets[i]['absolute_count'], targets={'bboxes': bboxes.tolist(), 'labels': targets[i]['labels'].tolist()})
+                dataset_model_output.add_train_sample(targets[i]['absolute_count'], targets={'bboxes': bboxes.tolist(), 'labels': labels.tolist()})
                 """pil_image = images[i] * torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1)
                 pil_image = pil_image + torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
                 plt.figure(figsize=(16, 10))
