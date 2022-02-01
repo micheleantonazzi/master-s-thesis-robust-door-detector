@@ -135,6 +135,13 @@ for i, (images, targets) in tqdm(enumerate(data_loader_classify), total=len(data
             labels = labels[keep]
             bboxes = bboxes[keep]
 
+            evaluator = MyEvaluator()
+            evaluator.add_predictions(targets=(targets[i],), predictions={
+                'pred_logits': torch.unsqueeze(outputs['pred_logits'][i], 0),
+                'pred_boxes': torch.unsqueeze(outputs['pred_boxes'][i], 0)
+            })
+            metrics = evaluator.get_metrics(iou_threshold=0.95, confidence_threshold=threshold, door_no_door_task=door_no_door_task)
+
             # Check if all doors are found without false positive detections
             check = True
             label_not_consider = '-1' if not door_no_door_task else '0'
