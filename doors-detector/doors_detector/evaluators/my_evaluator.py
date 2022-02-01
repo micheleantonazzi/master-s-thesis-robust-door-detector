@@ -68,7 +68,7 @@ class MyEvaluator(ModelEvaluator):
         predicted_bboxes_positives = []
 
         # Labels
-        labels = {'-1'}
+        labels = {'-1', '0', '1'}
 
         # A dictionary containing all bboxes divided by image. DETR produces a fixed number of prediction for every image.
         # A positive images have at least one ground truth bbox, while negatives don't have ground truth

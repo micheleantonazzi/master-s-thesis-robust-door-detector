@@ -2,6 +2,7 @@ import time
 
 import numpy as np
 import pandas as pd
+import torch
 from matplotlib import pyplot as plt
 from models.detr import SetCriterion
 from models.matcher import HungarianMatcher
@@ -41,11 +42,11 @@ params = {
 
 folder_name = 'house1'
 threshold = 0.95
-percentage = 0.1
+percentage = 0.75
 # Fix seeds
 seed_everything(params['seed'])
 
-door_no_door_task = False
+door_no_door_task = True
 
 # Prepare evaluation
 if door_no_door_task:
@@ -98,6 +99,7 @@ logs = {
 }
 
 print('Collect model output')
+f, t = 0, 0
 for i, (images, targets) in tqdm(enumerate(data_loader_classify), total=len(data_loader_classify), desc='Collect model output'):
 
     outputs = model(images)
@@ -116,9 +118,11 @@ for i, (images, targets) in tqdm(enumerate(data_loader_classify), total=len(data
             logs['gt']['bboxes'] += len(targets[i]['labels'])
 
 
-        keep = scores > threshold
+        keep = scores >= threshold
+        keep_len = torch.count_nonzero(keep).item()
 
-        if torch.count_nonzero(keep).item() > 0:
+        # Select only correct images
+        if keep_len > 0 and keep_len == len(targets[i]['boxes']):
             if is_positive:
                 logs['predicted']['positive_images'] += 1
                 logs['predicted']['positive_bboxes'] += torch.count_nonzero(keep).item()
@@ -129,30 +133,50 @@ for i, (images, targets) in tqdm(enumerate(data_loader_classify), total=len(data
             scores = scores[keep]
             labels = labels[keep]
             bboxes = bboxes[keep]
+            evaluator = MyEvaluator()
+            evaluator.add_predictions(targets=(targets[i],), predictions={
+                'pred_logits': torch.unsqueeze(outputs['pred_logits'][i], dim=0),
+                'pred_boxes': torch.unsqueeze(outputs['pred_boxes'][i], dim=0)
+            })
 
-            # Convert bbox coordinates
-            [h, w] = targets[i]['size'].tolist()
-            bboxes = np.array([(x - w / 2, y - h / 2, x + w / 2, y + h / 2) for (x, y, w, h) in bboxes.tolist()]) * [w, h, w, h]
+            metrics = evaluator.get_metrics(iou_threshold=0.95, confidence_threshold=threshold, door_no_door_task=door_no_door_task)
 
-            dataset_model_output.add_train_sample(targets[i]['absolute_count'], targets={'bboxes': bboxes.tolist(), 'labels': labels.tolist()})
-            """pil_image = images[i] * torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1)
-            pil_image = pil_image + torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
-            plt.figure(figsize=(16, 10))
+            # Check if all doors are found without false positive detections
+            check = True
+            label_not_consider = '-1' if not door_no_door_task else '0'
+            for label, results in metrics['per_image'].items():
+                if label != label_not_consider:
+                    #print(label)
+                    if results['total_positives'] != results['TP'] or results['FP'] > 0:
+                        check = False
+                        f += 1
+                        #print('false')
 
-            plt.imshow(T.ToPILImage()(pil_image))
-            ax = plt.gca()
+            if check:
+                # Convert bbox coordinates
+                [h, w] = targets[i]['size'].tolist()
+                print(len(bboxes), len(targets[i]['boxes']))
+                bboxes = np.array([(x - w / 2, y - h / 2, x + w / 2, y + h / 2) for (x, y, w, h) in bboxes.tolist()]) * [w, h, w, h]
 
-            for label, (x, y, w, h), score in zip(labels.tolist(), bboxes.tolist(), scores.tolist()):
-                ax.add_patch(plt.Rectangle(((x - w / 2 )*256, (y - h / 2 )*256), w*256, h *256,
-                                           fill=False, color=COLORS[label], linewidth=3))
-                text = f'{labels_set[int(label)]}: {score:0.2f}'
-                ax.text((x - w / 2 )*256, (y - h / 2 )*256, text, fontsize=15,
-                        bbox=dict(facecolor='yellow', alpha=0.5))
+                dataset_model_output.add_train_sample(targets[i]['absolute_count'], targets={'bboxes': bboxes.tolist(), 'labels': labels.tolist()})
+                pil_image = images[i] * torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1)
+                pil_image = pil_image + torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
+                plt.figure(figsize=(16, 10))
 
-            plt.axis('off')
-            plt.show()"""
+                plt.imshow(T.ToPILImage()(pil_image))
+                ax = plt.gca()
 
+                for label, (x_min, y_min, x_max, y_max), score in zip(labels.tolist(), bboxes.tolist(), scores.tolist()):
+                    ax.add_patch(plt.Rectangle((x_min, y_min), x_max - x_min, y_max - y_min,
+                                               fill=False, color=COLORS[label], linewidth=3))
+                    text = f'{labels_set[int(label)]}: {score:0.2f}'
+                    ax.text(x_min, y_min, text, fontsize=15,
+                            bbox=dict(facecolor='yellow', alpha=0.5))
 
+                plt.axis('off')
+                plt.show()
+
+print(t, f)
 print(f'GT -> Tot = {logs["gt"]["positive_images"] + logs["gt"]["negative_images"]} - '
       f'Positives = {logs["gt"]["positive_images"]} - '
       f'Negatives = {logs["gt"]["negative_images"]} - '

@@ -72,7 +72,7 @@ class DatasetCreatorFineTuneModelOutput:
         folders.remove(self._folder_name)
         folders = random.sample(folders, 2)
         complete_dataframe = complete_dataframe[complete_dataframe.folder_name.isin(folders) & (complete_dataframe.label == 1)]
-        complete_dataframe = complete_dataframe.loc[random.sample(complete_dataframe.index.tolist(), len(self._absolute_counts))]
+        complete_dataframe = complete_dataframe.loc[random.sample(complete_dataframe.index.tolist(), 0)]
 
         dataframe_train = pd.DataFrame(data={
             'folder_name': [self._folder_name for _ in range(len(self._absolute_counts))] + complete_dataframe.folder_name.tolist(),
