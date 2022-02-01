@@ -25,7 +25,7 @@ import torchvision.transforms as T
 params = {
     'seed': 0,
     'batch_size': 1,
-    'epochs': 20,
+    'epochs': 10,
     'lr': 1e-5,
     'weight_decay': 1e-4,
     'lr_drop': 20,
@@ -41,7 +41,7 @@ params = {
 }
 
 folder_name = 'house1'
-threshold = 0.95
+threshold = 0.70
 percentage = 0.75
 # Fix seeds
 seed_everything(params['seed'])
@@ -100,7 +100,6 @@ logs = {
 }
 
 print('Collect model output')
-f, t = 0, 0
 for i, (images, targets) in tqdm(enumerate(data_loader_classify), total=len(data_loader_classify), desc='Collect model output'):
 
     outputs = model(images)
@@ -124,12 +123,6 @@ for i, (images, targets) in tqdm(enumerate(data_loader_classify), total=len(data
 
         # Select only correct images
         if keep_len > 0 and keep_len == len(targets[i]['boxes']):
-            if is_positive:
-                logs['predicted']['positive_images'] += 1
-                logs['predicted']['positive_bboxes'] += torch.count_nonzero(keep).item()
-            else:
-                logs['predicted']['negative_images'] += 1
-                logs['predicted']['negative_bboxes'] += torch.count_nonzero(keep).item()
 
             scores = scores[keep]
             labels = labels[keep]
@@ -140,7 +133,7 @@ for i, (images, targets) in tqdm(enumerate(data_loader_classify), total=len(data
                 'pred_logits': torch.unsqueeze(outputs['pred_logits'][i], 0),
                 'pred_boxes': torch.unsqueeze(outputs['pred_boxes'][i], 0)
             })
-            metrics = evaluator.get_metrics(iou_threshold=0.95, confidence_threshold=threshold, door_no_door_task=door_no_door_task)
+            metrics = evaluator.get_metrics(iou_threshold=0.90 , confidence_threshold=threshold, door_no_door_task=False)
 
             # Check if all doors are found without false positive detections
             check = True
@@ -150,17 +143,21 @@ for i, (images, targets) in tqdm(enumerate(data_loader_classify), total=len(data
                     #print(label)
                     if results['total_positives'] != results['TP'] or results['FP'] > 0:
                         check = False
-                        f += 1
                         #print('false')
 
             if check:
+                if is_positive:
+                    logs['predicted']['positive_images'] += 1
+                    logs['predicted']['positive_bboxes'] += torch.count_nonzero(keep).item()
+                else:
+                    logs['predicted']['negative_images'] += 1
+                    logs['predicted']['negative_bboxes'] += torch.count_nonzero(keep).item()
                 # Convert bbox coordinates
                 [h, w] = targets[i]['size'].tolist()
-                print(len(bboxes), len(targets[i]['boxes']))
-                bboxes = np.array([(x - w / 2, y - h / 2, x + w / 2, y + h / 2) for (x, y, w, h) in bboxes.tolist()]) * [w, h, w, h]
+                bboxes = np.array([(x - w / 2, y - h / 2, x + w / 2, y + h / 2) for (x, y, w, h) in targets[i]['boxes'].tolist()]) * [w, h, w, h]
 
-                dataset_model_output.add_train_sample(targets[i]['absolute_count'], targets={'bboxes': bboxes.tolist(), 'labels': labels.tolist()})
-                pil_image = images[i] * torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1)
+                dataset_model_output.add_train_sample(targets[i]['absolute_count'], targets={'bboxes': bboxes.tolist(), 'labels': targets[i]['labels'].tolist()})
+                """pil_image = images[i] * torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1)
                 pil_image = pil_image + torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
                 plt.figure(figsize=(16, 10))
 
@@ -175,9 +172,9 @@ for i, (images, targets) in tqdm(enumerate(data_loader_classify), total=len(data
                             bbox=dict(facecolor='yellow', alpha=0.5))
 
                 plt.axis('off')
-                plt.show()
+                plt.show()"""
 
-print(t, f)
+
 print(f'GT -> Tot = {logs["gt"]["positive_images"] + logs["gt"]["negative_images"]} - '
       f'Positives = {logs["gt"]["positive_images"]} - '
       f'Negatives = {logs["gt"]["negative_images"]} - '
@@ -217,8 +214,8 @@ train, test = dataset_model_output.create_datasets()
 
 data_loader_train = DataLoader(train, batch_size=params['batch_size'], collate_fn=collate_fn, shuffle=False, num_workers=4)
 data_loader_test_model = DataLoader(test, batch_size=params['batch_size'], collate_fn=collate_fn, shuffle=False, num_workers=4)
-"""
-for i, (imgs, targets) in enumerate(data_loader_train):
+
+"""for i, (imgs, targets) in enumerate(data_loader_train):
     for img, target in zip(imgs, targets):
 
         # Denormalize image tensor and convert to PIL image
@@ -238,8 +235,8 @@ for i, (imgs, targets) in enumerate(data_loader_train):
                     bbox=dict(facecolor='yellow', alpha=0.5))
 
         plt.axis('off')
-        plt.show()
-        """
+        plt.show()"""
+
 print('Fine-tune with model output')
 # Create criterion to calculate losses
 losses = ['labels', 'boxes', 'cardinality']
