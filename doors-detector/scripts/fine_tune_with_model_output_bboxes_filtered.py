@@ -183,7 +183,7 @@ for i, (images, targets) in tqdm(enumerate(data_loader_classify), total=len(data
                 [h, w] = targets[i]['size'].tolist()
                 bboxes = predicted_bboxes[predicted_mask]
                 bboxes = np.array([(box._x, box._y, box._x + box._w, box._y + box._h) for box in bboxes.tolist()]) * [w, h, w, h]
-
+                labels = np.array(labels)[predicted_mask].tolist()
                 dataset_model_output.add_train_sample(targets[i]['absolute_count'], targets={'bboxes': bboxes.tolist(), 'labels': labels})
                 """pil_image = images[i] * torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1)
                 pil_image = pil_image + torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
