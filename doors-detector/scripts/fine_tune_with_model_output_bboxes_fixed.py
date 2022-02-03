@@ -411,7 +411,7 @@ for i, (label, values) in enumerate(sorted(metrics['per_bbox'].items(), key=lamb
     metrics_table['FP'][m + i] = values['FP']
 print(f'\tmAP = {mAP / len(metrics["per_bbox"].keys())}')
 
-final = '_train_size_' + str(percentage) + '_confidence_' + str(threshold) + '_model_output_bboxes_filtered'
+final = '_train_size_' + str(percentage) + '_confidence_' + str(threshold) + '_model_output_bboxes_filted'
 final += '_door_no_door.xlsx' if door_no_door_task else '.xlsx'
 with pd.ExcelWriter('./../results/'+folder_name + final) as writer:
     if not metrics_table.index.name:
