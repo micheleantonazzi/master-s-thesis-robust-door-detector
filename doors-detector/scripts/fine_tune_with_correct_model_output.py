@@ -399,7 +399,7 @@ for house in houses.keys():
 
     final = 'correct_images_train_size_' + str(percentage) + '_confidence_' + str(threshold) + '_model_output'
     final += '_door_no_door.xlsx' if door_no_door_task else '.xlsx'
-    with pd.ExcelWriter('./../results/'+folder_name + final) as writer:
+    with pd.ExcelWriter('./../results/'+ house + final) as writer:
         if not metrics_table.index.name:
             metrics_table.index.name = 'Index'
         metrics_table.to_excel(writer, sheet_name='s')
