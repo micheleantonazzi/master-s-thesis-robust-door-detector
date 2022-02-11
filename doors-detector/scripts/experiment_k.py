@@ -139,6 +139,7 @@ for house in houses.keys():
         metrics_table['FP'][i] = values['FP']
     print(f'\tmAP = {mAP / len(metrics["per_bbox"].keys())}')
 
+    percentage = 0.1
     # Fine tune and test for different percentage of k
     while dataset_model_output.len_train_set() >= K * percentage:
         print(percentage)
@@ -269,7 +270,7 @@ for house in houses.keys():
 
             #lr_scheduler.step()
 
-            plot_losses(logs)
+            #plot_losses(logs)
 
         # Test
         if door_no_door_task:
