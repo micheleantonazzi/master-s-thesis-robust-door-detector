@@ -27,6 +27,7 @@ class DatasetsCreatorExperimentK():
 
         train_indexes, _ = train_test_split(dataframe_train.index, train_size=number_of_samples, random_state=42)
         dataframe_train = dataframe_train.loc[train_indexes]
+        dataframe_test = self._test_dataframe[self._test_dataframe.label == 1]
 
         return (DatasetDoorsFinal(self._dataset_path, dataframe_train, TRAIN_SET, std_size=256, max_size=800, scales=[256 + i * 32 for i in range(11)]),
-                DatasetDoorsFinal(self._dataset_path, self._test_dataframe, TEST_SET, std_size=256, max_size=800, scales=[256 + i * 32 for i in range(11)]))
+                DatasetDoorsFinal(self._dataset_path, dataframe_test, TEST_SET, std_size=256, max_size=800, scales=[256 + i * 32 for i in range(11)]))

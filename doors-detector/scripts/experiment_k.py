@@ -118,7 +118,7 @@ for house in houses.keys():
 
     # Test
 
-    """data_loader_test = DataLoader(test, batch_size=params['batch_size'], collate_fn=collate_fn, shuffle=False, num_workers=4)
+    data_loader_test = DataLoader(test, batch_size=params['batch_size'], collate_fn=collate_fn, shuffle=False, num_workers=4)
     evaluator = MyEvaluator()
 
     for images, targets in tqdm(data_loader_test, total=len(data_loader_test), desc='Evaluate model'):
@@ -137,7 +137,7 @@ for house in houses.keys():
         metrics_table['Positives'][i] = values['total_positives']
         metrics_table['TP'][i] = values['TP']
         metrics_table['FP'][i] = values['FP']
-    print(f'\tmAP = {mAP / len(metrics["per_bbox"].keys())}')"""
+    print(f'\tmAP = {mAP / len(metrics["per_bbox"].keys())}')
 
     # Fine tune and test for different percentage of k
     while dataset_model_output.len_train_set() >= K * percentage:
@@ -149,7 +149,7 @@ for house in houses.keys():
         train, test = dataset_model_output.create_datasets(number_of_samples=int(round(percentage * K)), random_state=42)
 
         data_loader_train = DataLoader(train, batch_size=params['batch_size'], collate_fn=collate_fn, shuffle=False, num_workers=4)
-        data_loader_test = DataLoader(test, batch_size=params['batch_size'], collate_fn=collate_fn, shuffle=False, num_workers=4)
+        data_loader_test_model = DataLoader(test, batch_size=params['batch_size'], collate_fn=collate_fn, shuffle=False, num_workers=4)
 
         # Fine tune
         losses = ['labels', 'boxes', 'cardinality']
@@ -192,7 +192,6 @@ for house in houses.keys():
 
                 # Move targets to device
                 targets = [{k: v.to(device) for k, v in target.items() if k != 'folder_name' and k != 'absolute_count'} for target in targets]
-
                 outputs = model(images)
 
                 # Compute losses
@@ -232,7 +231,7 @@ for house in houses.keys():
                 criterion.eval()
 
                 accumulate_losses = {}
-                for i, test_data in enumerate(data_loader_test):
+                for i, test_data in enumerate(data_loader_test_model):
                     images, targets = test_data
                     images = images.to(device)
 
@@ -266,7 +265,7 @@ for house in houses.keys():
             logs['test'].append({k: v / len(temp_logs['test']) for k, v in epoch_total.items()})
             logs['time'].append(time.time() - start_time)
 
-            print(f'----> EPOCH SUMMARY TEST [{epoch}] -> [{i}/{len(data_loader_test)}]: ' + ', '.join([f'{k}: {v}' for k, v in logs['test'][epoch].items()]))
+            print(f'----> EPOCH SUMMARY TEST [{epoch}] -> [{i}/{len(data_loader_test_model)}]: ' + ', '.join([f'{k}: {v}' for k, v in logs['test'][epoch].items()]))
 
             #lr_scheduler.step()
 
