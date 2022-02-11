@@ -59,14 +59,14 @@ percentage = 0.1
 threshold_bboxes = 0.5
 threshold_criterion = 0.6
 criterion_type = CriterionType.MIN
-criterion = Criterion(criterion_type=criterion_type)
+image_criterion = Criterion(criterion_type=criterion_type)
 
 for house in houses.keys():
     if door_no_door_task:
         metrics_table = pd.DataFrame(data={
             'Env': [house for _ in range(2)],
             'Percentage':  ['0', '0'],
-            'Label': ['-1'],
+            'Label': ['-1', '0'],
             'AP': [0.0 for _ in range(2)],
             'Positives': [0 for _ in range(2)],
             'TP': [0 for _ in range(2)],
@@ -112,7 +112,7 @@ for house in houses.keys():
             scores = scores[keep]
             labels = labels[keep]
             bboxes = bboxes[keep]
-            score_image = criterion.aggregate_score_image(scores)
+            score_image = image_criterion.aggregate_score_image(scores)
             if score_image <= threshold_criterion:
                 dataset_model_output.add_train_sample(absolute_count=targets[i]['absolute_count'])
 
@@ -276,7 +276,7 @@ for house in houses.keys():
             new_metrics_table = pd.DataFrame(data={
                 'Env': [house for _ in range(2)],
                 'Percentage':  [str(percentage), str(percentage)],
-                'Label': ['-1'],
+                'Label': ['-1', '0'],
                 'AP': [0.0 for _ in range(2)],
                 'Positives': [0 for _ in range(2)],
                 'TP': [0 for _ in range(2)],
@@ -293,6 +293,8 @@ for house in houses.keys():
                 'FP': [0 for _ in range(3)]
             })
 
+        model.to('cpu')
+        model.eval()
         evaluator = MyEvaluator()
 
         for images, targets in tqdm(data_loader_test, total=len(data_loader_test), desc='Evaluate model'):
@@ -307,12 +309,12 @@ for house in houses.keys():
             mAP += values['AP']
             print(f'\tLabel {label} -> AP = {values["AP"]}, Total positives = {values["total_positives"]}, TP = {values["TP"]}, FP = {values["FP"]}')
             print(f'\t\tPositives = {values["TP"] / values["total_positives"] * 100:.2f}%, False positives = {values["FP"] / (values["TP"] + values["FP"]) * 100:.2f}%')
-            new_metrics_table['AP'][m + i] = values['AP']
-            new_metrics_table['Positives'][m + i] = values['total_positives']
-            new_metrics_table['TP'][m + i] = values['TP']
-            new_metrics_table['FP'][m + i] = values['FP']
+            new_metrics_table['AP'][i] = values['AP']
+            new_metrics_table['Positives'][i] = values['total_positives']
+            new_metrics_table['TP'][i] = values['TP']
+            new_metrics_table['FP'][i] = values['FP']
         print(f'\tmAP = {mAP / len(metrics["per_bbox"].keys())}')
-
+        print(new_metrics_table)
         metrics_table = metrics_table.append(new_metrics_table, ignore_index=True)
         percentage += 0.1
 
