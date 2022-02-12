@@ -16,3 +16,5 @@ class Criterion:
     def aggregate_score_image(self, scores) -> float:
         if self._criterion_type == CriterionType.MIN:
             return 0 if len(scores) == 0 else torch.min(scores).item()
+        elif self._criterion_type == CriterionType.MAX:
+            return 0 if len(scores) == 0 else torch.max(scores).item()

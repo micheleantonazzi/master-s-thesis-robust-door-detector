@@ -25,7 +25,10 @@ class DatasetsCreatorExperimentK():
         complete_dataframe = DatasetManager(dataset_path=self._dataset_path, sample_class=DoorSample).get_dataframe()
         dataframe_train = complete_dataframe[(complete_dataframe.folder_name == self._folder_name) & (complete_dataframe.folder_absolute_count.isin(self._absolute_counts))]
 
-        train_indexes, _ = train_test_split(dataframe_train.index, train_size=number_of_samples, random_state=42)
+        if len(dataframe_train.index) > number_of_samples:
+            train_indexes, _ = train_test_split(dataframe_train.index, train_size=number_of_samples, random_state=42)
+        else:
+            train_indexes, _ = train_test_split(dataframe_train.index, train_size=len(dataframe_train.index) - 2, random_state=42)
         dataframe_train = dataframe_train.loc[train_indexes]
         dataframe_test = self._test_dataframe[self._test_dataframe.label == 1]
 
