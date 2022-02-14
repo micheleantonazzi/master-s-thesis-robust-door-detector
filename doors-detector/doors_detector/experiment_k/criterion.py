@@ -3,6 +3,11 @@ from enum import Enum
 import torch
 
 
+class CriterionSorting(Enum):
+    DESCENDING = 'DESCENDING'
+    GROWING = 'GROWING'
+
+
 class CriterionType(Enum):
     MIN = 'MIN'
     MAX = 'MAX'
