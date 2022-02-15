@@ -57,14 +57,14 @@ houses = {
     'house22': [EXP_1_HOUSE_22, EXP_2_HOUSE_22_25, EXP_2_HOUSE_22_50, EXP_2_HOUSE_22_75],
 }
 
-percentage = 0.1
+percentage = 0.2
 threshold_bboxes = 0.5
 criterion_type = CriterionType.MIN
 image_criterion = Criterion(criterion_type=criterion_type)
 
 for house in houses.keys():
     if door_no_door_task:
-        metrics_table = pd.DataFrame(data={
+        metrics_table_first = pd.DataFrame(data={
             'Env': [house for _ in range(2)],
             'Percentage':  ['0', '0'],
             'Label': ['-1', '0'],
@@ -74,7 +74,7 @@ for house in houses.keys():
             'FP': [0 for _ in range(2)]
         })
     else:
-        metrics_table = pd.DataFrame(data={
+        metrics_table_first = pd.DataFrame(data={
             'Env': [house for _ in range(3)],
             'Percentage':  ['0', '0', '0'],
             'Label': ['-1', '0', '1'],
@@ -118,7 +118,6 @@ for house in houses.keys():
             dataset_model_output.add_train_sample(absolute_count=targets[i]['absolute_count'], score_image=score_image)
 
     # Test
-
     data_loader_test = DataLoader(test, batch_size=params['batch_size'], collate_fn=collate_fn, shuffle=False, num_workers=4)
     evaluator = MyEvaluator()
 
@@ -134,17 +133,16 @@ for house in houses.keys():
         mAP += values['AP']
         print(f'\tLabel {label} -> AP = {values["AP"]}, Total positives = {values["total_positives"]}, TP = {values["TP"]}, FP = {values["FP"]}')
         print(f'\t\tPositives = {values["TP"] / values["total_positives"] * 100:.2f}%, False positives = {values["FP"] / (values["TP"] + values["FP"]) * 100:.2f}%')
-        metrics_table['AP'][i] = values['AP']
-        metrics_table['Positives'][i] = values['total_positives']
-        metrics_table['TP'][i] = values['TP']
-        metrics_table['FP'][i] = values['FP']
+        metrics_table_first['AP'][i] = values['AP']
+        metrics_table_first['Positives'][i] = values['total_positives']
+        metrics_table_first['TP'][i] = values['TP']
+        metrics_table_first['FP'][i] = values['FP']
     print(f'\tmAP = {mAP / len(metrics["per_bbox"].keys())}')
 
-    percentage = 0.1
-
     for sorting in [CriterionSorting.DESCENDING, CriterionSorting.GROWING]:
+        metrics_table = metrics_table_first
         # Fine tune and test for different percentage of k
-        while dataset_model_output.len_train_set() >= K * percentage:
+        for percentage in [0.2 * i for i in range(1, 6)]:
             print(percentage)
 
             model = DetrDoorDetector(model_name=DETR_RESNET50, n_labels=len(labels_set.keys()), pretrained=True,
@@ -320,7 +318,7 @@ for house in houses.keys():
             print(f'\tmAP = {mAP / len(metrics["per_bbox"].keys())}')
             print(new_metrics_table)
             metrics_table = metrics_table.append(new_metrics_table, ignore_index=True)
-            percentage += 0.1
+            #percentage *= 2
 
         final = '_experimentk_ordered_' + str(criterion_type) + '_' + str(sorting)
         final += '_door_no_door.xlsx' if door_no_door_task else '.xlsx'
