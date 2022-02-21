@@ -278,8 +278,7 @@ The new version of Gibson we released implements further improvements. First of 
 \section{Pose Estimator}
 \label{sec:pose_estimator}
 To acquire a valid vision dataset, we need to determine the valid positions in which the robot can be placed: it must be in free space inside the building perimeter and not colliding with obstacles (walls, floors, or furniture). Furthermore, the samples must be collected in locations consistent with a possible exploration strategy followed by a mobile robot. Typically, a robot walks away from obstacles and chooses the shortest path for moving between different areas. To address these requirements, we developed a method called Pose Estimator, which is based on the work proposed by \citeauthor{repeatabilityslamarxiv} in \cite{repeatabilityslamarxiv, repeatabilityslam}.
-
-  is the component that extracts plausible positions for an autonomous agent from which collect the dataset. This tool performs the computation of the Voronoi graph over the 2D occupancy grid map \cite{cuupancygridfirst} of a floor plan and chooses the positions by sub-sampling this graph. The following paragraphs describe the procedures performed by this module, which is implemented in the \textit{gibson-env-utilities} package.
+Pose Estimator is the component that extracts plausible positions for an autonomous agent from which collect the dataset. This tool performs the computation of the Voronoi graph over the 2D occupancy grid map \cite{cuupancygridfirst} of a floor plan and chooses the positions by sub-sampling this graph. The following paragraphs describe the procedures performed by this module, which is implemented in the \textit{gibson-env-utilities} package.
 
 
 
