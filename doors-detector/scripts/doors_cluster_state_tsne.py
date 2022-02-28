@@ -39,7 +39,7 @@ model.model.transformer.register_forward_hook(
 model.to(device)
 model.eval()
 
-data_loader_training = DataLoader(test, batch_size=batch_size, collate_fn=collate_fn, shuffle=False, num_workers=6)
+data_loader_training = DataLoader(train, batch_size=batch_size, collate_fn=collate_fn, shuffle=False, num_workers=6)
 
 post_processor = PostProcess()
 
@@ -57,16 +57,41 @@ for i, training_data in tqdm(enumerate(data_loader_training), total=len(data_loa
         values['labels'].append(item['labels'][max_score].item())
 
 flatten_encoder = np.array([torch.squeeze(v)[m].flatten().tolist() for v, m in zip(values['transformer'], values['max_scores'])])
-flatten_encoder_pca = PCA(n_components=50, random_state=42).fit_transform(flatten_encoder)
+flatten_encoder_pca_train = PCA(n_components=50, random_state=42).fit_transform(flatten_encoder)
+color_list = np.array([COLORS[k] for k in sorted(COLORS.keys())])
+color_train = color_list[values['labels']]
+
+values = {'transformer': [], 'max_scores': [], 'labels': []}
+
+# TEST
+data_loader_test = DataLoader(test, batch_size=batch_size, collate_fn=collate_fn, shuffle=False, num_workers=6)
+
+post_processor = PostProcess()
+
+for i, training_data in tqdm(enumerate(data_loader_test), total=len(data_loader_test)):
+    images, targets = training_data
+
+    images = images.to(device)
+    outputs = model(images)
+
+    processed_data = post_processor(outputs=outputs, target_sizes=torch.tensor([[100, 100] for _ in range(len(images))], device=device))
+    for item in processed_data:
+        scores = item['scores']
+        max_score = torch.argmax(scores).item()
+        values['max_scores'].append(max_score)
+        values['labels'].append(item['labels'][max_score].item())
+
+flatten_encoder = np.array([torch.squeeze(v)[m].flatten().tolist() for v, m in zip(values['transformer'], values['max_scores'])])
+flatten_encoder_pca_test = PCA(n_components=50, random_state=42).fit_transform(flatten_encoder)
 
 fig, axes = subplots(nrows=1, ncols=2, figsize=(8, 4))
-color_list = np.array([COLORS[k] for k in sorted(COLORS.keys())])
+color_test = color_list[values['labels']]
 
-for perplexity, axis in tqdm(zip([30, 100], axes.flatten()), desc="Computing TSNEs", total=2):
-    axis.scatter(*TSNE(n_components=2, perplexity=perplexity).fit_transform(flatten_encoder_pca).T, s=1, c=color_list[values['labels']])
+for title, flatten, colors, axis in tqdm(zip(['Train set', 'Test set'], [flatten_encoder_pca_train, flatten_encoder_pca_test], [color_train, color_test], axes.flatten()), desc="Computing TSNEs", total=1):
+    axis.scatter(*TSNE(n_components=2, perplexity=100).fit_transform(flatten).T, s=1, c=colors)
     axis.xaxis.set_visible(False)
     axis.yaxis.set_visible(False)
-    axis.set_title(f"TSNE - perplexity = {perplexity}", fontdict={'fontsize': 10,
+    axis.set_title("TSNE - " + title, fontdict={'fontsize': 10,
                                                                                 'fontweight': 10,
                                                                                 'verticalalignment': 'baseline',
                                                                                 'horizontalalignment': 'center'})
