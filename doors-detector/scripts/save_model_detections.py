@@ -12,10 +12,12 @@ house = 'house1'
 save_path = '/home/michele/model_detections/'
 
 if not os.path.exists(save_path):
-    os.mkdir('/home/michele/model_detections')
+    os.mkdir(save_path)
 
-if not os.path.exists(os.path.join(save_path, house)):
-    os.mkdir(os.path.join(save_path, house))
+save_path = os.path.join(save_path, house)
+if not os.path.exists(save_path):
+    os.mkdir(save_path)
+
 
 params = {
     'seed': 0
@@ -68,9 +70,9 @@ for i, (img, target, door_sample) in enumerate(test):
             axis.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
                                        fill=False, color=COLORS[label], linewidth=3))
             text = f'{labels[int(label)]}: {score:0.2f}'
-            axis.text(xmin, ymin, text, fontsize=15,
+            axis.text(xmin, ymin, text, fontsize=12,
                     bbox=dict(facecolor='yellow', alpha=0.5))
-            axis.set_title(title)
+            #axis.set_title(title)
 
         axis.axis('off')
 
