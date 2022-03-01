@@ -8,7 +8,7 @@ houses = pd.read_csv('./../results/risultati_tesi_antonazzi.csv')
 houses['AP'] = houses['AP'].astype(np.float64)
 houses['AP'] = houses['AP'].apply(lambda x: x*100).round()
 
-labels = ['$GD_e$', '$FD^{25}_e$', '$FD^{50}_e$', '$FD^{75}_e$']
+labels = ['$GD_{-e}$', '$QD^{25}_e$', '$QD^{50}_e$', '$QD^{75}_e$']
 experiments = ['1', '2a', '2b', '2c']
 
 houses_list_dtype = CategoricalDtype(
@@ -35,7 +35,7 @@ ax.bar(X + 0.2, closed_doors[('AP', experiments[1])].tolist() + [closed_doors[('
 ax.bar(X + 0.4, closed_doors[('AP', experiments[2])].tolist() + [closed_doors[('AP', experiments[2])].mean()],  width=0.2, label=labels[2])
 ax.bar(X + 0.6, closed_doors[('AP', experiments[3])].tolist() + [closed_doors[('AP', experiments[3])].mean()],  width=0.2, label=labels[3])
 
-ax.set_title('AP results over all houses - closed doors (0)', fontsize=18)
+ax.set_title('AP results over all houses - closed doors', fontsize=18)
 ax.set_ylim([0, 110])
 
 ax.tick_params(axis='y', labelsize=16)
@@ -61,7 +61,7 @@ ax.bar(X + 0.2, open_doors[('AP', experiments[1])].tolist() + [open_doors[('AP',
 ax.bar(X + 0.4, open_doors[('AP', experiments[2])].tolist() + [open_doors[('AP', experiments[2])].mean()],  width=0.2, label=labels[2])
 ax.bar(X + 0.6, open_doors[('AP', experiments[3])].tolist() + [open_doors[('AP', experiments[3])].mean()],  width=0.2, label=labels[3])
 
-ax.set_title('AP results over all houses - open doors (1)', fontsize=18)
+ax.set_title('AP results over all houses - open doors', fontsize=18)
 ax.set_ylim([0, 110])
 ax.tick_params(axis='y', labelsize=16)
 ax.set_xticks([i+0.3 for i in range(11)])
