@@ -4,7 +4,7 @@
 
   [download dataset](https://drive.google.com/file/d/1BqjBpobjKTomFjDkzhWjmCryAXOEluO2/view?usp=sharing)
 
-  [download models parameters](https://mega.nz/folder/8kZXDC4D#XyT1IEwQQLAizo_gXNaiyQ)
+  [download models parameters](https://unimi2013-my.sharepoint.com/:f:/g/personal/michele_antonazzi_unimi_it/Er7n154eKXtHqESgk2MahoQBa_t7hka5grS7N4ELkamqvg?e=e7SmXl)
 
   ## Data collection
 
